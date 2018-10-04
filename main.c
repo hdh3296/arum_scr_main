@@ -1489,6 +1489,7 @@ void main(void) {
     initMCU();
     initPort();
     initTimer0();
+	initTimer1();
     initAdc();
     initLoaderUart2();
     initPwm();
@@ -1592,10 +1593,22 @@ void main(void) {
     }
 }
 
-
+volatile unsigned int timer1_test;
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
 	uint8_t ch;
+
+	if (TMR1IF) {
+		TMR1IF = 0;
+	    TMR1L = MSEC_L_1;
+	    TMR1H = MSEC_H_1;
+		timer1_test++;
+		if (timer1_test >= 1) {
+			timer1_test = 0;
+			pin_GATE_R_PH = ~pin_GATE_R_PH;
+		}
+
+	}
 
     if (TMR0IF) {
         TMR0IF = 0;
@@ -1606,8 +1619,8 @@ void interrupt isr(void) {
 
         if (timer_msec > 1000) {
             timer_msec = 0;
-
 			pin_RUN_LED = ~pin_RUN_LED;
+
         }
 
         NoCanInt++;

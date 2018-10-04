@@ -12,12 +12,16 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define MSEC_H 0xfc
 #define MSEC_L 0x18
 
-/* ======== 포트 ============  */
-#define pin_RUN_LED             RB0x
-#define pin_RUN_LED_tris     TRISB0
+#define MSEC_H_1 0xff
+#define MSEC_L_1 0xe0 // 35us
 
-#define pin_TX_EN485            RC0 	// SSR_0
-#define pin_TX_EN485_tris    TRISC0
+
+/* ======== 포트 ============  */
+#define pin_RUN_LED             RC3
+#define pin_RUN_LED_tris     TRISC3
+
+#define pin_GATE_R_PH            RC0 	// SSR_0
+#define pin_GATE_R_PH_tris    TRISC0
 
 #define pin_RX RE6		// rx
 #define pin_Rx_tris TRISE6
@@ -59,9 +63,10 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 
 #define EN_485 0
 #define DIS_485 1
-#define tx485_enPin pin_TX_EN485
+
 extern void initPort(void);
 extern void initTimer0(void);
+extern void initTimer1(void);
 
 #endif
 

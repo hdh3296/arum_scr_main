@@ -53,8 +53,8 @@ void initPort(void) {
     LATF = 0xff;
     LATG = 0xff;
 
-    pin_TX_EN485_tris = 0;
-    pin_TX_EN485 = 0; // if 0 = heater off
+    pin_GATE_R_PH_tris = 0;
+    pin_GATE_R_PH = 0; // if 0 = heater off
 
     pin_RUN_LED_tris = 0;
     pin_RUN_LED = 0;
@@ -86,5 +86,26 @@ void initTimer0(void) {
     TMR0L = MSEC_L;
     TMR0H = MSEC_H;
 }
+
+
+
+
+void initTimer1(void) {
+    TMR1IE = 1;
+    TMR1IF = 0;
+    TMR1ON = 1; // TMR0 on/off
+    //T18BIT = 0; // 8/16 bit select    ..(16bit)
+    //T1CS = 0; // TMR0 Source Select ..(internal clock)
+    //T1SE = 0; // TMR0 Source Edge Select
+    //PSA = 0; // Prescaler Assignment ..(enable)
+    //T1PS2 = 0; // Prescaler..............(1:2)
+    //T1PS1 = 1;
+    //T1PS0 = 0;
+    TMR1L = MSEC_L_1;
+    TMR1H = MSEC_H_1;
+
+
+}
+
 
 

@@ -12,7 +12,7 @@ uint16_t initLoaderUart2(void) {
     Init_Com2();
     serialIdleTimer = 0;
     TX2_IE = 0;
-    tx485_enPin = DIS_485;
+//	tx485_enPin = DIS_485;
     RC2_IE = 1;
     uart_status = STX_CHK;
     Ladder485Init();

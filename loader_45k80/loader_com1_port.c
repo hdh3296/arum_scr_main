@@ -32,7 +32,7 @@ void Init_Com2(void) {
     TRISE6 = INPUT; // rx
     RC2_IE = 1; // USART RX interrupt enable
     TX2_IE = 0; // USART TX interrupt enable
-    tx485_enPin = DIS_485;
+//    tx485_enPin = DIS_485;
     RC2_IF = 0; // USART RX interrupt enable
     TX2_IF = 0; // USART TX interrupt enable
     UART1MD = 1;
@@ -91,7 +91,7 @@ void uart2_txReadyGo(void) {
     TXREG2 = uartTxBuffer[0];
 	txBuffer_pt = 1;
     TX2_IE = 1;
-    tx485_enPin = EN_485;
+//    tx485_enPin = EN_485;
 
     can_txReady();
 }
@@ -111,7 +111,7 @@ bool isTxEndCondition() {
 void setTxStop(void) {
 	uart_status = STX_CHK;
 	TX2_IE = 0;
-	tx485_enPin = DIS_485;
+//	tx485_enPin = DIS_485;
 	serialIdleTimer = 0;
 	txBuffer_pt = 0;
 	totalTxCnt = 0;
