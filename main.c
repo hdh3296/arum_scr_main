@@ -1492,8 +1492,8 @@ void main(void) {
     initPort();
     initTimer0();
 	initTimer1();
-//	initInt0();
-//	initInt1();
+	initInt0();
+	initInt1();
 	initInt2();
 	// INT1, INT2 입력 설정
 	pin_ZERO_CROSS_T_tris = 1;
@@ -1614,17 +1614,17 @@ void interrupt isr(void) {
 	uint8_t ch;
 
 
-//	if(INT0IF && INT0IE){
-//  		INT0IF = 0;
-//		pin_GATE_R_PH = ~pin_GATE_R_PH;
-//	}
-//	if(INT1IF && INT1IE){
-//  		INT1IF = 0;
-//		pin_GATE_R_PH = ~pin_GATE_R_PH;
-//	}
+	if(INT0IF && INT0IE){
+  		INT0IF = 0;
+		pin_GATE_R_PH = ~pin_GATE_R_PH;
+	}
+	if(INT1IF && INT1IE){
+  		INT1IF = 0;
+		pin_GATE_S_PH = ~pin_GATE_S_PH;
+	}
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
-		pin_GATE_R_PH = ~pin_GATE_R_PH;
+		pin_GATE_T_PH = ~pin_GATE_T_PH;
 	}
 
 

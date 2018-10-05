@@ -20,9 +20,6 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_RUN_LED             RC3
 #define pin_RUN_LED_tris     TRISC3
 
-#define pin_GATE_R_PH            RC0 	// SSR_0
-#define pin_GATE_R_PH_tris    TRISC0
-
 #define pin_RX RE6		// rx
 #define pin_Rx_tris TRISE6
 #define pin_TX RE7		// tx
@@ -64,6 +61,13 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_ZERO_CROSS_S_tris   TRISB1
 #define pin_ZERO_CROSS_T        RB2
 #define pin_ZERO_CROSS_T_tris   TRISB2
+
+#define pin_GATE_R_PH            RC0 	// SSR_0
+#define pin_GATE_R_PH_tris    TRISC0
+#define pin_GATE_S_PH            RC1 	// SSR_0
+#define pin_GATE_S_PH_tris    TRISC1
+#define pin_GATE_T_PH            RC2 	// SSR_0
+#define pin_GATE_T_PH_tris    TRISC2
 
 
 #define EN_485 0
