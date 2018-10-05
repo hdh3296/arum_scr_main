@@ -1622,8 +1622,7 @@ void interrupt isr(void) {
 	}
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
-		pin_RUN_LED = ~pin_RUN_LED;
-
+		pin_GATE_T_PH = ~pin_GATE_T_PH;
 	}
 
 
@@ -1634,7 +1633,7 @@ void interrupt isr(void) {
 		timer1_test++;
 		if (timer1_test >= 90) {
 			timer1_test = 0;
-//			pin_GATE_R_PH = ~pin_GATE_R_PH;
+			// #1005 gate 출력 넣어야 함
 		}
 	}
 
@@ -1645,10 +1644,9 @@ void interrupt isr(void) {
         loader_msecTimer();
         timer_msec++;
 
-        if (timer_msec > 1000) {
+        if (timer_msec >= 1000) {
             timer_msec = 0;
-			pin_GATE_T_PH = ~pin_GATE_T_PH;
-
+			pin_RUN_LED = ~pin_RUN_LED;
         }
 
         NoCanInt++;
