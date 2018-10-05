@@ -91,18 +91,19 @@ void initTimer0(void) {
 
 
 void initTimer1(void) {
-    TMR1IE = 1;
     TMR1IF = 0;
-    TMR1ON = 1; // TMR0 on/off
-    //T18BIT = 0; // 8/16 bit select    ..(16bit)
-    //T1CS = 0; // TMR0 Source Select ..(internal clock)
-    //T1SE = 0; // TMR0 Source Edge Select
-    //PSA = 0; // Prescaler Assignment ..(enable)
-    //T1PS2 = 0; // Prescaler..............(1:2)
-    //T1PS1 = 1;
-    //T1PS0 = 0;
+	TMR1IP = 1;
+    TMR1IE = 1;
+    TMR1CS0 = 0;
+    TMR1CS1 = 0;
+	T1CONbits.SOSCEN = 0;	//  SOSC Oscillator Enable bit
+	T1CONbits.RD16 = 1;
+    T1CKPS1 = 1; // Prescaler ........(1/8)
+    T1CKPS0 = 1;
+
     TMR1L = MSEC_L_1;
     TMR1H = MSEC_H_1;
+    TMR1ON = 1; // TMR0 on/off
 
 
 }

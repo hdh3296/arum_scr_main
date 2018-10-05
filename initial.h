@@ -13,7 +13,7 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define MSEC_L 0x18
 
 #define MSEC_H_1 0xff
-#define MSEC_L_1 214 // 213 = 46us
+#define MSEC_L_1 214 // 213,4 = 46us
 
 
 /* ======== Æ÷Æ® ============  */

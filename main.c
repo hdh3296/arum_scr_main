@@ -1593,6 +1593,11 @@ void main(void) {
     }
 }
 
+#define PIN_R_PH_HIGH	1
+#define PIN_R_PH_LOW	0
+
+
+
 volatile unsigned int timer1_test;
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
@@ -1607,7 +1612,6 @@ void interrupt isr(void) {
 			timer1_test = 0;
 			pin_GATE_R_PH = ~pin_GATE_R_PH;
 		}
-
 	}
 
     if (TMR0IF) {
