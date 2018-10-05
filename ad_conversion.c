@@ -47,8 +47,8 @@ void initAdc(void) {
     ACQT2 = 1;
     ACQT1 = 0;
     ACQT0 = 0; // acquisition time >= 16~20 usec
-    ANCON0 = 0xff; // an0-an8
-    ANCON1 = 0x01; // an9
+    ANCON0 = 0x0f; // an0-an4, dig5~8
+    ANCON1 = 0x00; // an9 => dig9
     ADIP = 0;
     ADIF = 0;
     ADIE = 1;
