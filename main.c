@@ -1611,6 +1611,7 @@ void interrupt isr(void) {
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
 		int0checker++;
+		pin_GATE_R_PH = ~pin_GATE_R_PH;
 //		if (int0checker == 0xffff) {
 //			int0checker = 0;
 //		}
@@ -1623,7 +1624,7 @@ void interrupt isr(void) {
 		timer1_test++;
 		if (timer1_test >= 90) {
 			timer1_test = 0;
-			pin_GATE_R_PH = ~pin_GATE_R_PH;
+//			pin_GATE_R_PH = ~pin_GATE_R_PH;
 		}
 	}
 
