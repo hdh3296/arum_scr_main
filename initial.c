@@ -29,10 +29,13 @@ void initAnalogPin(void) {
     pin_ARMS_1          = 0;
     pin_ARMS_2_tris = 1;
     pin_ARMS_2          = 0;
-    pin_ARMS_3_tris = 1;
-    pin_ARMS_3          = 0;
     pin_ARMS_4_tris = 1;
     pin_ARMS_4          = 0;
+
+    pin_ZERO_CROSS_S_tris = 1;
+    pin_ZERO_CROSS_S      = 0;
+	pin_ZERO_CROSS_T_tris = 1;
+	pin_ZERO_CROSS_T      = 0;
 }
 
 void initPort(void) {

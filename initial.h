@@ -47,20 +47,23 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_ARMS_1_tris     TRISE1
 #define pin_ARMS_2              RE2
 #define pin_ARMS_2_tris     TRISE2
-#define pin_ARMS_3              RB1x
-#define pin_ARMS_3_tris     TRISB1
+
+
 #define pin_ARMS_4              RB4
 #define pin_ARMS_4_tris     TRISB4
 
+#define pin_CAN_RX 				RE4
+#define pin_CAN_RX_tris 		TRISE4
+#define pin_CAN_TX 				RE5
+#define pin_CAN_TX_tris			TRISE5
 
-#define pin_CAN_TX 				RB2
-#define pin_CAN_RX 				RB3
-#define pin_CAN_TX_tris			TRISB2
-#define pin_CAN_RX_tris 		TRISB3
-
-
-#define pin_ZERO_CROSS_R	RB0x // 외부 인터럽트 0 = INT0 ## ???
+// ZERO_CROSS_R / S / T 핀 설정 ##
+#define pin_ZERO_CROSS_R		RB0x // 외부 인터럽트 0 = INT0
 #define pin_ZERO_CROSS_R_tris	TRISB0
+#define pin_ZERO_CROSS_S        RB1x
+#define pin_ZERO_CROSS_S_tris   TRISB1
+#define pin_ZERO_CROSS_T        RB2
+#define pin_ZERO_CROSS_T_tris   TRISB2
 
 
 #define EN_485 0
