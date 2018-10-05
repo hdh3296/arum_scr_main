@@ -1603,7 +1603,7 @@ void interrupt isr(void) {
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
 		timer1_test++;
-		if (timer1_test >= 1) {
+		if (timer1_test >= 90) {
 			timer1_test = 0;
 			pin_GATE_R_PH = ~pin_GATE_R_PH;
 		}
