@@ -1496,11 +1496,9 @@ void main(void) {
 	initInt1();
 	initInt2();
 	// INT1, INT2 입력 설정
-	pin_ZERO_CROSS_T_tris = 1;
-
     initAdc();
     initLoaderUart2();
-    initPwm();
+    //initPwm();
 	// can 셋팅
 	init_canPort();
     InitCAN();
@@ -1510,7 +1508,7 @@ void main(void) {
     setAdcStartOrStop(1);
 
 
-    offPwmAll();
+    //offPwmAll();
 
 	for (ch = 0; ch < 5; ch++) {
 	// 전원 키면, enable/disable 값을 초기화 하기
@@ -1584,7 +1582,7 @@ void main(void) {
         rxtx_loop();
 
 // pwm 출력
-        outputPwm_loop();
+        //outputPwm_loop();
 
 // 통신 두절 판단하디 @09-07
 		b_temp_comm_not = getCheckNotCommTmep();
@@ -1624,7 +1622,8 @@ void interrupt isr(void) {
 	}
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
-		pin_GATE_T_PH = ~pin_GATE_T_PH;
+		pin_RUN_LED = ~pin_RUN_LED;
+
 	}
 
 
@@ -1648,7 +1647,7 @@ void interrupt isr(void) {
 
         if (timer_msec > 1000) {
             timer_msec = 0;
-			pin_RUN_LED = ~pin_RUN_LED;
+			pin_GATE_T_PH = ~pin_GATE_T_PH;
 
         }
 

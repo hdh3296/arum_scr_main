@@ -53,11 +53,11 @@ void initPort(void) {
     LATG = 0xff;
 
     pin_GATE_R_PH_tris = 0;
-    pin_GATE_R_PH = 0; // if 0 = heater off
+    pin_GATE_R_PH = 0;
     pin_GATE_S_PH_tris = 0;
-    pin_GATE_S_PH = 0; // if 0 = heater off
+    pin_GATE_S_PH = 0;
     pin_GATE_T_PH_tris = 0;
-    pin_GATE_T_PH = 0; // if 0 = heater off
+    pin_GATE_T_PH = 0;
 
     pin_RUN_LED_tris = 0;
     pin_RUN_LED = 0;
