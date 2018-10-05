@@ -115,10 +115,8 @@ unsigned    char    can_thisRxBuf[8];
 ///////////////////////
 
 
-void CAN_SetPort(void)//------------------------------------------------------------------------
+void CAN_SetConfigration(void)//------------------------------------------------------------------------
 {
-    TRISB3 = 1 ; // CAN RX
-    TRISB2 = 0 ; // CAN TX
 
 #ifdef		 U_COMPILER
     CANCONbits.REQOP = 4 ;// Entry Configration Mode
@@ -614,7 +612,7 @@ void InitCAN(void)
 {
     unsigned int i;
 
-    CAN_SetPort();
+    CAN_SetConfigration();
     CAN_SetBaudrate();
 
     ENDRHI = 1; // CANTX pin will drive when recessive

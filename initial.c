@@ -65,7 +65,7 @@ void initPort(void) {
 
 
     initAnalogPin();
-    init_canPort();
+
 
 
 }
@@ -122,12 +122,19 @@ void initInt0(void) {
 	pin_ZERO_CROSS_R_tris	= 1; // ют╥б
 }
 
-
 void initInt1(void) {
 	INTEDG1 = 1;	// rising edge
 	INT1IF	= 0;
 	INT1IE	= 1;
 	pin_ZERO_CROSS_S_tris = 1;
 }
+
+void initInt2(void) {
+	INTEDG2 = 1;	// rising edge
+	INT2IF	= 0;
+	INT2IE	= 1;
+	pin_ZERO_CROSS_T_tris = 1;
+}
+
 
 
