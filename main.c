@@ -1494,7 +1494,7 @@ void main(void) {
 	initTimer1();
 //	initInt0();
 //	initInt1();
-//	initInt2();
+	initInt2();
 	// INT1, INT2 입력 설정
 	pin_ZERO_CROSS_T_tris = 1;
 
@@ -1622,10 +1622,10 @@ void interrupt isr(void) {
 //  		INT1IF = 0;
 //		pin_GATE_R_PH = ~pin_GATE_R_PH;
 //	}
-//	if(INT2IF && INT2IE){
-//  		INT2IF = 0;
-//		pin_GATE_R_PH = ~pin_GATE_R_PH;
-//	}
+	if(INT2IF && INT2IE){
+  		INT2IF = 0;
+		pin_GATE_R_PH = ~pin_GATE_R_PH;
+	}
 
 
 	if (TMR1IF) {
