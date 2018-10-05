@@ -1493,6 +1493,12 @@ void main(void) {
     initTimer0();
 	initTimer1();
 	initInt0();
+	//initInt1();
+	//initInt2();
+	// INT1, INT2 입력 설정
+
+	pin_ZERO_CROSS_T_tris = 1;
+
     initAdc();
     initLoaderUart2();
     initPwm();
@@ -1602,7 +1608,6 @@ void main(void) {
 
 
 volatile unsigned int timer1_test;
-volatile unsigned int int0checker;
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
 	uint8_t ch;
@@ -1610,12 +1615,14 @@ void interrupt isr(void) {
 
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
-		int0checker++;
 		pin_GATE_R_PH = ~pin_GATE_R_PH;
-//		if (int0checker == 0xffff) {
-//			int0checker = 0;
-//		}
 	}
+//	if(INT1IF && INT1IE){
+//  		INT1IF = 0;
+//		pin_GATE_R_PH = ~pin_GATE_R_PH;
+//	}
+
+
 
 	if (TMR1IF) {
 		TMR1IF = 0;

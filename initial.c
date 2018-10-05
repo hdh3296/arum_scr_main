@@ -32,10 +32,6 @@ void initAnalogPin(void) {
     pin_ARMS_4_tris = 1;
     pin_ARMS_4          = 0;
 
-    pin_ZERO_CROSS_S_tris = 1;
-    pin_ZERO_CROSS_S      = 0;
-	pin_ZERO_CROSS_T_tris = 1;
-	pin_ZERO_CROSS_T      = 0;
 }
 
 void initPort(void) {
@@ -117,24 +113,21 @@ void    disableZero_RST_extInt(void) {
 }
 
 
-void    enabelZero_RST_extInt(void) {
-	INTEDG0 = 1;	//falling edge
-	INT0IF  = 0;
-	INT0IE  = 1;
-}
 
-
-void    Init_zero_RST_extInt(void) {
-	INTEDG0 = 1;	// rising edge
-	INT0IF	= 0;
-	INT0IE	= 1;
-	enabelZero_RST_extInt();
-}
 
 void initInt0(void) {
-	Init_zero_RST_extInt();
+	INTEDG0 = 1;	// 1 = rising edge
+	INT0IF  = 0;
+	INT0IE  = 1;
 	pin_ZERO_CROSS_R_tris	= 1; // ют╥б
 }
 
+
+void initInt1(void) {
+	INTEDG1 = 1;	// rising edge
+	INT1IF	= 0;
+	INT1IE	= 1;
+	pin_ZERO_CROSS_S_tris = 1;
+}
 
 

@@ -73,6 +73,7 @@ extern void initPort(void);
 extern void initTimer0(void);
 extern void initTimer1(void);
 extern void initInt0(void);
+extern void initInt1(void);
 
 #endif
 
