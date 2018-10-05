@@ -59,6 +59,8 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_CAN_RX_tris 		TRISB3
 
 
+#define pin_ZERO_CROSS_R	RB0x // 외부 인터럽트 0 = INT0 ## ???
+#define pin_ZERO_CROSS_R_tris	TRISB0
 
 
 #define EN_485 0
@@ -67,6 +69,7 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 extern void initPort(void);
 extern void initTimer0(void);
 extern void initTimer1(void);
+extern void initInt0(void);
 
 #endif
 

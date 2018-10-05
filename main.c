@@ -1480,6 +1480,8 @@ bool getCheckCommBreakPnnel(void) {
 	return 0;
 }
 
+
+
 // -------------------------
 // -------------------------
 void main(void) {
@@ -1490,6 +1492,7 @@ void main(void) {
     initPort();
     initTimer0();
 	initTimer1();
+	initInt0();
     initAdc();
     initLoaderUart2();
     initPwm();
@@ -1599,9 +1602,19 @@ void main(void) {
 
 
 volatile unsigned int timer1_test;
+volatile unsigned int int0checker;
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
 	uint8_t ch;
+
+
+	if(INT0IF && INT0IE){
+  		INT0IF = 0;
+		int0checker++;
+//		if (int0checker == 0xffff) {
+//			int0checker = 0;
+//		}
+	}
 
 	if (TMR1IF) {
 		TMR1IF = 0;

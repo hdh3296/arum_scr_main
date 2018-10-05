@@ -108,5 +108,30 @@ void initTimer1(void) {
 
 }
 
+void    disableZero_RST_extInt(void) {
+	INT0IF = 0;
+	INT0IE = 0;
+}
+
+
+void    enabelZero_RST_extInt(void) {
+	INTEDG0 = 1;	//falling edge
+	INT0IF  = 0;
+	INT0IE  = 1;
+}
+
+
+void    Init_zero_RST_extInt(void) {
+	INTEDG0 = 1;	// rising edge
+	INT0IF	= 0;
+	INT0IE	= 1;
+	enabelZero_RST_extInt();
+}
+
+void initInt0(void) {
+	Init_zero_RST_extInt();
+	pin_ZERO_CROSS_R_tris	= 1; // ют╥б
+}
+
 
 
