@@ -26,12 +26,14 @@ unsigned int bef_ad_channel = 0;
 
 
 void initAdc(void) {
+	// 전압 : 5채널 피드백 (pwm에 대해서)
     TRISA0 = 1; // VRMS_0
-    TRISA1 = 1;
+    TRISA1 = 1; // 수동 볼륨 0~99%
     TRISA2 = 1;
     TRISA3 = 1;
     TRISA5 = 1; // VRMS_4, AN4
 
+	// 전류  : 5채널 피드백 (pwm에 대해서)
     TRISE0 = 1; // ARMS_0  , AN5
     TRISE1 = 1; // ARMS_1
     TRISE2 = 1; // ARMS_2

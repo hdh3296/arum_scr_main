@@ -667,7 +667,8 @@ void outPwm_ch(uint8_t ch, uint16_t ducycycle) {
 
 void heater_setNowInVoltage_mV(Heater pcr[], uint8_t ch) {
     if (adc_bUpdated[ch]) {
-        pcr[ch].anlog_nowVoltage_mV = adc_updated_mv[ch];
+		// adconversion 이 완료 되면 해당 값 가져온다.
+        pcr[ch].adc_nowAnalog_mV = adc_updated_mv[ch];
         pcr[ch].adc_bUdted_mV = adc_bUpdated[ch];
         adc_bUpdated[ch] = FALSE;
     }
@@ -745,7 +746,7 @@ bool isOverCurrent(uint8_t ch) {
 }
 bool isOverVoltage(uint8_t ch) {
     uint16_t goalVoltage = heater[ch].analog_goalSetVoltage_mV;
-    uint16_t nowVoltage  = heater[ch].anlog_nowVoltage_mV;
+    uint16_t nowVoltage  = heater[ch].adc_nowAnalog_mV;
 
     if (nowVoltage > goalVoltage) {
         return 1;
@@ -772,7 +773,7 @@ uint16_t getDutyByGoalCurrent(uint8_t ch, uint16_t duty) {
 // 전압
 uint16_t getDutyByGoalVoltage_ch1(uint8_t ch, uint16_t duty) {
     uint16_t goal = heater[ch].analog_goalSetVoltage_mV;
-    uint16_t now =  heater[ch].anlog_nowVoltage_mV;
+    uint16_t now =  heater[ch].adc_nowAnalog_mV;
 
 	bDoAdcSpeed[ch] = get_bDoAdcSpeed(ch, now, goal, 100); // 전압 = 10V
 
@@ -1481,6 +1482,14 @@ bool getCheckCommBreakPnnel(void) {
 }
 
 
+// #1008 부식방지 시스템
+uint16_t gateRST_doValue;
+void test_manualVol(void) {
+	uint16_t volAnalog = heater[1].adc_nowAnalog_mV; // 6~4994
+	gateRST_doValue = volAnalog / 28;
+}
+
+
 
 // -------------------------
 // -------------------------
@@ -1545,7 +1554,7 @@ void main(void) {
 			heater_setTempError(ch);
 
 			heater[ch].db_errorCode = heater_chkEtcError(ch);
-            heater[ch].anlog_correctedVoltage_mV = heater[ch].anlog_nowVoltage_mV; // 현재 전압
+            heater[ch].anlog_correctedVoltage_mV = heater[ch].adc_nowAnalog_mV; // 현재 전압
             heater[ch].anlog_correctedAmp_mV = heater[ch].anlog_nowAmp_mV; // 현재 전류
 			// 전압/전류 보정된 최종 실제(유저) 데이터 저장
 			heater[ch].userNowInVoltage_V = heater_getRealVoltage(ch);
@@ -1596,7 +1605,9 @@ void main(void) {
 			}
 		}
 
+// #1008 부식방지 시스템
 
+	test_manualVol();
 
     }
 }
@@ -1614,7 +1625,7 @@ void interrupt isr(void) {
 
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
-		pin_GATE_R_PH = ~pin_GATE_R_PH;
+
 	}
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
@@ -1631,9 +1642,10 @@ void interrupt isr(void) {
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
 		timer1_test++;
-		if (timer1_test >= 90) {
+		if (timer1_test >= gateRST_doValue) {
 			timer1_test = 0;
-			// #1005 gate 출력 넣어야 함
+			// #1008 gate 출력 넣어야 함
+			pin_GATE_R_PH = ~pin_GATE_R_PH;
 		}
 	}
 
