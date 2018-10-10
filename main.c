@@ -1483,6 +1483,8 @@ bool getCheckCommBreakPnnel(void) {
 
 
 // #1008 부식방지 시스템
+#define GATE_ON		1
+#define	GATE_OFF	0
 uint16_t gateRST_doValue;
 void test_manualVol(void) {
 	uint16_t volAnalog = heater[1].adc_nowAnalog_mV; // 6~4994
@@ -1614,9 +1616,6 @@ void main(void) {
 
 #define PIN_R_PH_HIGH	1
 #define PIN_R_PH_LOW	0
-
-
-
 volatile unsigned int timer1_test;
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
@@ -1625,7 +1624,8 @@ void interrupt isr(void) {
 
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
-
+		pin_GATE_R_PH = GATE_ON;
+		timer1_test = 0;
 	}
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
@@ -1641,11 +1641,10 @@ void interrupt isr(void) {
 		TMR1IF = 0;
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
-		timer1_test++;
-		if (timer1_test >= gateRST_doValue) {
+		if (timer1_test < 0xffff) timer1_test++;
+		if (timer1_test >= 10) {
 			timer1_test = 0;
-			// #1008 gate 출력 넣어야 함
-			pin_GATE_R_PH = ~pin_GATE_R_PH;
+			pin_GATE_R_PH = GATE_OFF;
 		}
 	}
 
