@@ -1490,6 +1490,8 @@ bool getCheckCommBreakPnnel(void) {
 
 
 bool bRzeroEdgeUp;
+bool bSzeroEdgeUp;
+
 
 uint16_t gateRST_doValue;
 uint16_t test_manualVol(void) {
@@ -1498,7 +1500,8 @@ uint16_t test_manualVol(void) {
 }
 
 
-volatile unsigned int timerRGateHighChk;
+uint16_t timerRGateHighChk;
+uint16_t timerSGateHighChk;
 
 
 // -------------------------
@@ -1625,6 +1628,8 @@ void main(void) {
 
 
 uint16_t timerRzero;
+uint16_t timerSzero;
+
 
 void whenRZeroEdgeUp(void) {
 	if (bRzeroEdgeUp) {
@@ -1639,14 +1644,36 @@ void whenRZeroEdgeUp(void) {
 		}
 	}
 }
+void whenSZeroEdgeUp(void) {
+	if (bSzeroEdgeUp) {
+		// 제로 타이머 증가
+		timerSzero++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (timerSzero >= gateRST_doValue) {
+			timerSzero = 0;
+			pin_GATE_S_PH = GATE_H;
+			bSzeroEdgeUp = 0;
+			timerSGateHighChk = 0;
+		}
+	}
+}
+
 
 void lowRGate(void) {
 	timerRGateHighChk++;
-	if (timerRGateHighChk >= 10) {
+	if (timerRGateHighChk > 1) { // 2
 		timerRGateHighChk = 0;
 		pin_GATE_R_PH = GATE_L;
 	}
 }
+void lowSGate(void) {
+	timerSGateHighChk++;
+	if (timerSGateHighChk > 1) {
+		timerSGateHighChk = 0;
+		pin_GATE_S_PH = GATE_L;
+	}
+}
+
 
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
@@ -1656,11 +1683,13 @@ void interrupt isr(void) {
   		INT0IF = 0;
 		bRzeroEdgeUp = 1;
 		timerRzero = 0;
-		pin_GATE_S_PH = ~pin_GATE_S_PH;
+		pin_RUN_LED = ~pin_RUN_LED;
+
 	}
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
-
+		bSzeroEdgeUp = 1;
+		timerSzero = 0;
 	}
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
@@ -1677,6 +1706,10 @@ void interrupt isr(void) {
 		if (pin_GATE_R_PH == GATE_H) {
 			lowRGate();
 		}
+		whenSZeroEdgeUp();
+		if (pin_GATE_S_PH == GATE_H) {
+			lowSGate();
+		}
 	}
 
     if (TMR0IF) {
@@ -1688,7 +1721,7 @@ void interrupt isr(void) {
 
         if (timer_msec >= 1000) {
             timer_msec = 0;
-			pin_RUN_LED = ~pin_RUN_LED;
+
         }
 
         NoCanInt++;
