@@ -1578,19 +1578,35 @@ void lowTGate(void) {
 
 void manualVolumeRSTGateOnOff(void) {
 	whenRZeroEdgeUp(); // gate on(high) !!
+
+	whenSZeroEdgeUp();
+
+	whenTZeroEdgeUp();
+
+}
+
+
+
+void controlRSTpeedback(void) {
+	// 현재 전압 상태 값 체크
+	uint16_t nowVOLT = heater[3].adc_nowAnalog_mV; // AN3
+	// 전압 설정 값을 가져온다. (비교하기 위해서)
+	uint16_t setVOLT = 2500; // 0 ~ 5000 mV (마이컴 세계)
+
+	// 이제 셋팅값과 현재 피드백값을 비교해서 RST 게이트 제어를 하자. !!!
+}
+
+void offRSTGate(void) {
 	if (pin_GATE_R_PH == GATE_H) {
 		lowRGate();
 	}
-	whenSZeroEdgeUp();
 	if (pin_GATE_S_PH == GATE_H) {
 		lowSGate();
 	}
-	whenTZeroEdgeUp();
 	if (pin_GATE_T_PH == GATE_H) {
 		lowTGate();
 	}
 }
-
 
 // -------------------------
 // -------------------------
@@ -1711,7 +1727,10 @@ void main(void) {
 
 		gateRST_doValue = test_manualVol();
 
-
+		// #1011 RST 피드백 제어 : 전압
+		// 현재 전압 값 상태를 체크 한다.
+		// 전압 설정 값과 비교한다.
+		controlRSTpeedback();
     }
 }
 
@@ -1728,7 +1747,6 @@ void interrupt isr(void) {
 		bRzeroEdgeUp = 1;
 		timerRzero = 0;
 		pin_RUN_LED = ~pin_RUN_LED; // #todo : 임시 run led 주기 파악 용
-
 	}
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
@@ -1747,8 +1765,10 @@ void interrupt isr(void) {
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
 
-		// 수동시에, 볼륨에 의해 RST 게이트 ON
+		// 수동시에, 볼륨에 의해 RST 게이트 ON ##
 		if (!pin_AUTO)	manualVolumeRSTGateOnOff();
+		// 수동/자동 on되면 무조건 off 해야 한다.
+		offRSTGate();
 	}
 
 
