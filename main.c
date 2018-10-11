@@ -1491,6 +1491,7 @@ bool getCheckCommBreakPnnel(void) {
 
 bool bRzeroEdgeUp;
 bool bSzeroEdgeUp;
+bool bTzeroEdgeUp;
 
 
 uint16_t gateRST_doValue;
@@ -1502,6 +1503,77 @@ uint16_t test_manualVol(void) {
 
 uint16_t timerRGateHighChk;
 uint16_t timerSGateHighChk;
+uint16_t timerTGateHighChk;
+
+
+
+uint16_t timerRzero;
+uint16_t timerSzero;
+uint16_t timerTzero;
+
+
+void whenRZeroEdgeUp(void) {
+	if (bRzeroEdgeUp) {
+		// 제로 타이머 증가
+		timerRzero++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (timerRzero >= gateRST_doValue) {
+			timerRzero = 0;
+			pin_GATE_R_PH = GATE_H;
+			bRzeroEdgeUp = 0;
+			timerRGateHighChk = 0;
+		}
+	}
+}
+void whenSZeroEdgeUp(void) {
+	if (bSzeroEdgeUp) {
+		// 제로 타이머 증가
+		timerSzero++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (timerSzero >= gateRST_doValue) {
+			timerSzero = 0;
+			pin_GATE_S_PH = GATE_H;
+			bSzeroEdgeUp = 0;
+			timerSGateHighChk = 0;
+		}
+	}
+}
+void whenTZeroEdgeUp(void) {
+	if (bTzeroEdgeUp) {
+		// 제로 타이머 증가
+		timerTzero++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (timerTzero >= gateRST_doValue) {
+			timerTzero = 0;
+			pin_GATE_T_PH = GATE_H;
+			bTzeroEdgeUp = 0;
+			timerTGateHighChk = 0;
+		}
+	}
+}
+
+
+void lowRGate(void) {
+	timerRGateHighChk++;
+	if (timerRGateHighChk > 1) { // 2
+		timerRGateHighChk = 0;
+		pin_GATE_R_PH = GATE_L;
+	}
+}
+void lowSGate(void) {
+	timerSGateHighChk++;
+	if (timerSGateHighChk > 1) {
+		timerSGateHighChk = 0;
+		pin_GATE_S_PH = GATE_L;
+	}
+}
+void lowTGate(void) {
+	timerTGateHighChk++;
+	if (timerTGateHighChk > 1) {
+		timerTGateHighChk = 0;
+		pin_GATE_T_PH = GATE_L;
+	}
+}
 
 
 // -------------------------
@@ -1544,6 +1616,7 @@ void main(void) {
 	b_pannel_comm_not = 0;
 	bef_b_pannel_comm_not = 0;
 	b_pannel_comm_break_flag = 0;
+
 
     while (1) {
         unsigned int i;
@@ -1627,58 +1700,13 @@ void main(void) {
 }
 
 
-uint16_t timerRzero;
-uint16_t timerSzero;
-
-
-void whenRZeroEdgeUp(void) {
-	if (bRzeroEdgeUp) {
-		// 제로 타이머 증가
-		timerRzero++;
-		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (timerRzero >= gateRST_doValue) {
-			timerRzero = 0;
-			pin_GATE_R_PH = GATE_H;
-			bRzeroEdgeUp = 0;
-			timerRGateHighChk = 0;
-		}
-	}
-}
-void whenSZeroEdgeUp(void) {
-	if (bSzeroEdgeUp) {
-		// 제로 타이머 증가
-		timerSzero++;
-		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (timerSzero >= gateRST_doValue) {
-			timerSzero = 0;
-			pin_GATE_S_PH = GATE_H;
-			bSzeroEdgeUp = 0;
-			timerSGateHighChk = 0;
-		}
-	}
-}
-
-
-void lowRGate(void) {
-	timerRGateHighChk++;
-	if (timerRGateHighChk > 1) { // 2
-		timerRGateHighChk = 0;
-		pin_GATE_R_PH = GATE_L;
-	}
-}
-void lowSGate(void) {
-	timerSGateHighChk++;
-	if (timerSGateHighChk > 1) {
-		timerSGateHighChk = 0;
-		pin_GATE_S_PH = GATE_L;
-	}
-}
 
 
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
 	uint8_t ch;
 
+	// ZERO RST 입력 인터럽트 (상승 엣지) 체크
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
 		bRzeroEdgeUp = 1;
@@ -1693,15 +1721,17 @@ void interrupt isr(void) {
 	}
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
-		pin_GATE_T_PH = ~pin_GATE_T_PH;
+		bTzeroEdgeUp = 1;
+		timerTzero = 0;
 	}
 
-
+	// RST 게이트 ON 용 타이머1
 	if (TMR1IF) {
 		TMR1IF = 0;
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
 
+		// RST 게이트 ON
 		whenRZeroEdgeUp();
 		if (pin_GATE_R_PH == GATE_H) {
 			lowRGate();
@@ -1710,7 +1740,13 @@ void interrupt isr(void) {
 		if (pin_GATE_S_PH == GATE_H) {
 			lowSGate();
 		}
+		whenTZeroEdgeUp();
+		if (pin_GATE_T_PH == GATE_H) {
+			lowTGate();
+		}
 	}
+
+
 
     if (TMR0IF) {
         TMR0IF = 0;
