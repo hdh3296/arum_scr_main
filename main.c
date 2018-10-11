@@ -1483,14 +1483,22 @@ bool getCheckCommBreakPnnel(void) {
 
 
 // #1008 부식방지 시스템
-#define GATE_ON		1
-#define	GATE_OFF	0
+#define GATE_H		1
+#define	GATE_L	0
+#define PIN_R_PH_HIGH	1
+#define PIN_R_PH_LOW	0
+
+
+bool bRzeroEdgeUp;
+
 uint16_t gateRST_doValue;
-void test_manualVol(void) {
+uint16_t test_manualVol(void) {
 	uint16_t volAnalog = heater[1].adc_nowAnalog_mV; // 6~4994
-	gateRST_doValue = volAnalog / 28;
+	return (180 - (volAnalog / 28));
 }
 
+
+volatile unsigned int timerRGateHighChk;
 
 
 // -------------------------
@@ -1609,27 +1617,50 @@ void main(void) {
 
 // #1008 부식방지 시스템
 
-	test_manualVol();
+		gateRST_doValue = test_manualVol();
+
 
     }
 }
 
-#define PIN_R_PH_HIGH	1
-#define PIN_R_PH_LOW	0
-volatile unsigned int timer1_test;
+
+uint16_t timerRzero;
+
+void whenRZeroEdgeUp(void) {
+	if (bRzeroEdgeUp) {
+		// 제로 타이머 증가
+		timerRzero++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (timerRzero >= gateRST_doValue) {
+			timerRzero = 0;
+			pin_GATE_R_PH = GATE_H;
+			bRzeroEdgeUp = 0;
+			timerRGateHighChk = 0;
+		}
+	}
+}
+
+void lowRGate(void) {
+	timerRGateHighChk++;
+	if (timerRGateHighChk >= 10) {
+		timerRGateHighChk = 0;
+		pin_GATE_R_PH = GATE_L;
+	}
+}
+
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
 	uint8_t ch;
 
-
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
-		pin_GATE_R_PH = GATE_ON;
-		timer1_test = 0;
+		bRzeroEdgeUp = 1;
+		timerRzero = 0;
+		pin_GATE_S_PH = ~pin_GATE_S_PH;
 	}
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
-		pin_GATE_S_PH = ~pin_GATE_S_PH;
+
 	}
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
@@ -1641,10 +1672,10 @@ void interrupt isr(void) {
 		TMR1IF = 0;
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
-		if (timer1_test < 0xffff) timer1_test++;
-		if (timer1_test >= 10) {
-			timer1_test = 0;
-			pin_GATE_R_PH = GATE_OFF;
+
+		whenRZeroEdgeUp();
+		if (pin_GATE_R_PH == GATE_H) {
+			lowRGate();
 		}
 	}
 
