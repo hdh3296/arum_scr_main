@@ -67,6 +67,8 @@ void initPort(void) {
     pin_TX_tris = 0;
     pin_TX = 0;
 
+	pin_AUTO_tris = 1;
+	pin_AUTO = 0;
 
     initAnalogPin();
 

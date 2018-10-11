@@ -17,42 +17,42 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 
 
 /* ======== 포트 ============  */
-#define pin_RUN_LED             RC3
-#define pin_RUN_LED_tris     TRISC3
+#define pin_RUN_LED         RC3
+#define pin_RUN_LED_tris    TRISC3
 
-#define pin_RX RE6		// rx
-#define pin_Rx_tris TRISE6
-#define pin_TX RE7		// tx
-#define pin_TX_tris TRISE7
+#define pin_RX 				RE6		// rx
+#define pin_Rx_tris 		TRISE6
+#define pin_TX 				RE7		// tx
+#define pin_TX_tris 		TRISE7
 
 
 // PCR main 적용 포트 셋팅
-#define pin_VRMS_0              RA0
+#define pin_VRMS_0          RA0
 #define pin_VRMS_0_tris     TRISA0
-#define pin_VRMS_1              RA1
+#define pin_VRMS_1          RA1
 #define pin_VRMS_1_tris     TRISA1
-#define pin_VRMS_2              RA2
+#define pin_VRMS_2          RA2
 #define pin_VRMS_2_tris     TRISA2
-#define pin_VRMS_3              RA3
+#define pin_VRMS_3          RA3
 #define pin_VRMS_3_tris     TRISA3
-#define pin_VRMS_4              RA5
+#define pin_VRMS_4          RA5
 #define pin_VRMS_4_tris     TRISA5
 
-#define pin_ARMS_0              RE0
+#define pin_ARMS_0          RE0
 #define pin_ARMS_0_tris     TRISE0
-#define pin_ARMS_1              RE1
+#define pin_ARMS_1          RE1
 #define pin_ARMS_1_tris     TRISE1
-#define pin_ARMS_2              RE2
+#define pin_ARMS_2          RE2
 #define pin_ARMS_2_tris     TRISE2
 
 
-#define pin_ARMS_4              RB4
+#define pin_ARMS_4          RB4
 #define pin_ARMS_4_tris     TRISB4
 
-#define pin_CAN_RX 				RE4
-#define pin_CAN_RX_tris 		TRISE4
-#define pin_CAN_TX 				RE5
-#define pin_CAN_TX_tris			TRISE5
+#define pin_CAN_RX 			RE4
+#define pin_CAN_RX_tris 	TRISE4
+#define pin_CAN_TX 			RE5
+#define pin_CAN_TX_tris		TRISE5
 
 // ZERO_CROSS_R / S / T 핀 설정 ##
 #define pin_ZERO_CROSS_R		RB0x // 외부 인터럽트 0 = INT0
@@ -62,13 +62,15 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_ZERO_CROSS_T        RB2
 #define pin_ZERO_CROSS_T_tris   TRISB2
 
-#define pin_GATE_R_PH            RC0 	// SSR_0
-#define pin_GATE_R_PH_tris    TRISC0
-#define pin_GATE_S_PH            RC1 	// SSR_0
-#define pin_GATE_S_PH_tris    TRISC1
-#define pin_GATE_T_PH            RC2 	// SSR_0
-#define pin_GATE_T_PH_tris    TRISC2
+#define pin_GATE_R_PH           RC0 	// SSR_0
+#define pin_GATE_R_PH_tris    	TRISC0
+#define pin_GATE_S_PH           RC1 	// SSR_0
+#define pin_GATE_S_PH_tris    	TRISC1
+#define pin_GATE_T_PH           RC2 	// SSR_0
+#define pin_GATE_T_PH_tris    	TRISC2
 
+#define pin_AUTO		RD0
+#define pin_AUTO_tris	TRISD0
 
 #define EN_485 0
 #define DIS_485 1

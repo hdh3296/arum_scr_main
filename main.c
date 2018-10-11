@@ -1576,6 +1576,22 @@ void lowTGate(void) {
 }
 
 
+void manualVolumeRSTGateOnOff(void) {
+	whenRZeroEdgeUp(); // gate on(high) !!
+	if (pin_GATE_R_PH == GATE_H) {
+		lowRGate();
+	}
+	whenSZeroEdgeUp();
+	if (pin_GATE_S_PH == GATE_H) {
+		lowSGate();
+	}
+	whenTZeroEdgeUp();
+	if (pin_GATE_T_PH == GATE_H) {
+		lowTGate();
+	}
+}
+
+
 // -------------------------
 // -------------------------
 void main(void) {
@@ -1711,7 +1727,7 @@ void interrupt isr(void) {
   		INT0IF = 0;
 		bRzeroEdgeUp = 1;
 		timerRzero = 0;
-		pin_RUN_LED = ~pin_RUN_LED;
+		pin_RUN_LED = ~pin_RUN_LED; // #todo : 임시 run led 주기 파악 용
 
 	}
 	if(INT1IF && INT1IE){
@@ -1731,19 +1747,8 @@ void interrupt isr(void) {
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
 
-		// RST 게이트 ON
-		whenRZeroEdgeUp();
-		if (pin_GATE_R_PH == GATE_H) {
-			lowRGate();
-		}
-		whenSZeroEdgeUp();
-		if (pin_GATE_S_PH == GATE_H) {
-			lowSGate();
-		}
-		whenTZeroEdgeUp();
-		if (pin_GATE_T_PH == GATE_H) {
-			lowTGate();
-		}
+		// 수동시에, 볼륨에 의해 RST 게이트 ON
+		if (!pin_AUTO)	manualVolumeRSTGateOnOff();
 	}
 
 
