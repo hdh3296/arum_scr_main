@@ -387,7 +387,7 @@ uint16_t G3_Menu_Status_Set(void) {
     return (0);
 }
 
-// ch2
+// 서브 채널 8개 인에이블/디세이블
 uint16_t G4_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
@@ -396,69 +396,30 @@ uint16_t G4_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP04;
     sub_gr = 0;
-    /////////////////////////////////////////////////////////////////////
-    //sub group1 - 온도 low
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH2_TEMP_LOW;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub group2 - 온도 high
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH2_TEMP_HIGH;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-
-
 	/////////////////////////////////////////////////////////////////////
-	//sub group6 - ch1 목표 전압
-	/////////////////////////////////////////////////////////////////////
-	IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 500;
-
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH2_GOAL_VOLTAGE;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-			GroupLineMessage[UserMenuSerialNm];
-	UserMenuSerialNm++;
-	sub_gr++;
-	/////////////////////////////////////////////////////////////////////
-	//sub group7 - ch1 목표 전류
-	/////////////////////////////////////////////////////////////////////
-	IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
-
-
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH2_GOAL_CURRENT;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-			GroupLineMessage[UserMenuSerialNm];
-	UserMenuSerialNm++;
-	sub_gr++;
-
-	/////////////////////////////////////////////////////////////////////
-	//sub group8 - ch1 enable/disable
+	//서브 보드 - ch0 use/nouse
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH2_ENABLE;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_USE;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_enable_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
 	UserMenuSerialNm++;
 	sub_gr++;
 
 	/////////////////////////////////////////////////////////////////////
-	//sub ch1 group9 - ch use/nouse
+	//서브 보드 - ch1 use/nouse
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH1_USE;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	//서브 보드 - ch2 use/nouse
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
 	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH2_USE;
@@ -468,119 +429,8 @@ uint16_t G4_Menu_Status_Set(void) {
 	UserMenuSerialNm++;
 	sub_gr++;
 
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 온도 보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 25;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 10;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S3;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 전압  보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S4;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 전류  보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4; // ※ 소수점 포함해서 계산해야 한다.
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S5;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-
-
-
-
-    return (0);
-}
-
-
-// ch3
-uint16_t G5_Menu_Status_Set(void) {
-    uint16_t main_gr, sub_gr;
-
-    //////////////////////////////////////////////////////////////////////
-    // main group1
-    /////////////////////////////////////////////////////////////////////
-    main_gr = MAIN_GROUP05;
-    sub_gr = 0;
-    /////////////////////////////////////////////////////////////////////
-    //sub group1 - 온도 low
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH3_TEMP_LOW;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub group2 - 온도 high
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH3_TEMP_HIGH;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-
-
 	/////////////////////////////////////////////////////////////////////
-	//sub group6 - ch1 목표 전압
-	/////////////////////////////////////////////////////////////////////
-	IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 500;
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH3_GOAL_VOLTAGE;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-			GroupLineMessage[UserMenuSerialNm];
-	UserMenuSerialNm++;
-	sub_gr++;
-	/////////////////////////////////////////////////////////////////////
-	//sub group7 - ch1 목표 전류
-	/////////////////////////////////////////////////////////////////////
-	IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH3_GOAL_CURRENT;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-			GroupLineMessage[UserMenuSerialNm];
-	UserMenuSerialNm++;
-	sub_gr++;
-
-	/////////////////////////////////////////////////////////////////////
-	//sub group8 - ch1 enable/disable
-	/////////////////////////////////////////////////////////////////////
-	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH3_ENABLE;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_enable_sel_list;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
-	UserMenuSerialNm++;
-	sub_gr++;
-
-	/////////////////////////////////////////////////////////////////////
-	//sub ch1 group9 - ch use/nouse
+	//서브 보드 - ch3 use/nouse
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
 	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH3_USE;
@@ -590,45 +440,74 @@ uint16_t G5_Menu_Status_Set(void) {
 	UserMenuSerialNm++;
 	sub_gr++;
 
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 온도 보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 25;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 10;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S6;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 전압  보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S7;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 전류  보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4; // ※ 소수점 포함해서 계산해야 한다.
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH3_CORRECT_A;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
+	/////////////////////////////////////////////////////////////////////
+	//서브 보드 - ch4 use/nouse
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH4_USE;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	//서브 보드 - ch5 use/nouse
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH5_USE;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	//서브 보드 - ch6 use/nouse
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH6_USE;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	//서브 보드 - ch7 use/nouse
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH7_USE;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
 
 
+    return (0);
+}
 
+
+// 기타
+uint16_t G5_Menu_Status_Set(void) {
+    uint16_t main_gr, sub_gr;
+
+    //////////////////////////////////////////////////////////////////////
+    // main group1
+    /////////////////////////////////////////////////////////////////////
+    main_gr = MAIN_GROUP05;
+    sub_gr = 0;
+	/////////////////////////////////////////////////////////////////////
+	// 총 10가지 전류 타입 선택
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_A_TYPE_NUM;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) currentTypeList;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
 
     return (0);
 }
@@ -805,19 +684,19 @@ uint16_t DefaultValueSet(void) {
 
 
 		// ch0
-        cSR_ByteData(F_CH0_TEMP_LOW) = DFL_CH0_TEMP_LOW;
+        cSR_ByteData(F_A_TYPE_NUM) = DFL_CH0_TEMP_LOW;
         cSR_ByteData(F_CH0_TEMP_HIGH) = DFL_CH0_TEMP_HIGH;
-        cSR_ByteData(F_CH0_ENABLE) = 1;
+        cSR_ByteData(F_CH5_USE) = 1;
         cSR_ByteData(F_CH0_USE) = 1;
 		// ch1
         cSR_ByteData(F_CH1_TEMP_LOW) = DFL_CH1_TEMP_LOW;
         cSR_ByteData(F_CH1_TEMP_HIGH) = DFL_CH1_TEMP_HIGH;
-        cSR_ByteData(F_CH1_ENABLE) = 1;
+        cSR_ByteData(F_CH6_USE) = 1;
         cSR_ByteData(F_CH1_USE) = 1;
 		// ch2
         cSR_ByteData(F_CH2_TEMP_LOW) = DFL_CH2_TEMP_LOW;
         cSR_ByteData(F_CH2_TEMP_HIGH) = DFL_CH2_TEMP_HIGH;
-		cSR_ByteData(F_CH2_ENABLE) = 1;
+		cSR_ByteData(F_CH7_USE) = 1;
         cSR_ByteData(F_CH2_USE) = 1;
 		// ch3
         cSR_ByteData(F_CH3_TEMP_LOW) = DFL_CH3_TEMP_LOW;

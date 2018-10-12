@@ -1069,19 +1069,19 @@ void writeFlash(uint8_t ch, bool bEnable) {
 
     switch (ch) {
         case 0:
-            BlockPt = (F_CH0_ENABLE / FLASH_ONE_BLOCK_SIZE);
+            BlockPt = (F_CH5_USE / FLASH_ONE_BLOCK_SIZE);
             FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH0_ENABLE) = bEnable;
+            cSR_ByteData(F_CH5_USE) = bEnable;
             break;
         case 1:
-            BlockPt = (F_CH1_ENABLE / FLASH_ONE_BLOCK_SIZE);
+            BlockPt = (F_CH6_USE / FLASH_ONE_BLOCK_SIZE);
             FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH1_ENABLE) = bEnable;
+            cSR_ByteData(F_CH6_USE) = bEnable;
             break;
         case 2:
-            BlockPt = (F_CH2_ENABLE / FLASH_ONE_BLOCK_SIZE);
+            BlockPt = (F_CH7_USE / FLASH_ONE_BLOCK_SIZE);
             FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH2_ENABLE) = bEnable;
+            cSR_ByteData(F_CH7_USE) = bEnable;
             break;
         case 3:
             BlockPt = (F_CH3_ENABLE / FLASH_ONE_BLOCK_SIZE);
@@ -1100,61 +1100,9 @@ void writeFlash(uint8_t ch, bool bEnable) {
 
 
 
-void writeFlash_byNotuse(uint8_t ch) {
-	uint16_t BlockPt;
-
-	switch (ch) {
-		case 0:
-			BlockPt = (F_CH0_ENABLE / FLASH_ONE_BLOCK_SIZE);
-			FlashBlockRd(BlockPt);
-			cSR_ByteData(F_CH0_ENABLE) = 0;
-			break;
-		case 1:
-			BlockPt = (F_CH1_ENABLE / FLASH_ONE_BLOCK_SIZE);
-			FlashBlockRd(BlockPt);
-			cSR_ByteData(F_CH1_ENABLE) = 0;
-			break;
-		case 2:
-			BlockPt = (F_CH2_ENABLE / FLASH_ONE_BLOCK_SIZE);
-			FlashBlockRd(BlockPt);
-			cSR_ByteData(F_CH2_ENABLE) = 0;
-			break;
-		case 3:
-			BlockPt = (F_CH3_ENABLE / FLASH_ONE_BLOCK_SIZE);
-			FlashBlockRd(BlockPt);
-			cSR_ByteData(F_CH3_ENABLE) = 0;
-			break;
-		case 4:
-			BlockPt = (F_CH4_ENABLE / FLASH_ONE_BLOCK_SIZE);
-			FlashBlockRd(BlockPt);
-			cSR_ByteData(F_CH4_ENABLE) = 0;
-			break;
-	}
-
-	FlashBlockWr(BlockPt);
-}
 
 
 
-void heater_set_flashEnable(uint8_t ch) {
-	switch (ch) {
-		case 0:
-			heater[0].db_bFlashChEnable_state = cF_ch0_enable; // 최종 변경 되는 곳이다.
-			return;
-		case 1:
-			heater[1].db_bFlashChEnable_state = cF_ch1_enable;
-			return;
-		case 2:
-			heater[2].db_bFlashChEnable_state = cF_ch2_enable;
-			return;
-		case 3:
-			heater[3].db_bFlashChEnable_state = cF_ch3_enable;
-			return;
-		case 4:
-			heater[4].db_bFlashChEnable_state = cF_ch4_enable;
-			return;
-	}
-}
 
 void whenRxEnFormPan_write(uint8_t ch) {
 
@@ -1167,11 +1115,6 @@ void whenRxEnFormPan_write(uint8_t ch) {
 
 }
 
-void writeSetFlashEnable(uint8_t ch) {
-
-	writeFlash_byNotuse(ch);
-
-}
 
 bool isUseByLdr(uint8_t ch) {
 	switch (ch) {
@@ -1215,12 +1158,8 @@ void heater_setChEnableDisable(uint8_t ch) {
 
 	if ( heater[ch].db_bFlashChEnable_state && (isUseByLdr(ch) == FALSE)) {
 		// notuse 이면, 채널 off write
-		writeSetFlashEnable(ch);
-		pin_RUN_LED = ~pin_RUN_LED;
-
 	}
 
-	heater_set_flashEnable(ch);
 
 }
 
@@ -1354,7 +1293,7 @@ void oscillator_fail_loop(void) {
 uint16_t getSetTempLow(uint8_t ch) {
 	switch (ch) {
 		case 0:
-			return cF_ch0_temp_low + 1; // ※ ex. 27.9 부터 on 시키기 위해서
+			return 1; // ※ ex. 27.9 부터 on 시키기 위해서
 		case 1:
 			return cF_ch1_temp_low + 1;
 		case 2:

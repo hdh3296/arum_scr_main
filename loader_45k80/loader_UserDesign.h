@@ -40,17 +40,18 @@ const uint8_t GroupLineMessage[][17] = {
     "scr :correct S6 ", //16
     "scr :correct S7 ", //16
 
-    "CH-2:ch correctV", //16
-    "CH-2:ch correctA", //16
+    "zsu :ch0 e/d    ", //16
+    "zsu :ch1 e/d    ", //16
+    "zsu :ch2 e/d    ", //9  // group1
+    "zsu :ch3 e/d    ", //10
+    "zsu :ch4 e/d    ", //14
+    "zsu :ch5 e/d    ", //15
+    "zsu :ch6 e/d    ", //16
+    "zsu :ch7 e/d    ", //16
 
-    "CH-3:On Temp    ", //9  // group1
-    "CH-3:Off Temp   ", //10
-    "CH-3:Set Volt(V)", //14
-    "CH-3:Set Amp(A) ", //15
-    "CH-3:ch On/Off  ", //16
-    "CH-3:ch Use/Not ", //16
-    "CH-3:ch correctT", //16
-    "CH-3:ch correctV", //16
+    "etc :currentType", //16
+
+	"CH-3:ch correctV", //16
     "CH-3:ch correctA", //16
 
     "CH-4:On Temp    ", //9  // group1
@@ -84,23 +85,35 @@ const uint8_t DefaultMsg[][17] = {
 
 
 const uint8_t ch_enable_sel_list[][17] = {
-    "Off            ", //0
-    "On           ", //1
+    "Off             ", //0
+    "On              ", //1
 };
 
 const uint8_t ch_use_sel_list[][17] = {
     "Not use         ", //0
-    "Use           ", //1
+    "Use             ", //1
 };
 
+const uint8_t currentTypeList[][17] = {
+    "A_type1         ", //0
+    "A_type2         ", //1
+    "A_type3         ", //1
+    "A_type4         ", //1
+    "A_type5         ", //1
+    "A_type6         ", //1
+    "A_type7         ", //1
+    "A_type8         ", //1
+    "A_type9         ", //1
+    "A_type10        ", //1
+};
 
 
 const uint8_t DefaultMsgSel[][17] = {
 /*
     로더 초기화면에 표시할 메뉴 선택
 */
-    "display CH    ", //0
-    "display pwm   ", //1
+    "display CH      ", //0
+    "display pwm     ", //1
 };
 
 
@@ -120,18 +133,21 @@ const uint8_t FlashMsgSel[][17] = {
 // not use 					ByteData005
 
 // ch0~4 ----------------------------------------------------
-#define F_CH0_ENABLE    	ByteData006
-#define F_CH0_USE           ByteData007
-#define F_CH1_ENABLE    	ByteData008
-#define F_CH1_USE			ByteData009
-#define F_CH2_ENABLE    	ByteData010
-#define F_CH2_USE			ByteData011
-#define F_CH3_ENABLE    	ByteData012
-#define F_CH3_USE			ByteData013
-#define F_CH4_ENABLE    	ByteData014
-#define F_CH4_USE			ByteData015
+#define F_CH0_USE           ByteData006
+#define F_CH1_USE			ByteData007
+#define F_CH2_USE			ByteData008
+#define F_CH3_USE			ByteData009
+#define F_CH4_USE			ByteData010
+#define F_CH5_USE	    	ByteData011
+#define F_CH6_USE	    	ByteData012
+#define F_CH7_USE   	 	ByteData013
 
-#define F_CH0_TEMP_LOW      ByteData016
+
+#define F_CH3_ENABLE    	ByteData014
+#define F_CH4_ENABLE    	ByteData015
+
+#define F_A_TYPE_NUM      	ByteData016
+
 #define F_CH0_TEMP_HIGH     ByteData017
 #define F_CH1_TEMP_LOW     	ByteData018
 #define F_CH1_TEMP_HIGH     ByteData019
@@ -189,18 +205,21 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_FLASH_COPY 			cF_ByteData(F_FLASH_COPY)
 #define cF_INITIAL 				cF_ByteData(F_INITIAL)
 
-#define cF_ch0_enable 		cF_ByteData(F_CH0_ENABLE) // ※ iF -> cF
 #define cF_ch0_use 			cF_ByteData(F_CH0_USE)
-#define cF_ch1_enable 		cF_ByteData(F_CH1_ENABLE)
 #define cF_ch1_use 			cF_ByteData(F_CH1_USE)
-#define cF_ch2_enable 		cF_ByteData(F_CH2_ENABLE) // ※ iF -> cF
 #define cF_ch2_use 			cF_ByteData(F_CH2_USE)
-#define cF_ch3_enable 		cF_ByteData(F_CH3_ENABLE)
 #define cF_ch3_use 			cF_ByteData(F_CH3_USE)
-#define cF_ch4_enable 		cF_ByteData(F_CH4_ENABLE) // ※ iF -> cF
 #define cF_ch4_use 			cF_ByteData(F_CH4_USE)
+#define cF_ch5_use	 		cF_ByteData(F_CH5_USE) //
+#define cF_ch6_use 			cF_ByteData(F_CH6_USE)
+#define cF_ch7_use 			cF_ByteData(F_CH7_USE)
+
+#define cF_ch3_enable 		cF_ByteData(F_CH3_ENABLE)
+#define cF_ch4_enable 		cF_ByteData(F_CH4_ENABLE) // ※ iF -> cF
+
+#define cF_A_type_num   	cF_ByteData(F_A_TYPE_NUM)
+
 // ch0
-#define cF_ch0_temp_low     		cF_ByteData(F_CH0_TEMP_LOW)
 #define cF_ch0_temp_high    		cF_ByteData(F_CH0_TEMP_HIGH)
 // ch1
 #define cF_ch1_temp_low 			cF_ByteData(F_CH1_TEMP_LOW)
