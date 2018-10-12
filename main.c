@@ -56,6 +56,7 @@ enum {
 
 Heater heater[MAX_CH];
 Heater scr;
+uint16_t zsu_ch0_ch7_analog[8];
 
 
 
@@ -385,9 +386,9 @@ void temp_proc(void) {
 
     uint16_t i, j;
     j = 0;
-    for (i=0; i<5; i++) {
+    for (i=0; i<8; i++) {
 		// 서브로 부터 온도 아날로그 저장
-        heater[i].db_nowTemp_mV
+        zsu_ch0_ch7_analog[i]
 			= getTempAnalog(getHexTo(rxGoodBuffer[10+j], rxGoodBuffer[11+j]),
                            	getHexTo(rxGoodBuffer[12+j], rxGoodBuffer[13+j]));
         j += 10;
@@ -1632,8 +1633,7 @@ void main(void) {
 			}
 		}
 
-// #1008 부식방지 시스템
-
+// #1008 부식방지 시스템 -----------------------------------------
 
 		// #부식방지 - 전압/전류/센서  로더 Goal Set Volt/Amp/Sensor
 		scr.goalSetVoltage_V = iF_scr_goalVoltage;

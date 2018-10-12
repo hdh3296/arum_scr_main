@@ -193,7 +193,7 @@ uint16_t G2_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 500;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 100; // @주의 : 최대 100V
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_VOLTAGE;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
