@@ -58,7 +58,7 @@ enum {
 
 Heater heater[MAX_CH];
 Heater scr;
-uint16_t zsu_ch0_ch7_analog[8];
+uint16_t zsu_ch0_ch7_analog[8]; // zsu 아날로그 채널 8개 저장 값
 
 
 
@@ -1454,7 +1454,19 @@ void offRSTGate(void) {
 	}
 }
 
+uint16_t reverseZSU8ch(uint16_t ch) {
+	if (zsu_ch0_ch7_analog[ch] >= 2500) {
+		return (zsu_ch0_ch7_analog[ch] - 2500);
+	}	return (2500 - zsu_ch0_ch7_analog[ch]);
+}
 
+volatile uint16_t finalZSUbuf8ch_mV[ZSU_CH_MAX];
+void saveFinalZsu8ch_2500(void) {
+	uint16_t ch;
+	for (ch = 0; ch < ZSU_CH_MAX; ch++) {
+		finalZSUbuf8ch_mV[ch] = reverseZSU8ch(ch);
+	}
+}
 
 // -------------------------
 // -------------------------
@@ -1569,17 +1581,19 @@ void main(void) {
 		// 아날로그 입력
 		// 수동 볼류 입력
 		gateRST_doValue = test_manualVol();
-		scr.nowMicomAdSensor = heater[0].adc_nowAnalog_mV;
-		scr.nowMicomAdManualVolume = heater[1].adc_nowAnalog_mV; // 0
-		scr.nowMicomAdCurrent = heater[2].adc_nowAnalog_mV;
-		scr.nowMicomAdVoltage = heater[3].adc_nowAnalog_mV;
+		scr.nowMicomAdSensor = heater[0].adc_nowAnalog_mV; 			// 센서
+		scr.nowMicomAdManualVolume = heater[1].adc_nowAnalog_mV; 	// 수동 볼륨 값
+		scr.nowMicomAdCurrent = heater[2].adc_nowAnalog_mV;			// 전류
+		scr.nowMicomAdVoltage = heater[3].adc_nowAnalog_mV;			// 전압
 
-		// #1011 RST 피드백 제어 : 전압
+		// zsu 통신 수신 아날로그 0~7 ch 값
+
+		// RST 피드백 제어 : 전압
 		// 현재 전압 값 상태를 체크 한다.
 		// 전압 설정 값과 비교한다.
 		controlRSTpeedback();
 
-		// #1012
+		// zsu use/not_use 셋팅 값 저장
 		bufZSU_use_not[0] = cF_ch0_use;
 		bufZSU_use_not[1] = cF_ch1_use;
 		bufZSU_use_not[2] = cF_ch2_use;
@@ -1588,6 +1602,9 @@ void main(void) {
 		bufZSU_use_not[5] = cF_ch5_use;
 		bufZSU_use_not[6] = cF_ch6_use;
 		bufZSU_use_not[7] = cF_ch7_use;
+
+		// zsu로부터 입력 받은 값을 정/역 판단해서 2500 mV 제외한 값 저장
+		saveFinalZsu8ch_2500();
     }
 }
 
