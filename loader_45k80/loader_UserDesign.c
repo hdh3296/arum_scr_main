@@ -387,7 +387,7 @@ uint16_t G3_Menu_Status_Set(void) {
     return (0);
 }
 
-// 서브 채널 8개 인에이블/디세이블
+// ZSU 서브 채널 8개 인에이블/디세이블 (use/not)
 uint16_t G4_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 

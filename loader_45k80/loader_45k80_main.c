@@ -6,6 +6,11 @@
 uint16_t updateNewFlashTimer;
 
 
+// --------
+
+
+
+
 uint16_t initLoaderUart2(void) {
 
     uart2_baudrate = 19200;
@@ -72,37 +77,6 @@ void txReadyAndStartForLoader(uint8_t txbuf[]) {
 }
 
 
-void txReadyAndStartForTemp(uint8_t txbuf[]) {
-/*
-    온도 보드에 데이터 요청 하기
-
-        * tx buffer 에 해당 바이트 저장
-        * 체크섬 값 계산해서 저장
-        * 이후, tx start !
-*/
-    uint16_t i;
-
-    for(i = 0; i < COM1_MAX_TX_BUF; i++) {
-        txbuf[i] = ' ';
-    }
-
-    txbuf[0] = ACK;
-    txbuf[1] = 'T';
-    txbuf[2] = 'M';
-    txbuf[3] = ',';
-
-    txbuf[96] = ETX;
-    txbuf[97] = 0; // checksum high
-    txbuf[98] = 0; // checksum low
-    txbuf[99] = 0; // 반드시 0
-
-    checkSum();
-
-    totalTxCnt = getTxTotalCnt();
-    uart2_txReadyGo();
-}
-
-
 uint8_t getAsciiFirstTo(uint8_t hex) {
     uint8_t i;
 
@@ -131,6 +105,52 @@ uint8_t getAsciiSecondTo(uint8_t hex) {
     }
     return i;
 }
+
+
+void loadChUse(uint8_t txbuf[]) {
+    uint8_t ch, j, i;
+
+    j = 0;
+    for (ch = 0; ch < ZSU_CH_MAX; ch++) {
+        txbuf[14 + j] = getAsciiFirstTo((uint8_t)bufZSU_use_not[ch]);
+        txbuf[15 + j] = getAsciiSecondTo((uint8_t)bufZSU_use_not[ch]);
+        j += 10;
+    }
+}
+
+
+void txReadyAndStartForTemp(uint8_t txbuf[]) {
+/*
+    온도 보드에 데이터 요청 하기
+
+        * tx buffer 에 해당 바이트 저장
+        * 체크섬 값 계산해서 저장
+        * 이후, tx start !
+*/
+    uint16_t i;
+
+    for(i = 0; i < COM1_MAX_TX_BUF; i++) {
+        txbuf[i] = ' ';
+    }
+
+    txbuf[0] = ACK;
+    txbuf[1] = 'T';
+    txbuf[2] = 'M';
+    txbuf[3] = ',';
+
+	loadChUse(txbuf);
+
+    txbuf[96] = ETX;
+    txbuf[97] = 0; // checksum high
+    txbuf[98] = 0; // checksum low
+    txbuf[99] = 0; // 반드시 0
+
+    checkSum();
+
+    totalTxCnt = getTxTotalCnt();
+    uart2_txReadyGo();
+}
+
 
 
 
@@ -171,18 +191,6 @@ void loadChEnable(uint8_t txbuf[]) {
 
 }
 
-// --------
-
-void loadChUse(uint8_t txbuf[]) {
-    uint8_t ch, j, i;
-
-    j=0;
-    for (ch = 0; ch < 5; ch++) {
-        txbuf[60 + j] = getAsciiFirstTo((uint8_t)heater[ch].db_bChUse);
-        txbuf[61 + j] = getAsciiSecondTo((uint8_t)heater[ch].db_bChUse);
-        j += 2;
-    }
-}
 
 // ------------------
 
@@ -198,7 +206,7 @@ void loadMyInfoTo(uint8_t txbuf[]) {
 
     loadChEnable(txbuf);
 
-    loadChUse(txbuf);
+
 }
 
 void txReadyAndStartForPannel(uint8_t txbuf[]) {
@@ -253,6 +261,7 @@ void trasmitToLoader(void) {
 
 void trasmitToTemp(void) {
     txReadyAndStartForTemp(uartTxBuffer);
+
 }
 
 

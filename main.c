@@ -10,6 +10,8 @@
 #include    "can\my_can.h"
 
 #define MAX_CH 5
+uint8_t bufZSU_use_not[ZSU_CH_MAX];
+
 
 uint8_t rx_db_enableSet[MAX_CH];
 uint16_t dutycycleCompared[MAX_CH];
@@ -1066,37 +1068,6 @@ void outputPwm_loop(void) {
 
 
 void writeFlash(uint8_t ch, bool bEnable) {
-    uint16_t BlockPt;
-
-    switch (ch) {
-        case 0:
-            BlockPt = (F_CH5_USE / FLASH_ONE_BLOCK_SIZE);
-            FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH5_USE) = bEnable;
-            break;
-        case 1:
-            BlockPt = (F_CH6_USE / FLASH_ONE_BLOCK_SIZE);
-            FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH6_USE) = bEnable;
-            break;
-        case 2:
-            BlockPt = (F_CH7_USE / FLASH_ONE_BLOCK_SIZE);
-            FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH7_USE) = bEnable;
-            break;
-        case 3:
-            BlockPt = (F_CH3_ENABLE / FLASH_ONE_BLOCK_SIZE);
-            FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH3_ENABLE) = bEnable;
-            break;
-        case 4:
-            BlockPt = (F_CH4_ENABLE / FLASH_ONE_BLOCK_SIZE);
-            FlashBlockRd(BlockPt);
-            cSR_ByteData(F_CH4_ENABLE) = bEnable;
-            break;
-    }
-
-    FlashBlockWr(BlockPt);
 }
 
 
@@ -1109,30 +1080,13 @@ void whenRxEnFormPan_write(uint8_t ch) {
 
 	if (heater[ch].bChEnStateFromPannel != heater[ch].db_bFlashChEnable_state) {
 
-		writeFlash(ch, heater[ch].bChEnStateFromPannel);
-		pin_RUN_LED = ~pin_RUN_LED;
 
 	}
 
 }
 
 
-bool isUseByLdr(uint8_t ch) {
-	switch (ch) {
-		case 0:
-			return cF_ch0_use;
-		case 1:
-			return cF_ch1_use;
-		case 2:
-			return cF_ch2_use;
-		case 3:
-			return cF_ch3_use;
-		case 4:
-			return cF_ch4_use;
-	}
 
-	return 0;
-}
 
 
 uint8_t useState[5];
@@ -1140,26 +1094,6 @@ uint8_t useState[5];
 
 void heater_setChEnableDisable(uint8_t ch) {
 
-	// 판넬에서 enable/disable set 정보 일때 write 시도 한다.
-	// 판넬 통신이 두절 되는 순간에 대해서도 처리 해야 한다. @09-07
-	uint8_t ttt;
-	ttt = whatChEnDisNone_byPannel(ch);
-
-	if (ttt == CH_SET_EN) {
-		heater[ch].bChEnStateFromPannel = 1;
-		whenRxEnFormPan_write(ch); // write
-
-	} else if (ttt == CH_SET_DIS) {
-
-		heater[ch].bChEnStateFromPannel = 0;
-
-		whenRxEnFormPan_write(ch);
-	}
-
-
-	if ( heater[ch].db_bFlashChEnable_state && (isUseByLdr(ch) == FALSE)) {
-		// notuse 이면, 채널 off write
-	}
 
 
 }
@@ -1279,7 +1213,6 @@ void chkEmptyEorrChktiemr(uint8_t ch) {
 void heater_initSetDisable(uint8_t ch) {
 	bool bEnable;
 	bEnable = 0;
-	writeFlash(ch, bEnable);
 }
 
 void oscillator_fail_loop(void) {
@@ -1521,6 +1454,8 @@ void offRSTGate(void) {
 	}
 }
 
+
+
 // -------------------------
 // -------------------------
 void main(void) {
@@ -1546,14 +1481,6 @@ void main(void) {
     setWatchDockEnable();
     setAdcStartOrStop(1);
 
-
-    //offPwmAll();
-
-	for (ch = 0; ch < 5; ch++) {
-	// 전원 키면, enable/disable 값을 초기화 하기
-		heater_initSetDisable(ch);
-	}
-
 	// 온도/판넬   통신 두절 체크 용 변수 초기화
 	not_rx_temp_chkTimer = 0;
 	b_temp_comm_not = 0;
@@ -1576,7 +1503,6 @@ void main(void) {
 // 히터 on, off 기능
 //
         for (ch = 0; ch < MAX_CH; ch++) {
-            heater_setChEnableDisable(ch);
             heater_setUseNouse(ch);
             heater_setOnOffNone(ch);
             heater_setNowInVoltage_mV(heater, ch);
@@ -1652,10 +1578,18 @@ void main(void) {
 		// 현재 전압 값 상태를 체크 한다.
 		// 전압 설정 값과 비교한다.
 		controlRSTpeedback();
+
+		// #1012
+		bufZSU_use_not[0] = cF_ch0_use;
+		bufZSU_use_not[1] = cF_ch1_use;
+		bufZSU_use_not[2] = cF_ch2_use;
+		bufZSU_use_not[3] = cF_ch3_use;
+		bufZSU_use_not[4] = cF_ch4_use;
+		bufZSU_use_not[5] = cF_ch5_use;
+		bufZSU_use_not[6] = cF_ch6_use;
+		bufZSU_use_not[7] = cF_ch7_use;
     }
 }
-
-
 
 
 void interrupt isr(void) {

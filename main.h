@@ -8,6 +8,9 @@ typedef unsigned short int uint16_t;
 typedef unsigned long uint32_t;
 typedef unsigned char bool;
 
+
+#define ZSU_CH_MAX	8
+
 #define RX_GOOD_SUCESS_T 20
 
 
@@ -123,7 +126,7 @@ extern unsigned    int     CanTxDataTxPointer;
 
 extern uint16_t rxGoodSucessTimer;
 
-
+extern uint8_t bufZSU_use_not[];
 
 
 #endif
