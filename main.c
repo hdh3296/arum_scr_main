@@ -55,6 +55,8 @@ enum {
 
 
 Heater heater[MAX_CH];
+Heater scr;
+
 
 
 uint16_t rxGoodSucessTimer;
@@ -786,36 +788,7 @@ uint16_t getDutyByGoalVoltage_ch1(uint8_t ch, uint16_t duty) {
     return duty; // goal == now
 }
 
-uint16_t getUserSetGoalVolt(uint8_t ch) {
-	switch (ch) {
-        case 0:
-            return iF_ch0_goalVoltage;
-        case 1:
-            return iF_ch1_goalVoltage;
-        case 2:
-            return iF_ch2_goalVoltage;
-        case 3:
-            return iF_ch3_goalVoltage;
-        case 4:
-            return iF_ch4_goalVoltage;
-	}
-	return 0;
-}
-uint16_t getUserSetGoalAmp(uint8_t ch) {
-	switch (ch) {
-        case 0:
-            return iF_ch0_goalCurrent;
-        case 1:
-            return iF_ch1_goalCurrent;
-        case 2:
-            return iF_ch2_goalCurrent;
-        case 3:
-            return iF_ch3_goalCurrent;
-        case 4:
-            return iF_ch4_goalCurrent;
-	}
-	return 0;
-}
+
 
 uint16_t correctedFinalGoalAnalogVolt_mv(uint8_t ch) {
 	uint16_t normal_set_analog = heater[ch].goalSetVoltage_V * 10;
@@ -1662,6 +1635,11 @@ void main(void) {
 
 // 히터 on, off 기능
 //
+		// #부식방지 - 전압/전류/센서  로더 Goal Set Volt/Amp/Sensor
+		scr.goalSetVoltage_V = iF_scr_goalVoltage;
+		scr.goalSetAmp_100mA = iF_scr_goalCurrent;
+		scr.goalSetSensor = iF_scr_goalSensor;
+
         for (ch = 0; ch < MAX_CH; ch++) {
             heater_setChEnableDisable(ch);
             heater_setUseNouse(ch);
@@ -1678,9 +1656,6 @@ void main(void) {
 			heater[ch].userNowInVoltage_V = heater_getRealVoltage(ch);
 			heater[ch].userNowInAmp_100mA = heater_getRealAmp(ch);
 
-			// 전압/전류 로더 Goal Set Volt/Amp
-			heater[ch].goalSetVoltage_V = getUserSetGoalVolt(ch);
-			heater[ch].goalSetAmp_100mA = getUserSetGoalAmp(ch);
 
             heater[ch].db_heatingOnState = heater_getOnState(heater[ch].db_finaldutycycle);
             heater[ch].analog_goalSetVoltage_mV = heater_getAnalogGoalSetVoltage_mv(ch);

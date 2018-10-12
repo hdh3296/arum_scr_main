@@ -24,12 +24,10 @@ const uint8_t StatusMessage[][17] = {
 const uint8_t GroupLineMessage[][17] = {
     "USER:Display Sel", //1
     "USER:Version    ", //0  // group0
-
-    "CH-1:On Temp    ", //9  // group1
-    "CH-1:Off Temp   ", //10
-    "CH-1:Set Volt(V)", //14
-    "CH-1:Set Amp(A) ", //15
-    "CH-1:ch On/Off  ", //16
+    // 그룹 : 목표치 설정
+    "goal:Set Volt(V)", //14
+    "goal:Set Amp(A) ", //15
+    "goal:Set Sensor ", //16
     "CH-1:ch Use/Not ", //16
     "CH-1:ch correctT", //16
     "CH-1:ch correctV", //16
@@ -166,10 +164,10 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_CH4_CORRECT_A     ByteData040
 
 // ※ 두번째 블락 (인테져 타입은 두번째 블럭에서 처리 하고자 한다.)
-#define F_CH0_GOAL_VOLTAGE     		IntzData033
-#define F_CH0_GOAL_CURRENT     		IntzData034
+#define F_SCR_GOAL_VOLTAGE     		IntzData033
+#define F_SCR_GOAL_CURRENT     		IntzData034
+#define F_SCR_GOAL_SENSOR       	IntzData035
 
-#define F_CH1_GOAL_VOLTAGE       	IntzData035
 #define F_CH1_GOAL_CURRENT     		IntzData036
 
 #define F_CH2_GOAL_VOLTAGE       	IntzData037
@@ -239,10 +237,10 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_ch4_correctA 			cF_ByteData(F_CH4_CORRECT_A)
 
 // ------------------------------------------------------------------
-#define iF_ch0_goalVoltage 			iF_IntData(F_CH0_GOAL_VOLTAGE)
-#define iF_ch0_goalCurrent 			iF_IntData(F_CH0_GOAL_CURRENT)
+#define iF_scr_goalVoltage 			iF_IntData(F_SCR_GOAL_VOLTAGE)
+#define iF_scr_goalCurrent 			iF_IntData(F_SCR_GOAL_CURRENT)
+#define iF_scr_goalSensor 			iF_IntData(F_SCR_GOAL_SENSOR)
 
-#define iF_ch1_goalVoltage 			iF_IntData(F_CH1_GOAL_VOLTAGE)
 #define iF_ch1_goalCurrent 			iF_IntData(F_CH1_GOAL_CURRENT)
 
 #define iF_ch2_goalVoltage 			iF_IntData(F_CH2_GOAL_VOLTAGE)

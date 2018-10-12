@@ -12,18 +12,18 @@ Menu_Status MenuStatus[MAX_MENU];
 
 /////////////////////////////////////////////////////
 #define DFL_SETUP 0x55						//default val
-#define DFL_VERSION 10							//version
+#define DFL_VERSION 0						//version
+#define DFL_SCR_GOAL_VOLTAGE 100 // V
+#define DFL_SCR_GOAL_CURRENT 50 // 7A
+#define DFL_SCR_GOAL_SENSOR 1000 // V
+
 
 #define DFL_CH0_TEMP_LOW 27	 //11234	  //2800
 #define DFL_CH0_TEMP_HIGH 32
-#define DFL_CH0_GOAL_VOLTAGE 100 // V
-#define DFL_CH0_GOAL_CURRENT 50 // 7A
 
 #define DFL_CH1_TEMP_LOW 27	 //11234	  //2800
 #define DFL_CH1_TEMP_HIGH 32
-#define DFL_CH1_GOAL_VOLTAGE 100 // V
 #define DFL_CH1_GOAL_CURRENT 50 // 7A
-
 
 #define DFL_CH2_TEMP_LOW 27	 //11234	  //2800
 #define DFL_CH2_TEMP_HIGH 32
@@ -144,7 +144,7 @@ uint16_t IntType_DIGIT_EDIT_Set(uint16_t main_gr, uint16_t sub_gr, uint16_t divi
     return (0);
 }
 
-// 유저 그룹
+// 그룹1 : 유저그룹
 uint16_t G1_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
@@ -155,7 +155,7 @@ uint16_t G1_Menu_Status_Set(void) {
     main_gr = MAIN_GROUP01;
     sub_gr = 0;
     /////////////////////////////////////////////////////////////////////
-    //0
+    //0 : 현재 상태 값 보기 설정
     /////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
 	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_DEFAULT_DSP;
@@ -167,7 +167,7 @@ uint16_t G1_Menu_Status_Set(void) {
 	UserMenuSerialNm++;
 	sub_gr++;
     /////////////////////////////////////////////////////////////////////
-    //1
+    //1 : 펌웨어 버전 정보
     /////////////////////////////////////////////////////////////////////
     ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_VERSION;
@@ -180,7 +180,7 @@ uint16_t G1_Menu_Status_Set(void) {
     return (0);
 }
 
-// ch0
+// ch0 -> 그룹2 : 목표 설정
 uint16_t G2_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
     //////////////////////////////////////////////////////////////////////
@@ -189,36 +189,12 @@ uint16_t G2_Menu_Status_Set(void) {
     main_gr = MAIN_GROUP02;
     sub_gr = 0;
     /////////////////////////////////////////////////////////////////////
-    //sub group1 - 온도 하
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_TEMP_LOW;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub group2 - 온도 상
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_TEMP_HIGH;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-
-
-    /////////////////////////////////////////////////////////////////////
-    //sub group6 - ch0 목표 전압
+    //sub group6 - ch0 목표 전압 -> 목표 전압 설정
     /////////////////////////////////////////////////////////////////////
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 500;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_GOAL_VOLTAGE;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_VOLTAGE;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -230,69 +206,27 @@ uint16_t G2_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
 
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_GOAL_CURRENT;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_CURRENT;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
+	/////////////////////////////////////////////////////////////////////
+    //sub group7 - ch0 목표 센서(부식) 예시) 1000 mV
     /////////////////////////////////////////////////////////////////////
-    //sub group8 - ch0 enable/disable
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_ENABLE;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-    MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_enable_sel_list;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2500;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_SENSOR;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
+            GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
 
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 group9 - ch use/nouse
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_USE;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-    MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
-    UserMenuSerialNm++;
-    sub_gr++;
 
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 온도 보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 25;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 10;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_CORRECT_T;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 전압  보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_CORRECT_V;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
-    /////////////////////////////////////////////////////////////////////
-    //sub ch0 : 전류  보정
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4; // ※ 소수점 포함해서 계산해야 한다.
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_CORRECT_A;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
+
+
+
 
     return (0);
 }
@@ -329,18 +263,8 @@ uint16_t G3_Menu_Status_Set(void) {
     UserMenuSerialNm++;
     sub_gr++;
 
-    /////////////////////////////////////////////////////////////////////
-    //sub group6 - ch1 목표 전압
-    /////////////////////////////////////////////////////////////////////
-    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 500;
 
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH1_GOAL_VOLTAGE;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
+
     /////////////////////////////////////////////////////////////////////
     //sub group7 - ch1 목표 전류
     /////////////////////////////////////////////////////////////////////
@@ -834,6 +758,8 @@ uint16_t DefaultValueSet(void) {
     } else {
         cSR_ByteData(F_VERSION) = DFL_VERSION;
         cSR_ByteData(F_INITIAL) = DFL_SETUP;
+
+
 		// ch0
         cSR_ByteData(F_CH0_TEMP_LOW) = DFL_CH0_TEMP_LOW;
         cSR_ByteData(F_CH0_TEMP_HIGH) = DFL_CH0_TEMP_HIGH;
@@ -879,10 +805,11 @@ uint16_t DefaultValueSet(void) {
         FlashBlockWr(0);
 
 		// 두번째 블럭
-		iSR_IntData(F_CH0_GOAL_VOLTAGE) = DFL_CH0_GOAL_VOLTAGE;
-		iSR_IntData(F_CH0_GOAL_CURRENT) = DFL_CH0_GOAL_CURRENT;
+		iSR_IntData(F_SCR_GOAL_VOLTAGE) = DFL_SCR_GOAL_VOLTAGE;
+		iSR_IntData(F_SCR_GOAL_CURRENT) = DFL_SCR_GOAL_CURRENT;
+        iSR_IntData(F_SCR_GOAL_SENSOR) 	= DFL_SCR_GOAL_SENSOR;
 
-        iSR_IntData(F_CH1_GOAL_VOLTAGE) = DFL_CH1_GOAL_VOLTAGE;
+
         iSR_IntData(F_CH1_GOAL_CURRENT) = DFL_CH1_GOAL_CURRENT;
 
         iSR_IntData(F_CH2_GOAL_VOLTAGE) = DFL_CH2_GOAL_VOLTAGE;

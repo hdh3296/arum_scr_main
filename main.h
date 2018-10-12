@@ -70,8 +70,12 @@ typedef struct {
 	uint16_t userNowInAmp_100mA;				// 현재, 입력 전류 (유저 보이기 )
     uint16_t analog_goalSetVoltage_mV;	// Goal 셋팅 전압 아날로그
     uint16_t analog_goalSetCurrent_mV;	// Goal 셋팅 전류 아날로그
+
     uint16_t goalSetVoltage_V;			// Goal 셋팅 전압 실제(유저)
     uint16_t goalSetAmp_100mA;			// Goal 셋팅 전류 실제(유저) ex) 0.1 A => 1 x 100mA
+	uint16_t goalSetSensor;
+
+
 	uint16_t userCorrVoltSet;			// 보정 - 전압 ex) +10 V
 	uint16_t userCorrAmpSet;			// 보정 - 전류 ex) +1.0 A
 
