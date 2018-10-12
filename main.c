@@ -1574,11 +1574,6 @@ void main(void) {
 
 // 히터 on, off 기능
 //
-		// #부식방지 - 전압/전류/센서  로더 Goal Set Volt/Amp/Sensor
-		scr.goalSetVoltage_V = iF_scr_goalVoltage;
-		scr.goalSetAmp_100mA = iF_scr_goalCurrent;
-		scr.goalSetSensor = iF_scr_goalSensor;
-
         for (ch = 0; ch < MAX_CH; ch++) {
             heater_setChEnableDisable(ch);
             heater_setUseNouse(ch);
@@ -1639,7 +1634,19 @@ void main(void) {
 
 // #1008 부식방지 시스템
 
+
+		// #부식방지 - 전압/전류/센서  로더 Goal Set Volt/Amp/Sensor
+		scr.goalSetVoltage_V = iF_scr_goalVoltage;
+		scr.goalSetAmp_100mA = iF_scr_goalCurrent;
+		scr.goalSetSensor = iF_scr_goalSensor;
+
+		// 아날로그 입력
+		// 수동 볼류 입력
 		gateRST_doValue = test_manualVol();
+		scr.nowMicomAdSensor = heater[0].adc_nowAnalog_mV;
+		scr.nowMicomAdManualVolume = heater[1].adc_nowAnalog_mV; // 0
+		scr.nowMicomAdCurrent = heater[2].adc_nowAnalog_mV;
+		scr.nowMicomAdVoltage = heater[3].adc_nowAnalog_mV;
 
 		// #1011 RST 피드백 제어 : 전압
 		// 현재 전압 값 상태를 체크 한다.
