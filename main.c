@@ -1246,8 +1246,8 @@ bool getCheckCommBreakPnnel(void) {
 
 
 bool bRzeroTimerStart;
-bool bSzeroEdgeUp;
-bool bTzeroEdgeUp;
+bool bSzeroTimerStart;
+bool bTzeroTimerStart;
 
 
 uint16_t gateRSTDoValue; // 수동에의해 최종 몇 도 조절 할지의 값이다.
@@ -1256,7 +1256,7 @@ uint16_t gateRSTDoValue; // 수동에의해 최종 몇 도 조절 할지의 값이다.
 
 uint16_t test_manualVol(void) {
 	uint16_t volAnalog = scr.nowMicomAdVolume; // 6~4994
-	return (180 - (volAnalog / 28) + 57);
+	return (180 - (volAnalog / 28) + 60);
 }
 
 
@@ -1267,8 +1267,8 @@ uint16_t timerTGateHighChk;
 
 
 uint16_t tiemrRzeroTimer;
-uint16_t timerSzero;
-uint16_t timerTzero;
+uint16_t tiemrSzeroTimer;
+uint16_t tiemrTzeroTimer;
 
 
 void whenRZeroEdgeUp(void) {
@@ -1285,27 +1285,27 @@ void whenRZeroEdgeUp(void) {
 	}
 }
 void whenSZeroEdgeUp(void) {
-	if (bSzeroEdgeUp) {
+	if (bSzeroTimerStart) {
 		// 제로 타이머 증가
-		timerSzero++;
+		tiemrSzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (timerSzero >= gateRSTDoValue) {
-			timerSzero = 0;
+		if (tiemrSzeroTimer >= gateRSTDoValue) {
+			tiemrSzeroTimer = 0;
 			pin_GATE_S_PH = GATE_H;
-			bSzeroEdgeUp = 0;
+			bSzeroTimerStart = 0;
 			timerSGateHighChk = 0;
 		}
 	}
 }
 void whenTZeroEdgeUp(void) {
-	if (bTzeroEdgeUp) {
+	if (bTzeroTimerStart) {
 		// 제로 타이머 증가
-		timerTzero++;
+		tiemrTzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (timerTzero >= gateRSTDoValue) {
-			timerTzero = 0;
+		if (tiemrTzeroTimer >= gateRSTDoValue) {
+			tiemrTzeroTimer = 0;
 			pin_GATE_T_PH = GATE_H;
-			bTzeroEdgeUp = 0;
+			bTzeroTimerStart = 0;
 			timerTGateHighChk = 0;
 		}
 	}
@@ -1420,7 +1420,7 @@ void compareGoalNowVoltage(void) { // ##
 //		- 목표 전압치
 //		- 현재 전압값
 //		- 이를 비교하여 게이트 ON 기준점 변화 주기
-void autoRSTGateOnOff(void) { // ##
+void autoRGateOnOff(void) { // ##
 	if (bRzeroTimerStart) { // 제로
 		// 제로 타이머 증가
 		tiemrRzeroTimer++;
@@ -1433,6 +1433,38 @@ void autoRSTGateOnOff(void) { // ##
 		}
 	}
 }
+void autoSGateOnOff(void) { // ##
+	if (bSzeroTimerStart) { // 제로
+		// 제로 타이머 증가
+		tiemrSzeroTimer++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (tiemrSzeroTimer >= gateRSTDoValue) {
+			tiemrSzeroTimer = 0;
+			pin_GATE_S_PH = GATE_H;
+			bSzeroTimerStart = 0;
+			timerSGateHighChk = 0;
+		}
+	}
+}
+void autoTGateOnOff(void) { // ##
+	if (bTzeroTimerStart) { // 제로
+		// 제로 타이머 증가
+		tiemrTzeroTimer++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (tiemrTzeroTimer >= gateRSTDoValue) {
+			tiemrTzeroTimer = 0;
+			pin_GATE_T_PH = GATE_H;
+			bTzeroTimerStart = 0;
+			timerTGateHighChk = 0;
+		}
+	}
+}
+
+
+
+
+
+
 
 
 // -------------------------------------
@@ -1593,13 +1625,13 @@ void interrupt isr(void) {
 	}
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
-		bSzeroEdgeUp = 1;
-		timerSzero = 0;
+		bSzeroTimerStart = 1;
+		tiemrSzeroTimer = 0;
 	}
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
-		bTzeroEdgeUp = 1;
-		timerTzero = 0;
+		bTzeroTimerStart = 1;
+		tiemrTzeroTimer = 0;
 	}
 
 	// RST 게이트 ON 용 타이머1
@@ -1616,7 +1648,7 @@ void interrupt isr(void) {
 			// 게이트를 ON 해 준다.
 			manualVolumeRSTGateOnOff();
 		} else {
-			autoRSTGateOnOff();
+			autoRGateOnOff();
 		}
 		// 수동/자동 on되면 무조건 off 해야 한다.
 		offRSTGate();
