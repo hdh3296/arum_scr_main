@@ -13,7 +13,7 @@ Menu_Status MenuStatus[MAX_MENU];
 /////////////////////////////////////////////////////
 #define DFL_SETUP 0x55						//default val
 #define DFL_VERSION 0						//version
-#define DFL_SCR_GOAL_VOLTAGE 100 // V
+#define DFL_SCR_GOAL_VOLTAGE 10 // V
 #define DFL_SCR_GOAL_CURRENT 50 // 7A
 #define DFL_SCR_GOAL_SENSOR 1000 // V
 
@@ -180,7 +180,7 @@ uint16_t G1_Menu_Status_Set(void) {
     return (0);
 }
 
-// ch0 -> 그룹2 : 목표 설정
+// 그룹2 : 목표 설정
 uint16_t G2_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
     //////////////////////////////////////////////////////////////////////

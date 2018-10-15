@@ -65,7 +65,6 @@ typedef struct {
     uint8_t db_errorCode;		// 에러 코드 번호
 
 	// 현재, 전압, 전류 입력 값들
-    uint16_t adc_nowAnalog_mV; 		// 현재, 입력 아날로그 (마이컴) => 전압/전류/센서/볼륨
     uint16_t anlog_nowAmp_mV; 			// 현재, 입력 아날로그 (마이컴)
     uint16_t anlog_correctedVoltage_mV; // 현재, 입력 전압 아날로그 (보정 받은)
     uint16_t anlog_correctedAmp_mV; 	// 현재, 입력 전류 아날로그 (보정 받은)
@@ -89,7 +88,6 @@ typedef struct {
     bool 	db_bChUse; // use / notuse
 
 	// 기타
-    bool adc_bUdted_mV;
     bool adc_bUdted_mA;
     bool db_bCurrentOver;
 
@@ -110,8 +108,14 @@ typedef struct {
 	uint16_t nowMicomAdVoltage;
 	uint16_t nowMicomAdCurrent;
 	uint16_t nowMicomAdSensor;
-	uint16_t nowMicomAdManualVolume;
+	uint16_t nowMicomAdVolume;
+	bool bNowMicomAdVoltage_updted;
+	bool bNowMicomAdCurrent_updted;
+	bool bNowMicomAdSensor_updted;
+	bool bNowMicomAdVolume_updted;
 
+    uint16_t adc_nowAnalog_mV; 		// 현재, 입력 아날로그 (마이컴) => 전압/전류/센서/볼륨
+    //  이값의 채널 0 ~ 3 값이 각각 전압/전류/센서/볼륨 값들이다.
 } Heater;
 
 

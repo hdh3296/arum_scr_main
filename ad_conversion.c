@@ -10,7 +10,7 @@ bool b_ad_calc_enable;
 unsigned char ad_calc_wait_count;
 unsigned long SumAD = 0;
 unsigned int SumCnt = 0;
-uint16_t adc_updated_mv[ADC_CH_MAX] = {
+uint16_t adc_updated_analog_mV[ADC_CH_MAX] = {
     0,
 };
 
@@ -94,7 +94,7 @@ bool is_update_AD() {
 
         if (SumCnt >= sum_count) {
             AdVal = ((SumAD * 1000) / (0xfff / 5)) / SumCnt; // 12비트 5000 mV 기준
-            adc_updated_mv[AD_channel] = (unsigned int) AdVal;
+            adc_updated_analog_mV[AD_channel] = (unsigned int) AdVal;
             adc_bUpdated[AD_channel] = TRUE;
             SumAD = 0;
             SumCnt = 0;
@@ -124,33 +124,8 @@ uchar get_AD_channel(uchar AdSel) {
             break;
 
         case 3:
-            AdSel = 4;
-            break;
-
-        case 4:
-            AdSel = 5;
-            break;
-
-        case 5:
-            AdSel = 6;
-            break;
-
-        case 6:
-            AdSel = 7;
-            break;
-
-        case 7:
-            AdSel = 8;
-            break;
-
-        case 8:
-            AdSel = 9;
-            break;
-
-        case 9:
             AdSel = 0;
             break;
-
         default:
             AdSel = 0;
             break;

@@ -54,7 +54,7 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_CAN_TX 			RE5
 #define pin_CAN_TX_tris		TRISE5
 
-// ZERO_CROSS_R / S / T 핀 설정 ##
+// ZERO_CROSS_R / S / T 핀 설정
 #define pin_ZERO_CROSS_R		RB0x // 외부 인터럽트 0 = INT0
 #define pin_ZERO_CROSS_R_tris	TRISB0
 #define pin_ZERO_CROSS_S        RB1x

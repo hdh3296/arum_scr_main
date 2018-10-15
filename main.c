@@ -670,22 +670,38 @@ void outPwm_ch(uint8_t ch, uint16_t ducycycle) {
 }
 
 
-void heater_setNowInVoltage_mV(Heater pcr[], uint8_t ch) {
+void scr_micom_setNowInVoltage_mV(uint8_t ch) {
     if (adc_bUpdated[ch]) {
-		// adconversion 이 완료 되면 해당 값 가져온다.
-        pcr[ch].adc_nowAnalog_mV = adc_updated_mv[ch];
-        pcr[ch].adc_bUdted_mV = adc_bUpdated[ch];
-        adc_bUpdated[ch] = FALSE;
+		adc_bUpdated[ch] = FALSE;
+		switch (ch) {
+			case 0:
+				// AN0 센서
+				scr.nowMicomAdSensor = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowMicomAdSensor_updted = TRUE;
+				break;
+			case 1:
+				// AN1 수동 볼륨 값
+				scr.nowMicomAdVolume = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowMicomAdVolume_updted = TRUE;
+				break;
+			case 2:
+				// AN2 전류
+				scr.nowMicomAdCurrent = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowMicomAdCurrent_updted = TRUE;
+				break;
+			case 3:
+				// AN3 전압
+				scr.nowMicomAdVoltage = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowMicomAdVoltage_updted = TRUE;
+				break;
+			default:
+				break;
+		}
+
     }
 }
 
-void heater_setNowInCurrent_mA(Heater pcr[], uint8_t ch) {
-    if (adc_bUpdated[ch + 5]) {
-        pcr[ch].anlog_nowAmp_mV = adc_updated_mv[ch + 5];
-        pcr[ch].adc_bUdted_mA = adc_bUpdated[ch + 5];
-        adc_bUpdated[ch + 5] = FALSE;
-    }
-}
+
 
 
 void setPwmOut(uint8_t ch, uint16_t ducycycle) {
@@ -739,57 +755,6 @@ uint16_t decreaseDuty(uint16_t duty, uint8_t ch) {
     return duty;
 }
 
-
-bool isOverCurrent(uint8_t ch) {
-    uint16_t goal_current = heater[ch].analog_goalSetCurrent_mV;
-    uint16_t now_current  = heater[ch].anlog_nowAmp_mV;
-
-    if (now_current > goal_current) {
-        return 1;
-    }
-    return 0;
-}
-bool isOverVoltage(uint8_t ch) {
-    uint16_t goalVoltage = heater[ch].analog_goalSetVoltage_mV;
-    uint16_t nowVoltage  = heater[ch].adc_nowAnalog_mV;
-
-    if (nowVoltage > goalVoltage) {
-        return 1;
-    }
-    return 0;
-}
-
-
-// 전류
-uint16_t getDutyByGoalCurrent(uint8_t ch, uint16_t duty) {
-    uint16_t goal = heater[ch].analog_goalSetCurrent_mV;
-    uint16_t now  = heater[ch].anlog_nowAmp_mV;
-
-	bDoAdcSpeed[ch] = get_bDoAdcSpeed(ch, now, goal, 10); // 전류 = 1A
-    // current
-    if (now < goal) {
-        return increaseDuty(duty, ch);
-    } else if (now > goal) {
-        return decreaseDuty(duty, ch);
-    }
-    return duty; // goal == now
-}
-
-// 전압
-uint16_t getDutyByGoalVoltage_ch1(uint8_t ch, uint16_t duty) {
-    uint16_t goal = heater[ch].analog_goalSetVoltage_mV;
-    uint16_t now =  heater[ch].adc_nowAnalog_mV;
-
-	bDoAdcSpeed[ch] = get_bDoAdcSpeed(ch, now, goal, 100); // 전압 = 10V
-
-    // voltage
-    if (now < goal) {
-		return increaseDuty(duty, ch);
-    } else if (now > goal) {
-		return decreaseDuty(duty, ch);
-    }
-    return duty; // goal == now
-}
 
 
 
@@ -870,27 +835,6 @@ uint16_t heater_getAnalogGoalAmp_mv(uint8_t ch) {
     return 0;
 }
 
-bool isUpdated_mA(uint8_t ch) {
-    if (heater[ch].adc_bUdted_mA) {
-        heater[ch].adc_bUdted_mA = FALSE;
-        return 1;
-    }
-    return 0;
-}
-
-void controlPwmByCurrent(uint8_t ch) {
-    if (isUpdated_mA(ch)) {
-        dutycycleCompared[ch] = getDutyByGoalCurrent(ch, heater[ch].db_finaldutycycle);
-    }
-}
-
-void controlPwmByVoltage(uint8_t ch) {
-    if (heater[ch].adc_bUdted_mV) {
-        heater[ch].adc_bUdted_mV = FALSE;
-
-        dutycycleCompared[ch] = getDutyByGoalVoltage_ch1(ch, heater[ch].db_finaldutycycle);
-    }
-}
 
 enum {
 	CONT_VOLT,
@@ -899,40 +843,6 @@ enum {
 
 
 uint8_t contMode[MAX_CH] = {CONT_VOLT, };
-
-void setContMode(uint8_t ch) {
-
-	switch (contMode[ch]) {
-		case CONT_VOLT:
-			if (isOverCurrent(ch)) {
-				contMode[ch] = CONT_CURR;
-			}
-			return;
-		case CONT_CURR:
-			if (isOverVoltage(ch)) {
-				contMode[ch] = CONT_VOLT;
-			}
-			return;
-	}
-}
-
-void onoffOuputAllPwmBy(uint8_t ch) {
-	setContMode(ch);
-	switch (contMode[ch]) {
-		case CONT_VOLT:
-			// 전류 제어
-			controlPwmByVoltage(ch);
-			return;
-		case CONT_CURR:
-			// 전압 제어
-			controlPwmByCurrent(ch);
-			return;
-	}
-}
-
-void compareNowVoltageCurrent(uint8_t ch) {
-	onoffOuputAllPwmBy(ch);
-}
 
 
 enum {
@@ -1335,15 +1245,18 @@ bool getCheckCommBreakPnnel(void) {
 #define PIN_R_PH_LOW	0
 
 
-bool bRzeroEdgeUp;
+bool bRzeroTimerStart;
 bool bSzeroEdgeUp;
 bool bTzeroEdgeUp;
 
 
-uint16_t gateRST_doValue;
+uint16_t gateRSTDoValue; // 수동에의해 최종 몇 도 조절 할지의 값이다.
+// 이 값이 결국은 PWM 의 듀티값과 같다고 보면 된다.
+// 이값을 조절함으로 써 목표 전압/전류/센서 값을 제어하면 된다.
+
 uint16_t test_manualVol(void) {
-	uint16_t volAnalog = heater[1].adc_nowAnalog_mV; // 6~4994
-	return (180 - (volAnalog / 28));
+	uint16_t volAnalog = scr.nowMicomAdVolume; // 6~4994
+	return (180 - (volAnalog / 28) + 57);
 }
 
 
@@ -1353,20 +1266,20 @@ uint16_t timerTGateHighChk;
 
 
 
-uint16_t timerRzero;
+uint16_t tiemrRzeroTimer;
 uint16_t timerSzero;
 uint16_t timerTzero;
 
 
 void whenRZeroEdgeUp(void) {
-	if (bRzeroEdgeUp) {
+	if (bRzeroTimerStart) {
 		// 제로 타이머 증가
-		timerRzero++;
+		tiemrRzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (timerRzero >= gateRST_doValue) {
-			timerRzero = 0;
+		if (tiemrRzeroTimer >= gateRSTDoValue) {
+			tiemrRzeroTimer = 0;
 			pin_GATE_R_PH = GATE_H;
-			bRzeroEdgeUp = 0;
+			bRzeroTimerStart = 0;
 			timerRGateHighChk = 0;
 		}
 	}
@@ -1376,7 +1289,7 @@ void whenSZeroEdgeUp(void) {
 		// 제로 타이머 증가
 		timerSzero++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (timerSzero >= gateRST_doValue) {
+		if (timerSzero >= gateRSTDoValue) {
 			timerSzero = 0;
 			pin_GATE_S_PH = GATE_H;
 			bSzeroEdgeUp = 0;
@@ -1389,7 +1302,7 @@ void whenTZeroEdgeUp(void) {
 		// 제로 타이머 증가
 		timerTzero++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (timerTzero >= gateRST_doValue) {
+		if (timerTzero >= gateRSTDoValue) {
 			timerTzero = 0;
 			pin_GATE_T_PH = GATE_H;
 			bTzeroEdgeUp = 0;
@@ -1433,14 +1346,7 @@ void manualVolumeRSTGateOnOff(void) {
 
 
 
-void controlRSTpeedback(void) {
-	// 현재 전압 상태 값 체크
-	uint16_t nowVOLT = heater[3].adc_nowAnalog_mV; // AN3
-	// 전압 설정 값을 가져온다. (비교하기 위해서)
-	uint16_t setVOLT = 2500; // 0 ~ 5000 mV (마이컴 세계)
 
-	// 이제 셋팅값과 현재 피드백값을 비교해서 RST 게이트 제어를 하자. !!!
-}
 
 void offRSTGate(void) {
 	if (pin_GATE_R_PH == GATE_H) {
@@ -1468,8 +1374,69 @@ void saveFinalZsu8ch_2500(void) {
 	}
 }
 
-// -------------------------
-// -------------------------
+void decreadeDosu(uint16_t * pGateRSTDoValue) {
+	if (*pGateRSTDoValue > 0) {
+		*pGateRSTDoValue -= 1;
+	}
+}
+
+
+void increaseDosu(uint16_t * pGateRSTDoValue) {
+	if (*pGateRSTDoValue < 180) {
+		*pGateRSTDoValue += 1;
+	}
+}
+
+
+void compareGoalNowVoltage(void) { // ##
+	uint16_t goal = (scr.goalSetVoltage_V * 50); // micom 목표 전압
+	uint16_t now = scr.nowMicomAdVoltage; // AN3, micom 현재 전압
+	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
+	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
+	if (scr.bNowMicomAdVoltage_updted) {
+		scr.bNowMicomAdVoltage_updted = FALSE;
+
+		if (now < goal) {
+			//decreadeDosu(&gateRSTDoValue);
+			if (gateRSTDoValue > 0) {
+				gateRSTDoValue -= 1;
+			}
+		} else if (now > goal) {
+			//increaseDosu(&gateRSTDoValue);
+			if (gateRSTDoValue < 180) {
+				gateRSTDoValue += 1;
+			}
+		}
+	}
+
+
+
+}
+
+
+// #1015 전압 제어 코딩 중 !
+// 목표 전압치 설정하기
+// 필요한 것
+//		- 목표 전압치
+//		- 현재 전압값
+//		- 이를 비교하여 게이트 ON 기준점 변화 주기
+void autoRSTGateOnOff(void) { // ##
+	if (bRzeroTimerStart) { // 제로
+		// 제로 타이머 증가
+		tiemrRzeroTimer++;
+		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
+		if (tiemrRzeroTimer >= gateRSTDoValue) {
+			tiemrRzeroTimer = 0;
+			pin_GATE_R_PH = GATE_H;
+			bRzeroTimerStart = 0;
+			timerRGateHighChk = 0;
+		}
+	}
+}
+
+
+// -------------------------------------
+// - main loop ------------------------
 void main(void) {
 	uint8_t ch;
 
@@ -1514,39 +1481,34 @@ void main(void) {
 
 // 히터 on, off 기능
 //
-        for (ch = 0; ch < MAX_CH; ch++) {
-            heater_setUseNouse(ch);
-            heater_setOnOffNone(ch);
-            heater_setNowInVoltage_mV(heater, ch);
-            heater_setNowInCurrent_mA(heater, ch);
-
-			heater_setTempError(ch);
-
-			heater[ch].db_errorCode = heater_chkEtcError(ch);
-            heater[ch].anlog_correctedVoltage_mV = heater[ch].adc_nowAnalog_mV; // 현재 전압
-            heater[ch].anlog_correctedAmp_mV = heater[ch].anlog_nowAmp_mV; // 현재 전류
-			// 전압/전류 보정된 최종 실제(유저) 데이터 저장
-			heater[ch].userNowInVoltage_V = heater_getRealVoltage(ch);
-			heater[ch].userNowInAmp_100mA = heater_getRealAmp(ch);
-
-
-            heater[ch].db_heatingOnState = heater_getOnState(heater[ch].db_finaldutycycle);
-            heater[ch].analog_goalSetVoltage_mV = heater_getAnalogGoalSetVoltage_mv(ch);
-            heater[ch].analog_goalSetCurrent_mV = heater_getAnalogGoalAmp_mv(ch);
-
-
-			// 셋팅 온도 보정된 아날로그 값 데이터 베이스 저장
-			heater[ch].db_setOnTemp_mV = temp_getAnalogTo(getSetTempLow(ch), ch);
-			heater[ch].db_setOffTemp_mV = temp_getAnalogTo(getSetTempHigh(ch), ch);
-			// 보정값 database에 저장하기
-			heater[ch].corrTempSet = getSetCorrT(ch);
-			heater[ch].userCorrVoltSet = getSetCorrV(ch);
-			heater[ch].userCorrAmpSet  = getSetCorrA(ch);
-
-			// 현재 입력 전압, 전류 입력값을 비교해서
-			// 듀티싸이클 값 얻어 오기 위한 목적
-			compareNowVoltageCurrent(ch);
-        }
+//        for (ch = 0; ch < MAX_CH; ch++) {
+//            heater_setUseNouse(ch);
+//            heater_setOnOffNone(ch);
+//
+//			heater_setTempError(ch);
+//
+//			heater[ch].db_errorCode = heater_chkEtcError(ch);
+//            heater[ch].anlog_correctedVoltage_mV = heater[ch].adc_nowAnalog_mV; // 현재 전압
+//            heater[ch].anlog_correctedAmp_mV = heater[ch].anlog_nowAmp_mV; // 현재 전류
+//			// 전압/전류 보정된 최종 실제(유저) 데이터 저장
+//			heater[ch].userNowInVoltage_V = heater_getRealVoltage(ch);
+//			heater[ch].userNowInAmp_100mA = heater_getRealAmp(ch);
+//
+//
+//            heater[ch].db_heatingOnState = heater_getOnState(heater[ch].db_finaldutycycle);
+//            heater[ch].analog_goalSetVoltage_mV = heater_getAnalogGoalSetVoltage_mv(ch);
+//            heater[ch].analog_goalSetCurrent_mV = heater_getAnalogGoalAmp_mv(ch);
+//
+//
+//			// 셋팅 온도 보정된 아날로그 값 데이터 베이스 저장
+//			heater[ch].db_setOnTemp_mV = temp_getAnalogTo(getSetTempLow(ch), ch);
+//			heater[ch].db_setOffTemp_mV = temp_getAnalogTo(getSetTempHigh(ch), ch);
+//			// 보정값 database에 저장하기
+//			heater[ch].corrTempSet = getSetCorrT(ch);
+//			heater[ch].userCorrVoltSet = getSetCorrV(ch);
+//			heater[ch].userCorrAmpSet  = getSetCorrA(ch);
+//
+//        }
 // --- system loop ----------------------------------
 // adc
 // * 10개 채널의 입력 mV 값 읽어 오는게 목적이다.
@@ -1554,12 +1516,12 @@ void main(void) {
 
 // 통신
         can_tx_loop();
-        rxtx_loop();
+	    rxtx_loop();
 
 // pwm 출력
         //outputPwm_loop();
 
-// 통신 두절 판단하디 @09-07
+//////////
 		b_temp_comm_not = getCheckNotCommTmep();
 
 		b_pannel_comm_break_flag = getCheckCommBreakPnnel();
@@ -1571,29 +1533,34 @@ void main(void) {
 			}
 		}
 
-// #1008 부식방지 시스템 -----------------------------------------
+// #1000 부식방지 시스템 -----------------------------------------
 
 		// #부식방지 - 전압/전류/센서  로더 Goal Set Volt/Amp/Sensor
 		scr.goalSetVoltage_V = iF_scr_goalVoltage;
 		scr.goalSetAmp_100mA = iF_scr_goalCurrent;
 		scr.goalSetSensor = iF_scr_goalSensor;
 
+		for (ch = 0; ch < ADC_CH_MAX; ch++) {
+			scr_micom_setNowInVoltage_mV(ch); // #1015 : 업데이트 정보 가져와야 한다.
+		}
+
+
 		// 아날로그 입력
 		// 수동 볼류 입력
-		gateRST_doValue = test_manualVol();
-		scr.nowMicomAdSensor = heater[0].adc_nowAnalog_mV; 			// 센서
-		scr.nowMicomAdManualVolume = heater[1].adc_nowAnalog_mV; 	// 수동 볼륨 값
-		scr.nowMicomAdCurrent = heater[2].adc_nowAnalog_mV;			// 전류
-		scr.nowMicomAdVoltage = heater[3].adc_nowAnalog_mV;			// 전압
+		if (!pin_AUTO) {
+			if (scr.bNowMicomAdVolume_updted) {
+				scr.bNowMicomAdVolume_updted = FALSE;
+				gateRSTDoValue = test_manualVol();
+			}
+		} else {
+			compareGoalNowVoltage();
+		}
+		// 각 아날로그 채널별 값을 최종 변수에 저장하기
 
-		// zsu 통신 수신 아날로그 0~7 ch 값
+		// #부식방지 : 마이컴 아날로그 ADC 최종 값 가져오기
 
-		// RST 피드백 제어 : 전압
-		// 현재 전압 값 상태를 체크 한다.
-		// 전압 설정 값과 비교한다.
-		controlRSTpeedback();
 
-		// zsu use/not_use 셋팅 값 저장
+		// ZSU use/not_use 셋팅 값 저장하기
 		bufZSU_use_not[0] = cF_ch0_use;
 		bufZSU_use_not[1] = cF_ch1_use;
 		bufZSU_use_not[2] = cF_ch2_use;
@@ -1603,11 +1570,15 @@ void main(void) {
 		bufZSU_use_not[6] = cF_ch6_use;
 		bufZSU_use_not[7] = cF_ch7_use;
 
-		// zsu로부터 입력 받은 값을 정/역 판단해서 2500 mV 제외한 값 저장
+		// ZSU 로부터 입력 받은 값을
+		// 정/역 방향 판단해서
+		// 2500 mV 제외한 값 저장하기
 		saveFinalZsu8ch_2500();
+
+		// #1015 전압 제어하기
+
     }
 }
-
 
 void interrupt isr(void) {
     static unsigned int timer_msec = 0;
@@ -1616,8 +1587,8 @@ void interrupt isr(void) {
 	// ZERO RST 입력 인터럽트 (상승 엣지) 체크
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
-		bRzeroEdgeUp = 1;
-		timerRzero = 0;
+		bRzeroTimerStart = 1; // 제로 타이머 시작을 위한 제로 RST 시작 지점
+		tiemrRzeroTimer = 0;
 		pin_RUN_LED = ~pin_RUN_LED; // #todo : 임시 run led 주기 파악 용
 	}
 	if(INT1IF && INT1IE){
@@ -1638,7 +1609,15 @@ void interrupt isr(void) {
 	    TMR1H = MSEC_H_1;
 
 		// 수동시에, 볼륨에 의해 RST 게이트 ON ##
-		if (!pin_AUTO)	manualVolumeRSTGateOnOff();
+		if (!pin_AUTO) { // 수동 !!!!
+			// 수동 시에는 이 함수에서
+			// 수동 볼륨으로 게이트 on 할 지점의 타임 값을 설정하면
+			// 도 타이머가 알아서 시간이 흐르면서 해당 지점에 도달 하면
+			// 게이트를 ON 해 준다.
+			manualVolumeRSTGateOnOff();
+		} else {
+			autoRSTGateOnOff();
+		}
 		// 수동/자동 on되면 무조건 off 해야 한다.
 		offRSTGate();
 	}

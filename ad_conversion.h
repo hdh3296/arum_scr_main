@@ -13,8 +13,8 @@ typedef unsigned char uchar;
 #define TRUE 1
 #define FALSE 0
 #define b_conversion_ad DONE
-#define ADC_CH_MAX 10
-extern uint16_t adc_updated_mv[ADC_CH_MAX];
+#define ADC_CH_MAX 4
+extern uint16_t adc_updated_analog_mV[ADC_CH_MAX];
 extern unsigned char adc_bUpdated[ADC_CH_MAX];
 extern uint8_t AD_channel;
 extern void adc_loop(void);
