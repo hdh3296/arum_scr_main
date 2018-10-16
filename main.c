@@ -1434,16 +1434,8 @@ void compareGoalNowVoltage(void) {
 	if (scr.bNowMicomAdVoltage_updted) {
 		scr.bNowMicomAdVoltage_updted = FALSE;
 
-		if (now < goal) {
-			//decreadeDosu(&gateRSTDoValue);
-			if (gateRSTDoValue > MIN_GATE) {
-				gateRSTDoValue -= 1;
-			}
-		} else if (now > goal) {
-			//increaseDosu(&gateRSTDoValue);
-			if (gateRSTDoValue < MAX_GATE) {
-				gateRSTDoValue += 1;
-			}
+		if (gateRSTDoValue < MAX_GATE) {
+			gateRSTDoValue += 1;
 		}
 	}
 }
@@ -1456,16 +1448,8 @@ void compareGoalNowCurrent(void) {
 	if (scr.bNowMicomAdCurrent_updted) {
 		scr.bNowMicomAdCurrent_updted = FALSE;
 
-		if (now < goal) {
-			//decreadeDosu(&gateRSTDoValue);
-			if (gateRSTDoValue > MIN_GATE) {
-				gateRSTDoValue -= 1;
-			}
-		} else if (now > goal) {
-			//increaseDosu(&gateRSTDoValue);
-			if (gateRSTDoValue < MAX_GATE) {
-				gateRSTDoValue += 1;
-			}
+		if (gateRSTDoValue < MAX_GATE) {
+			gateRSTDoValue += 1;
 		}
 	}
 }
@@ -1493,7 +1477,6 @@ void compareGoalNowSensor(void) {
 	}
 }
 
-
 // ##
 void controlGataOnOffByVoltageAndCurrent(void) {
 	setContMode();
@@ -1505,7 +1488,20 @@ void controlGataOnOffByVoltageAndCurrent(void) {
 			compareGoalNowCurrent();
 			return;
 	}
+}
 
+void controlGateTotal(void) {
+
+	if (isOverVoltage()) {
+		compareGoalNowVoltage();
+		return;
+	} else if (isOverCurrent()) {
+		compareGoalNowCurrent();
+		return;
+	}
+
+	// 정상 적이면 그대로 센서에 의해서 제어
+	compareGoalNowSensor();
 }
 
 
@@ -1675,8 +1671,7 @@ void main(void) {
 				gateRSTDoValue = test_manualVol();
 			}
 		} else {
-			controlGataOnOffByVoltageAndCurrent();
-//			compareGoalNowSensor();
+			controlGateTotal();
 		}
 		// 각 아날로그 채널별 값을 최종 변수에 저장하기
 
