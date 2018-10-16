@@ -783,7 +783,7 @@ uint16_t correctedFinalGoalAnalogVolt_mv(uint8_t ch) {
 }
 
 uint16_t correctedFinalGoalAnalogAmp_mv(uint8_t ch) {
-	uint16_t normal_set_analog = heater[ch].goalSetAmp_100mA * 10;
+	uint16_t normal_set_analog = heater[ch].goalSetAmp * 10;
 	uint16_t correctSet = heater[ch].userCorrAmpSet;
 	uint16_t correctValue_analog_mv, result;
 	correctValue_analog_mv = (correctSet % 100) * 10;
@@ -1392,7 +1392,7 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 }
 
 
-void compareGoalNowVoltage(void) { // ##
+void compareGoalNowVoltage(void) {
 	uint16_t goal = (scr.goalSetVoltage_V * 50); // micom 목표 전압
 	uint16_t now = scr.nowMicomAdVoltage; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
@@ -1412,10 +1412,30 @@ void compareGoalNowVoltage(void) { // ##
 			}
 		}
 	}
-
-
-
 }
+
+void compareGoalNowCurrent(void) { // ## 전류 제어
+	uint16_t goal = (scr.goalSetAmp * 5); // micom 목표 전압 (50A : 2500mV 기준)
+	uint16_t now = scr.nowMicomAdCurrent; // AN3, micom 현재 전압
+	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
+	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
+	if (scr.bNowMicomAdCurrent_updted) {
+		scr.bNowMicomAdCurrent_updted = FALSE;
+
+		if (now < goal) {
+			//decreadeDosu(&gateRSTDoValue);
+			if (gateRSTDoValue > MIN_GATE) {
+				gateRSTDoValue -= 1;
+			}
+		} else if (now > goal) {
+			//increaseDosu(&gateRSTDoValue);
+			if (gateRSTDoValue < MAX_GATE) {
+				gateRSTDoValue += 1;
+			}
+		}
+	}
+}
+
 
 
 // #1015 전압 제어 코딩 중 !
@@ -1463,6 +1483,8 @@ void autoTGateOnOff(void) { // ##
 		}
 	}
 }
+
+// #1016 전류 제어 하기
 
 // -------------------------------------
 // - main loop ------------------------
@@ -1566,7 +1588,7 @@ void main(void) {
 
 		// #부식방지 - 전압/전류/센서  로더 Goal Set Volt/Amp/Sensor
 		scr.goalSetVoltage_V = iF_scr_goalVoltage;
-		scr.goalSetAmp_100mA = iF_scr_goalCurrent;
+		scr.goalSetAmp = iF_scr_goalCurrent;
 		scr.goalSetSensor = iF_scr_goalSensor;
 
 		for (ch = 0; ch < ADC_CH_MAX; ch++) {
@@ -1582,7 +1604,8 @@ void main(void) {
 				gateRSTDoValue = test_manualVol();
 			}
 		} else {
-			compareGoalNowVoltage();
+//			compareGoalNowVoltage(); // 전압제어
+			compareGoalNowCurrent();
 		}
 		// 각 아날로그 채널별 값을 최종 변수에 저장하기
 

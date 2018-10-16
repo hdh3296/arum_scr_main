@@ -101,8 +101,8 @@ typedef struct {
 
 
 	// #부식방지
-    uint16_t goalSetVoltage_V;			// Goal 셋팅 전압 실제(유저)
-    uint16_t goalSetAmp_100mA;			// Goal 셋팅 전류 실제(유저) ex) 0.1 A => 1 x 100mA
+    uint16_t goalSetVoltage_V;	// Goal 셋팅 전압 실제 예시) 1v => 마이컴에서 50mV
+    uint16_t goalSetAmp;	// Goal 셋팅 전류 실제(유저) 예시) 50A =>
 	uint16_t goalSetSensor;
 
 	uint16_t nowMicomAdVoltage;
