@@ -845,10 +845,6 @@ enum {
 	CONT_CURR
 };
 
-
-uint8_t contMode[MAX_CH] = {CONT_VOLT, };
-
-
 enum {
     ERR_NONE  = 0,
     ERR_BREAK = 1,
@@ -1391,6 +1387,44 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 	}
 }
 
+// #1016 전압/전류 제어 변경
+
+
+
+bool isOverVoltage(void) {
+	uint16_t goal = (scr.goalSetVoltage_V * 40); // micom 목표 전압 100v -> 4000mV
+	uint16_t now = scr.nowMicomAdVoltage; // AN3, micom 현재 전압
+
+    if (now > goal) {
+        return 1;
+    }   return 0;
+}
+bool isOverCurrent(void) {
+	uint16_t goal = (scr.goalSetAmp * 4); // micom 목표 전압 (50A : 2500mV 기준)
+	uint16_t now = scr.nowMicomAdCurrent; // AN3, micom 현재 전압
+
+    if (now > goal) {
+        return 1;
+    }   return 0;
+}
+
+uint8_t contMode;
+void setContMode(void) {
+	switch (contMode) {
+		case CONT_VOLT:
+			if (isOverCurrent()) {
+				contMode = CONT_CURR;
+			}
+			return;
+		case CONT_CURR:
+			if (isOverVoltage()) {
+				contMode = CONT_VOLT;
+			}
+			return;
+	}
+}
+
+
 // 전압 제어
 void compareGoalNowVoltage(void) {
 	uint16_t goal = (scr.goalSetVoltage_V * 40); // micom 목표 전압 100v -> 4000mV
@@ -1436,7 +1470,7 @@ void compareGoalNowCurrent(void) {
 	}
 }
 // 센서
-void compareGoalNowSensor(void) { // ## 센서 제어(전위)
+void compareGoalNowSensor(void) {
 	uint16_t goal = scr.goalSetSensor; // micom단, 목표 센서 mV
 	uint16_t now = scr.nowMaxSensor = finalZSUbuf8ch_mV[0]; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
@@ -1460,13 +1494,28 @@ void compareGoalNowSensor(void) { // ## 센서 제어(전위)
 }
 
 
+// ##
+void controlGataOnOffByVoltageAndCurrent(void) {
+	setContMode();
+	switch (contMode) {
+		case CONT_VOLT: // 전압 제어 해라 !
+			compareGoalNowVoltage();
+			return;
+		case CONT_CURR: // 전류 제어 해라 !
+			compareGoalNowCurrent();
+			return;
+	}
+
+}
+
+
 // #1015 전압 제어 코딩 중 !
 // 목표 전압치 설정하기
 // 필요한 것
 //		- 목표 전압치
 //		- 현재 전압값
 //		- 이를 비교하여 게이트 ON 기준점 변화 주기
-void autoRGateOnOff(void) { // ##
+void autoRGateOnOff(void) {
 	if (bRzeroTimerStart) { // 제로
 		// 제로 타이머 증가
 		tiemrRzeroTimer++;
@@ -1479,7 +1528,7 @@ void autoRGateOnOff(void) { // ##
 		}
 	}
 }
-void autoSGateOnOff(void) { // ##
+void autoSGateOnOff(void) {
 	if (bSzeroTimerStart) { // 제로
 		// 제로 타이머 증가
 		tiemrSzeroTimer++;
@@ -1492,7 +1541,7 @@ void autoSGateOnOff(void) { // ##
 		}
 	}
 }
-void autoTGateOnOff(void) { // ##
+void autoTGateOnOff(void) {
 	if (bTzeroTimerStart) { // 제로
 		// 제로 타이머 증가
 		tiemrTzeroTimer++;
@@ -1626,8 +1675,7 @@ void main(void) {
 				gateRSTDoValue = test_manualVol();
 			}
 		} else {
-//			compareGoalNowVoltage(); // 전압제어
-			compareGoalNowCurrent();
+			controlGataOnOffByVoltageAndCurrent();
 //			compareGoalNowSensor();
 		}
 		// 각 아날로그 채널별 값을 최종 변수에 저장하기
