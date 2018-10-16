@@ -1649,6 +1649,8 @@ void interrupt isr(void) {
 			manualVolumeRSTGateOnOff();
 		} else {
 			autoRGateOnOff();
+			autoSGateOnOff();
+			autoTGateOnOff();
 		}
 		// 수동/자동 on되면 무조건 off 해야 한다.
 		offRSTGate();
