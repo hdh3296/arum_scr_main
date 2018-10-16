@@ -9,6 +9,10 @@
 #include    "pwm.h"
 #include    "can\my_can.h"
 
+#define MAX_GATE	240
+#define MIN_GATE	60
+
+
 #define MAX_CH 5
 uint8_t bufZSU_use_not[ZSU_CH_MAX];
 
@@ -1398,12 +1402,12 @@ void compareGoalNowVoltage(void) { // ##
 
 		if (now < goal) {
 			//decreadeDosu(&gateRSTDoValue);
-			if (gateRSTDoValue > 0) {
+			if (gateRSTDoValue > MIN_GATE) {
 				gateRSTDoValue -= 1;
 			}
 		} else if (now > goal) {
 			//increaseDosu(&gateRSTDoValue);
-			if (gateRSTDoValue < 180) {
+			if (gateRSTDoValue < MAX_GATE) {
 				gateRSTDoValue += 1;
 			}
 		}
@@ -1460,13 +1464,6 @@ void autoTGateOnOff(void) { // ##
 	}
 }
 
-
-
-
-
-
-
-
 // -------------------------------------
 // - main loop ------------------------
 void main(void) {
@@ -1500,7 +1497,7 @@ void main(void) {
 	bef_b_pannel_comm_not = 0;
 	b_pannel_comm_break_flag = 0;
 
-
+	gateRSTDoValue = MAX_GATE;
     while (1) {
         unsigned int i;
         uint8_t ch;
@@ -1640,14 +1637,11 @@ void interrupt isr(void) {
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
 
-		// 수동시에, 볼륨에 의해 RST 게이트 ON ##
-		if (!pin_AUTO) { // 수동 !!!!
-			// 수동 시에는 이 함수에서
-			// 수동 볼륨으로 게이트 on 할 지점의 타임 값을 설정하면
-			// 도 타이머가 알아서 시간이 흐르면서 해당 지점에 도달 하면
-			// 게이트를 ON 해 준다.
+		if (!pin_AUTO) {
 			manualVolumeRSTGateOnOff();
 		} else {
+			// 자동 조절
+			// 왜 처음 시작 시에 자동 졸이 안 되었을까?
 			autoRGateOnOff();
 			autoSGateOnOff();
 			autoTGateOnOff();
