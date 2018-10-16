@@ -114,6 +114,8 @@ typedef struct {
 	bool bNowMicomAdSensor_updted;
 	bool bNowMicomAdVolume_updted;
 
+	uint16_t nowMaxSensor;
+
     uint16_t adc_nowAnalog_mV; 		// 현재, 입력 아날로그 (마이컴) => 전압/전류/센서/볼륨
     //  이값의 채널 0 ~ 3 값이 각각 전압/전류/센서/볼륨 값들이다.
 } Heater;

@@ -1391,7 +1391,7 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 	}
 }
 
-
+// 전압 제어
 void compareGoalNowVoltage(void) {
 	uint16_t goal = (scr.goalSetVoltage_V * 50); // micom 목표 전압
 	uint16_t now = scr.nowMicomAdVoltage; // AN3, micom 현재 전압
@@ -1413,8 +1413,8 @@ void compareGoalNowVoltage(void) {
 		}
 	}
 }
-
-void compareGoalNowCurrent(void) { // ## 전류 제어
+// 전류 제어
+void compareGoalNowCurrent(void) {
 	uint16_t goal = (scr.goalSetAmp * 5); // micom 목표 전압 (50A : 2500mV 기준)
 	uint16_t now = scr.nowMicomAdCurrent; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
@@ -1436,6 +1436,28 @@ void compareGoalNowCurrent(void) { // ## 전류 제어
 	}
 }
 
+void compareGoalNowSensor(void) { // ## 센서 제어(전위)
+	uint16_t goal = scr.goalSetSensor; // micom단, 목표 센서 mV
+	uint16_t now = scr.nowMaxSensor = finalZSUbuf8ch_mV[0]; // AN3, micom 현재 전압
+	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
+	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
+	if (scr.bNowMicomAdCurrent_updted) {
+		scr.bNowMicomAdCurrent_updted = FALSE;
+
+		if (now < goal) {
+			//decreadeDosu(&gateRSTDoValue);
+			if (gateRSTDoValue < MAX_GATE) {
+				gateRSTDoValue += 1;
+			}
+		} else if (now > goal) {
+			// 전류를 많이 보내 줘야 한다.
+			//increaseDosu(&gateRSTDoValue);
+			if (gateRSTDoValue > MIN_GATE) {
+				gateRSTDoValue -= 1;
+			}
+		}
+	}
+}
 
 
 // #1015 전압 제어 코딩 중 !
@@ -1592,7 +1614,7 @@ void main(void) {
 		scr.goalSetSensor = iF_scr_goalSensor;
 
 		for (ch = 0; ch < ADC_CH_MAX; ch++) {
-			scr_micom_setNowInVoltage_mV(ch); // #1015 : 업데이트 정보 가져와야 한다.
+			scr_micom_setNowInVoltage_mV(ch);
 		}
 
 
@@ -1605,7 +1627,8 @@ void main(void) {
 			}
 		} else {
 //			compareGoalNowVoltage(); // 전압제어
-			compareGoalNowCurrent();
+//			compareGoalNowCurrent();
+			compareGoalNowSensor();
 		}
 		// 각 아날로그 채널별 값을 최종 변수에 저장하기
 
