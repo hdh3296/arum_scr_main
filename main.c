@@ -1305,19 +1305,44 @@ void offRSTGATEWhenOn(void) {
 	}
 }
 
-uint16_t reverseZSU8ch(uint16_t ch) {
-	if (zsu_ch0_ch7_analog[ch] >= 2500) {
-		return (zsu_ch0_ch7_analog[ch] - 2500);
-	}	return (2500 - zsu_ch0_ch7_analog[ch]);
-}
+// ## 정/역
+uint16_t allSensorFinal_mV[ZSU_CH_MAX+1][2];
+void reverseZSU8ch(uint16_t ch) {
 
-volatile uint16_t finalZSUbuf8ch_mV[ZSU_CH_MAX];
+	if (zsu_ch0_ch7_analog[ch] >= 2500) {
+		// +500
+		allSensorFinal_mV[ch][0] = 1; // +
+		allSensorFinal_mV[ch][1] = (zsu_ch0_ch7_analog[ch] - 2500); // 500
+		return;
+	}
+
+	// -500
+	allSensorFinal_mV[ch][0] = 0; // -
+	allSensorFinal_mV[ch][1] = (2500 - zsu_ch0_ch7_analog[ch]); // 500
+}
+void reverseMainSensor(uint16_t sensor) {
+
+	if (sensor >= 2500) {
+		// +500
+		allSensorFinal_mV[8][0] = 1; // +
+		allSensorFinal_mV[8][1] = (sensor - 2500); // 500
+		return;
+	}
+
+	// -500
+	allSensorFinal_mV[8][0] = 0; // -
+	allSensorFinal_mV[8][1] = (2500 - sensor); // 500
+}
 void saveFinalZsu8ch_2500(void) {
 	uint16_t ch;
 	for (ch = 0; ch < ZSU_CH_MAX; ch++) {
-		finalZSUbuf8ch_mV[ch] = reverseZSU8ch(ch);
+		reverseZSU8ch(ch);
 	}
+	reverseMainSensor(scr.nowMicomAdSensor);
 }
+
+
+
 
 void decreadeDosu(uint16_t * pGateRSTDoValue) {
 	if (*pGateRSTDoValue > 0) {
@@ -1373,11 +1398,13 @@ void compareGoalNowCurrent(void) {
 // 센서
 void compareGoalNowSensor(void) {
 	uint16_t goal = scr.goalSetSensor; // micom단, 목표 센서 mV
-	uint16_t now = scr.nowMaxSensor = finalZSUbuf8ch_mV[0]; // AN3, micom 현재 전압
+	uint16_t now = scr.nowMaxSensor = allSensorFinal_mV[0][1]; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
 	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
-	if (scr.bNowMicomAdCurrent_updted) {
-		scr.bNowMicomAdCurrent_updted = FALSE;
+	if (scr.bNowMicomAdSensor_updted) {
+		scr.bNowMicomAdSensor_updted = FALSE;
+
+		saveFinalZsu8ch_2500();
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
@@ -1597,12 +1624,6 @@ void main(void) {
 		}
 
 
-		// ZSU 로부터 입력 받은 값을
-		// 정/역 방향 판단해서
-		// 2500 mV 제외한 값 저장하기
-		// #1017 이 부분 잘 못되었음 (개념 파악 잘못 했다.)
-		// 로더 셋팅에 정/역 설정을 보고 현재 입력값이 올바로 왔는지 그렇지 않은지 판단해야 한다.
-		saveFinalZsu8ch_2500();
 
 		// ZSU use/not_use 셋팅 값 저장하기
 		bufZSU_use_not[0] = cF_ch0_use;
