@@ -75,7 +75,7 @@ void initMCU(void) {
     POR = 0; // power-on reset status
     BOR = 0; // brown-our reset status
     //-- 타이머1 -----------------------------------
-    // T1CON Register #1005 @중요
+    // T1CON Register 2018.1005일  @중요
     // 	RD1=1;	// 16 Bit Read/Write Enable
     //T1RD16=1;	// 16 Bit Read/Write Enable
     T1CKPS1 = 1; // Prescaler ........(1/8)

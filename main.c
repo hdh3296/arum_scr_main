@@ -1180,13 +1180,15 @@ bool getCheckCommBreakPnnel(void) {
 	return 0;
 }
 
-
-// #1008 부식방지 시스템
+/*/////////////////////////////////
+/* #부식방지 시스템
+/*//////////////////////////////////
 #define GATE_H		1
 #define	GATE_L	0
 #define PIN_R_PH_HIGH	1
 #define PIN_R_PH_LOW	0
 
+uint16_t pwstartTiemr; // 최초 전원 켰을 때 순간 게이트 on 되는 문제 때문에 추가 된 시간 변수이다.
 
 bool bRzeroTimerStart;
 bool bSzeroTimerStart;
@@ -1330,9 +1332,6 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 	}
 }
 
-// #1016 전압/전류 제어 변경
-
-
 
 bool isOverVoltage(void) {
 	uint16_t goal = (scr.goalSetVoltage_V * 4); // micom 목표 전압 100v -> 4000mV
@@ -1380,14 +1379,14 @@ void compareGoalNowSensor(void) {
 	if (scr.bNowMicomAdCurrent_updted) {
 		scr.bNowMicomAdCurrent_updted = FALSE;
 
-		if (now < goal) {
-			//decreadeDosu(&gateRSTDoValue);
+		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
+		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
+		if (now < (goal-50)) {
 			if (gateRSTDoValue < MAX_GATE) {
 				gateRSTDoValue += 1;
 			}
-		} else if (now > goal) {
+		} else if (now > (goal+50)) {
 			// 전류를 많이 보내 줘야 한다.
-			//increaseDosu(&gateRSTDoValue);
 			if (gateRSTDoValue > MIN_GATE) {
 				gateRSTDoValue -= 1;
 			}
@@ -1410,7 +1409,7 @@ void controlGateTotal(void) {
 }
 
 
-// #1015 전압 제어 코딩 중 !
+// 전압 제어 코딩 성공 !
 // 목표 전압치 설정하기
 // 필요한 것
 //		- 목표 전압치
@@ -1462,9 +1461,6 @@ void onRSTGATEWhenAuto(void) {
 	autoTGateOnOff();
 }
 
-
-// #1016 전류 제어 하기
-uint16_t pwstartTiemr; // 최초 전원 켰을 때 순간 게이트 on 되는 문제 때문에 추가 된 시간 변수이다.
 
 // -------------------------------------
 // - main loop ------------------------
