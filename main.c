@@ -1386,7 +1386,7 @@ uint16_t getFinalMaxSensor(void) {
 	// 이 중에 최대 값을 리턴한다.
 	filterGoodValue();
 	sensorMax = getMaxValue();
-
+	return sensorMax;
 }
 
 
