@@ -141,6 +141,17 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_CH5_USE	    	ByteData011
 #define F_CH6_USE	    	ByteData012
 #define F_CH7_USE   	 	ByteData013
+// #부식방지 : 센서 정/역
+#define F_REVERSE_0     	ByteData017
+#define F_REVERSE_1     	ByteData018
+#define F_REVERSE_2     	ByteData019
+#define F_REVERSE_3     	ByteData020
+#define F_REVERSE_4    	 	ByteData021
+#define F_REVERSE_5     	ByteData022
+#define F_REVERSE_6     	ByteData023
+#define F_REVERSE_7     	ByteData024
+#define F_REVERSE_8     	ByteData025
+
 
 
 #define F_CH3_ENABLE    	ByteData014
@@ -148,15 +159,6 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define F_A_TYPE_NUM      	ByteData016
 
-#define F_CH0_TEMP_HIGH     ByteData017
-#define F_CH1_TEMP_LOW     	ByteData018
-#define F_CH1_TEMP_HIGH     ByteData019
-#define F_CH2_TEMP_LOW     	ByteData020
-#define F_CH2_TEMP_HIGH     ByteData021
-#define F_CH3_TEMP_LOW     	ByteData022
-#define F_CH3_TEMP_HIGH     ByteData023
-#define F_CH4_TEMP_LOW     	ByteData024
-#define F_CH4_TEMP_HIGH     ByteData025
 
 // 보정 기능 추가
 #define F_SCR_CORRECT_V     	ByteData026
@@ -219,20 +221,16 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define cF_A_type_num   	cF_ByteData(F_A_TYPE_NUM)
 
-// ch0
-#define cF_ch0_temp_high    		cF_ByteData(F_CH0_TEMP_HIGH)
-// ch1
-#define cF_ch1_temp_low 			cF_ByteData(F_CH1_TEMP_LOW)
-#define cF_ch1_temp_high 			cF_ByteData(F_CH1_TEMP_HIGH)
-// ch2
-#define cF_ch2_temp_low 			cF_ByteData(F_CH2_TEMP_LOW)
-#define cF_ch2_temp_high 			cF_ByteData(F_CH2_TEMP_HIGH)
-// ch3
-#define cF_ch3_temp_low 			cF_ByteData(F_CH3_TEMP_LOW)
-#define cF_ch3_temp_high 			cF_ByteData(F_CH3_TEMP_HIGH)
-// ch4
-#define cF_ch4_temp_low 			cF_ByteData(F_CH4_TEMP_LOW)
-#define cF_ch4_temp_high 			cF_ByteData(F_CH4_TEMP_HIGH)
+// 센서 정/역 설정 final 저장 값
+#define cF_reverse_0    		cF_ByteData(F_REVERSE_0)
+#define cF_reverse_1 			cF_ByteData(F_REVERSE_1)
+#define cF_reverse_2 			cF_ByteData(F_REVERSE_2)
+#define cF_reverse_3 			cF_ByteData(F_REVERSE_3)
+#define cF_reverse_4 			cF_ByteData(F_REVERSE_4)
+#define cF_reverse_5 			cF_ByteData(F_REVERSE_5)
+#define cF_reverse_6 			cF_ByteData(F_REVERSE_6)
+#define cF_reverse_7 			cF_ByteData(F_REVERSE_7)
+#define cF_reverse_8 			cF_ByteData(F_REVERSE_8)
 // 보정
 #define cF_ch0_correctT 			cF_ByteData(F_SCR_CORRECT_S_MAIN)
 #define cF_ch0_correctV 			cF_ByteData(F_SCR_CORRECT_V)
