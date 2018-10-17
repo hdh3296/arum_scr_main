@@ -1335,7 +1335,7 @@ void lowTGate(void) {
 }
 
 
-void manualVolumeRSTGateOnOff(void) {
+void onRSTGATEWhenManual(void) {
 	whenRZeroEdgeUp(); // gate on(high) !!
 
 	whenSZeroEdgeUp();
@@ -1348,7 +1348,7 @@ void manualVolumeRSTGateOnOff(void) {
 
 
 
-void offRSTGate(void) {
+void offRSTGATEWhenOn(void) {
 	if (pin_GATE_R_PH == GATE_H) {
 		lowRGate();
 	}
@@ -1551,7 +1551,15 @@ void autoTGateOnOff(void) {
 	}
 }
 
+void onRSTGATEWhenAuto(void) {
+	autoRGateOnOff();
+	autoSGateOnOff();
+	autoTGateOnOff();
+}
+
+
 // #1016 전류 제어 하기
+uint16_t pwstartTiemr; // 최초 전원 켰을 때 순간 게이트 on 되는 문제 때문에 추가 된 시간 변수이다.
 
 // -------------------------------------
 // - main loop ------------------------
@@ -1586,7 +1594,16 @@ void main(void) {
 	bef_b_pannel_comm_not = 0;
 	b_pannel_comm_break_flag = 0;
 
+	// 초기화
 	gateRSTDoValue = MAX_GATE;
+	bRzeroTimerStart = 0;
+	bSzeroTimerStart = 0;
+	bTzeroTimerStart = 0;
+	tiemrRzeroTimer = 0;
+	tiemrSzeroTimer = 0;
+	tiemrTzeroTimer = 0;
+
+	pwstartTiemr = 0;
     while (1) {
         unsigned int i;
         uint8_t ch;
@@ -1651,32 +1668,40 @@ void main(void) {
 			}
 		}
 
-// #1000 부식방지 시스템 -----------------------------------------
+// #부식방지 시스템 -----------------------------------------
 
-		// #부식방지 - 전압/전류/센서  로더 Goal Set Volt/Amp/Sensor
+		// 전압/전류/센서   로더 목표 설정값 가져오기       ---Goal Set Volt/Amp/Sensor
 		scr.goalSetVoltage_V = iF_scr_goalVoltage;
 		scr.goalSetAmp = iF_scr_goalCurrent;
 		scr.goalSetSensor = iF_scr_goalSensor;
 
+		// 메인 보드의 총 4개의 아날로그 채널 값 획득하기 (저장하기)
+		// 전압/전류/센서/볼륨
 		for (ch = 0; ch < ADC_CH_MAX; ch++) {
 			scr_micom_setNowInVoltage_mV(ch);
 		}
 
-
-		// 아날로그 입력
-		// 수동 볼류 입력
+		// 게이트 PWM 처럼 제어하기위한 목적으로
+		// 게이트 ON 할 시점의 도수 값 획득하기 (저장하기)
+		// 이 도수 값을 가지고 타이머 영역에서 46us 마다 1도이므로 이를 비교하여 게이트를 ON할 목적이다.
 		if (!pin_AUTO) {
+			// 수동 볼륨에 의해서 gateRSTDoValue 값을 획득한다.
 			if (scr.bNowMicomAdVolume_updted) {
 				scr.bNowMicomAdVolume_updted = FALSE;
 				gateRSTDoValue = test_manualVol();
 			}
 		} else {
+			// PWM 처럼 게이트 제어하는 함수이다.
 			controlGateTotal();
 		}
-		// 각 아날로그 채널별 값을 최종 변수에 저장하기
 
-		// #부식방지 : 마이컴 아날로그 ADC 최종 값 가져오기
 
+		// ZSU 로부터 입력 받은 값을
+		// 정/역 방향 판단해서
+		// 2500 mV 제외한 값 저장하기
+		// #1017 이 부분 잘 못되었음 (개념 파악 잘못 했다.)
+		// 로더 셋팅에 정/역 설정을 보고 현재 입력값이 올바로 왔는지 그렇지 않은지 판단해야 한다.
+		saveFinalZsu8ch_2500();
 
 		// ZSU use/not_use 셋팅 값 저장하기
 		bufZSU_use_not[0] = cF_ch0_use;
@@ -1687,14 +1712,6 @@ void main(void) {
 		bufZSU_use_not[5] = cF_ch5_use;
 		bufZSU_use_not[6] = cF_ch6_use;
 		bufZSU_use_not[7] = cF_ch7_use;
-
-		// ZSU 로부터 입력 받은 값을
-		// 정/역 방향 판단해서
-		// 2500 mV 제외한 값 저장하기
-		saveFinalZsu8ch_2500();
-
-		// #1015 전압 제어하기
-
     }
 }
 
@@ -1707,7 +1724,6 @@ void interrupt isr(void) {
   		INT0IF = 0;
 		bRzeroTimerStart = 1; // 제로 타이머 시작을 위한 제로 RST 시작 지점
 		tiemrRzeroTimer = 0;
-		pin_RUN_LED = ~pin_RUN_LED; // #todo : 임시 run led 주기 파악 용
 	}
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
@@ -1726,17 +1742,15 @@ void interrupt isr(void) {
 	    TMR1L = MSEC_L_1;
 	    TMR1H = MSEC_H_1;
 
-		if (!pin_AUTO) {
-			manualVolumeRSTGateOnOff();
-		} else {
-			// 자동 조절
-			// 왜 처음 시작 시에 자동 졸이 안 되었을까?
-			autoRGateOnOff();
-			autoSGateOnOff();
-			autoTGateOnOff();
+		if (pwstartTiemr > 10) {
+			if (!pin_AUTO) {
+				onRSTGATEWhenManual();
+			} else {
+				onRSTGATEWhenAuto();
+			}
 		}
 		// 수동/자동 on되면 무조건 off 해야 한다.
-		offRSTGate();
+		offRSTGATEWhenOn();
 	}
 
 
@@ -1747,10 +1761,10 @@ void interrupt isr(void) {
         TMR0H = MSEC_H;
         loader_msecTimer();
         timer_msec++;
-
+		if (pwstartTiemr < 0xffff) pwstartTiemr++;
         if (timer_msec >= 1000) {
             timer_msec = 0;
-
+			pin_RUN_LED = ~pin_RUN_LED;
         }
 
         NoCanInt++;
