@@ -500,10 +500,10 @@ uint16_t G5_Menu_Status_Set(void) {
     sub_gr = 0;
 
 	/////////////////////////////////////////////////////////////////////
-	// 0 센서 정/역 방향 ZSU 0채널
+	// 0 센서 정/역 방향 ZSU 0채널 ##
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_0;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_0; // 데이어/플래쉬
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;

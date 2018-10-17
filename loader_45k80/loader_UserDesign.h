@@ -237,7 +237,7 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_A_type_num   	cF_ByteData(F_A_TYPE_NUM)
 
 // 센서 정/역 설정 final 저장 값
-#define cF_reverse_0    		cF_ByteData(F_REVERSE_0)
+#define cF_reverse_0      		cF_ByteData(F_REVERSE_0)
 #define cF_reverse_1 			cF_ByteData(F_REVERSE_1)
 #define cF_reverse_2 			cF_ByteData(F_REVERSE_2)
 #define cF_reverse_3 			cF_ByteData(F_REVERSE_3)

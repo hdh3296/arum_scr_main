@@ -1262,8 +1262,30 @@ void reverseMainSensor(uint16_t sensor) {
 	allSensorFinal_mV[8][1] = (2500 - sensor); // 500
 }
 
-bool chkSetReverse(void) {
-	// 모두 정방향으로 설정 되어 있다는 가정하에 ...
+bool chkSetReverse(uint16_t i) { // ##
+	// 9개의 정/역 비교를 위한 로더 설정 값
+	switch (i) {
+		case 0:
+			return cF_reverse_0;
+		case 1:
+			return cF_reverse_1;
+		case 2:
+			return cF_reverse_2;
+		case 3:
+			return cF_reverse_3;
+		case 4:
+			return cF_reverse_4;
+		case 5:
+			return cF_reverse_5;
+		case 6:
+			return cF_reverse_6;
+		case 7:
+			return cF_reverse_7;
+		case 8:
+			return cF_reverse_8;
+	}
+
+
 	return 1; // 가정, 정(+)
 }
 
@@ -1271,7 +1293,7 @@ bool chkSetReverse(void) {
 void filterGoodValue(void) {
 	uint16_t i;
 	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
-		if (allSensorFinal_mV[i][0] == chkSetReverse()) {
+		if (allSensorFinal_mV[i][0] == chkSetReverse(i)) {
 			// 정 방향 이면, 그대로
 			allSensorFinal_mV[i][0] = S_GOOD;
 		} else {
@@ -1305,7 +1327,7 @@ uint16_t getFinalMaxSensor(void) {
 	reverseMainSensor(scr.nowMicomAdSensor);
 
 	// 이 중에 최대 값을 리턴한다.
-	filterGoodValue();
+	filterGoodValue(); // ##
 	sensorMax = getMaxValue();
 	return sensorMax;
 }
