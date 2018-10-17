@@ -43,6 +43,13 @@ enum {
 	CH_SET_EN   = 2,
 };
 
+enum {
+	S_MINUS,
+	S_PLUS,
+	S_GOOD,
+	S_ERROR
+};
+
 
 typedef struct {
     unsigned heater_onoff : 1;
@@ -1311,34 +1318,60 @@ void reverseZSU8ch(uint16_t ch) {
 
 	if (zsu_ch0_ch7_analog[ch] >= 2500) {
 		// +500
-		allSensorFinal_mV[ch][0] = 1; // +
+		allSensorFinal_mV[ch][0] = S_PLUS; // +
 		allSensorFinal_mV[ch][1] = (zsu_ch0_ch7_analog[ch] - 2500); // 500
 		return;
 	}
 
 	// -500
-	allSensorFinal_mV[ch][0] = 0; // -
+	allSensorFinal_mV[ch][0] = S_MINUS; // -
 	allSensorFinal_mV[ch][1] = (2500 - zsu_ch0_ch7_analog[ch]); // 500
 }
 void reverseMainSensor(uint16_t sensor) {
 
 	if (sensor >= 2500) {
 		// +500
-		allSensorFinal_mV[8][0] = 1; // +
+		allSensorFinal_mV[8][0] = S_PLUS; // +
 		allSensorFinal_mV[8][1] = (sensor - 2500); // 500
 		return;
 	}
 
 	// -500
-	allSensorFinal_mV[8][0] = 0; // -
+	allSensorFinal_mV[8][0] = S_MINUS; // -
 	allSensorFinal_mV[8][1] = (2500 - sensor); // 500
 }
-void saveFinalZsu8ch_2500(void) {
+
+bool chkSetReverse(void) {
+	// 모두 정방향으로 설정 되어 있다는 가정하에 ...
+	return 1; // 가정, 정(+)
+}
+
+
+void filterGoodValue(void) {
+	uint16_t i;
+	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
+		if (allSensorFinal_mV[i][0] == chkSetReverse()) {
+			// 정 방향 이면, 그대로
+			allSensorFinal_mV[i][0] = S_GOOD;
+		} else {
+			allSensorFinal_mV[i][0] = S_ERROR;
+		}
+	}
+}
+
+
+uint16_t getFinalMaxSensor(void) {
 	uint16_t ch;
+	// 모든(총 9개) 센서 입력값을 버퍼에 저장한다.
 	for (ch = 0; ch < ZSU_CH_MAX; ch++) {
 		reverseZSU8ch(ch);
 	}
 	reverseMainSensor(scr.nowMicomAdSensor);
+
+	// 이 중에 최대 값을 리턴한다.
+	filterGoodValue();
+//	chkMaxValue();
+
 }
 
 
@@ -1398,13 +1431,13 @@ void compareGoalNowCurrent(void) {
 // 센서
 void compareGoalNowSensor(void) {
 	uint16_t goal = scr.goalSetSensor; // micom단, 목표 센서 mV
-	uint16_t now = scr.nowMaxSensor = allSensorFinal_mV[0][1]; // AN3, micom 현재 전압
+	uint16_t now; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
 	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
 	if (scr.bNowMicomAdSensor_updted) {
 		scr.bNowMicomAdSensor_updted = FALSE;
 
-		saveFinalZsu8ch_2500();
+		now = getFinalMaxSensor();
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
