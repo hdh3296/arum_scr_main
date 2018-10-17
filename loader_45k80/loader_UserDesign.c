@@ -489,7 +489,7 @@ uint16_t G4_Menu_Status_Set(void) {
 }
 
 
-// 정/역 메뉴 9개 + 테스트 메뉴 1개
+// 정/역 메뉴 9개 + 테스트 메뉴 1개 ##
 uint16_t G5_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
@@ -500,15 +500,104 @@ uint16_t G5_Menu_Status_Set(void) {
     sub_gr = 0;
 
 	/////////////////////////////////////////////////////////////////////
-	// 센서 정/역 방향 ZSU 0채널
+	// 0 센서 정/역 방향 ZSU 0채널
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH0_USE;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_0;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
 	UserMenuSerialNm++;
 	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 1 센서 정/역 방향 ZSU 1채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_1;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 2 센서 정/역 방향 ZSU 2채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_2;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 3 센서 정/역 방향 ZSU 3채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_3;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 4 센서 정/역 방향 ZSU 4채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_4;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 5 센서 정/역 방향 ZSU 5채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_5;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 6 센서 정/역 방향 ZSU 6채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_6;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 7 센서 정/역 방향 ZSU 7채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_7;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// 8 센서 정/역 방향 main 센서
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_8;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
 
 
     return (0);

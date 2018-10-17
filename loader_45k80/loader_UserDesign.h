@@ -48,6 +48,16 @@ const uint8_t GroupLineMessage[][17] = {
     "zsu :ch5 e/d    ", //15
     "zsu :ch6 e/d    ", //16
     "zsu :ch7 e/d    ", //16
+	// 센서 정/역
+	"zsu :ch0 R/F    ", //16
+	"zsu :ch1 R/F    ", //16
+	"zsu :ch2 R/F    ", //16
+	"zsu :ch3 R/F    ", //16
+	"zsu :ch4 R/F    ", //16
+	"zsu :ch5 R/F    ", //16
+	"zsu :ch6 R/F    ", //16
+	"zsu :ch7 R/F    ", //16
+	"main:--- R/F    ", //16
 
     "etc :currentType", //16
 
@@ -93,6 +103,11 @@ const uint8_t ch_use_sel_list[][17] = {
     "Not use         ", //0
     "Use             ", //1
 };
+const uint8_t ch_reverse_sel_list[][17] = {
+    "Reverse         ", //0
+    "Forward         ", //1
+};
+
 
 const uint8_t currentTypeList[][17] = {
     "A_type1         ", //0
@@ -231,6 +246,9 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_reverse_6 			cF_ByteData(F_REVERSE_6)
 #define cF_reverse_7 			cF_ByteData(F_REVERSE_7)
 #define cF_reverse_8 			cF_ByteData(F_REVERSE_8)
+
+
+
 // 보정
 #define cF_ch0_correctT 			cF_ByteData(F_SCR_CORRECT_S_MAIN)
 #define cF_ch0_correctV 			cF_ByteData(F_SCR_CORRECT_V)
