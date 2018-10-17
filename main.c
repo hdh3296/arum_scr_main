@@ -1360,6 +1360,21 @@ void filterGoodValue(void) {
 }
 
 
+uint16_t getMaxValue(void) {
+	uint16_t max = 0;
+	uint16_t i;
+	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
+		if (allSensorFinal_mV[i][0] == S_GOOD) {
+			if (allSensorFinal_mV[i][1] > max) {
+				max = allSensorFinal_mV[i][1];
+			}
+		}
+	}
+
+	return max;
+}
+
+volatile uint16_t sensorMax;
 uint16_t getFinalMaxSensor(void) {
 	uint16_t ch;
 	// 모든(총 9개) 센서 입력값을 버퍼에 저장한다.
@@ -1370,7 +1385,7 @@ uint16_t getFinalMaxSensor(void) {
 
 	// 이 중에 최대 값을 리턴한다.
 	filterGoodValue();
-//	chkMaxValue();
+	sensorMax = getMaxValue();
 
 }
 
