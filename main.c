@@ -763,79 +763,22 @@ uint16_t decreaseDuty(uint16_t duty, uint8_t ch) {
 
 
 uint16_t correctedFinalGoalAnalogVolt_mv(uint8_t ch) {
-	uint16_t normal_set_analog = heater[ch].goalSetVoltage_V * 10;
-	uint16_t correctSet = heater[ch].userCorrVoltSet;
-	uint16_t correctValue_analog_mv, result;
-	correctValue_analog_mv = (correctSet % 100) * 10;
-
-	if (correctSet >= SIGN_POSIT_V_OR_A) {
-		// + 기호
-		if (normal_set_analog > correctValue_analog_mv) {
-			result = normal_set_analog - correctValue_analog_mv;
-			return result;
-		}
-	} else {
-		// - 기호
-			result = normal_set_analog + correctValue_analog_mv;
-			return result;
-	}
 	return 0;
 }
 
 uint16_t correctedFinalGoalAnalogAmp_mv(uint8_t ch) {
-	uint16_t normal_set_analog = heater[ch].goalSetAmp * 10;
-	uint16_t correctSet = heater[ch].userCorrAmpSet;
-	uint16_t correctValue_analog_mv, result;
-	correctValue_analog_mv = (correctSet % 100) * 10;
 
-	if (correctSet >= SIGN_POSIT_V_OR_A) {
-		// + 기호
-		if (normal_set_analog > correctValue_analog_mv) {
-			result = normal_set_analog - correctValue_analog_mv;
-			return result;
-		}
-	} else {
-		// - 기호
-			result = normal_set_analog + correctValue_analog_mv;
-			return result;
-	}
 	return 0;
 }
 
 
 
 uint16_t heater_getAnalogGoalSetVoltage_mv(uint8_t ch) {
-	uint16_t nomal;
-    switch (ch) {
-        case 0:
-			return correctedFinalGoalAnalogVolt_mv(0);
-        case 1:
-            return correctedFinalGoalAnalogVolt_mv(1);
-        case 2:
-            return correctedFinalGoalAnalogVolt_mv(2);
-        case 3:
-            return correctedFinalGoalAnalogVolt_mv(3);
-        case 4:
-            return correctedFinalGoalAnalogVolt_mv(4);
-    }
     return 0;
-
 }
 
 uint16_t heater_getAnalogGoalAmp_mv(uint8_t ch) {
 
-    switch (ch) {
-        case 0:
-            return correctedFinalGoalAnalogAmp_mv(0);
-        case 1:
-            return correctedFinalGoalAnalogAmp_mv(1);
-        case 2:
-            return correctedFinalGoalAnalogAmp_mv(2);
-        case 3:
-            return correctedFinalGoalAnalogAmp_mv(3);
-        case 4:
-            return correctedFinalGoalAnalogAmp_mv(4);
-    }
     return 0;
 }
 
@@ -1392,7 +1335,7 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 
 
 bool isOverVoltage(void) {
-	uint16_t goal = (scr.goalSetVoltage_V * 40); // micom 목표 전압 100v -> 4000mV
+	uint16_t goal = (scr.goalSetVoltage_V * 4); // micom 목표 전압 100v -> 4000mV
 	uint16_t now = scr.nowMicomAdVoltage; // AN3, micom 현재 전압
 
     if (now > goal) {
@@ -1408,29 +1351,8 @@ bool isOverCurrent(void) {
     }   return 0;
 }
 
-uint8_t contMode;
-void setContMode(void) {
-	switch (contMode) {
-		case CONT_VOLT:
-			if (isOverCurrent()) {
-				contMode = CONT_CURR;
-			}
-			return;
-		case CONT_CURR:
-			if (isOverVoltage()) {
-				contMode = CONT_VOLT;
-			}
-			return;
-	}
-}
-
-
 // 전압 제어
 void compareGoalNowVoltage(void) {
-	uint16_t goal = (scr.goalSetVoltage_V * 40); // micom 목표 전압 100v -> 4000mV
-	uint16_t now = scr.nowMicomAdVoltage; // AN3, micom 현재 전압
-	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
-	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
 	if (scr.bNowMicomAdVoltage_updted) {
 		scr.bNowMicomAdVoltage_updted = FALSE;
 
@@ -1441,10 +1363,6 @@ void compareGoalNowVoltage(void) {
 }
 // 전류 제어
 void compareGoalNowCurrent(void) {
-	uint16_t goal = (scr.goalSetAmp * 4); // micom 목표 전압 (50A : 2500mV 기준)
-	uint16_t now = scr.nowMicomAdCurrent; // AN3, micom 현재 전압
-	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
-	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
 	if (scr.bNowMicomAdCurrent_updted) {
 		scr.bNowMicomAdCurrent_updted = FALSE;
 
@@ -1474,19 +1392,6 @@ void compareGoalNowSensor(void) {
 				gateRSTDoValue -= 1;
 			}
 		}
-	}
-}
-
-// ##
-void controlGataOnOffByVoltageAndCurrent(void) {
-	setContMode();
-	switch (contMode) {
-		case CONT_VOLT: // 전압 제어 해라 !
-			compareGoalNowVoltage();
-			return;
-		case CONT_CURR: // 전류 제어 해라 !
-			compareGoalNowCurrent();
-			return;
 	}
 }
 

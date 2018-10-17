@@ -13,9 +13,9 @@ Menu_Status MenuStatus[MAX_MENU];
 /////////////////////////////////////////////////////
 #define DFL_SETUP 0x55						//default val
 #define DFL_VERSION 0						//version
-#define DFL_SCR_GOAL_VOLTAGE 10 // V
-#define DFL_SCR_GOAL_CURRENT 1 // 7A
-#define DFL_SCR_GOAL_SENSOR 2500 // V
+#define DFL_SCR_GOAL_VOLTAGE 50 // V
+#define DFL_SCR_GOAL_CURRENT 50 // 5.0A
+#define DFL_SCR_GOAL_SENSOR 1000 // 1000mV 전위
 
 
 #define DFL_CH0_TEMP_LOW 27	 //11234	  //2800
@@ -191,9 +191,9 @@ uint16_t G2_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     //sub group6 - ch0 목표 전압 -> 목표 전압 설정
     /////////////////////////////////////////////////////////////////////
-    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 100; // @주의 : 최대 100V
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 999; // @주의 : 최대 100V
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_VOLTAGE;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
