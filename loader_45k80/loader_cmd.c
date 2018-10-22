@@ -368,6 +368,8 @@ void display_unit(void) {
 */
 	switch	(ThisSelMenuNm){
 		case	MENU_CTa_0:
+			// 여하튼 해당 조건이면
+			// 뭔가 기호여부를 판단해주는 것을 넣어주면 좋겠다.
             ldr_sigh_T(); // 온도
 			break;
         case    MENU_CVb_0:
@@ -460,7 +462,7 @@ void Integer_Digit(void) {
         Ten_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
     }
 
-	display_unit(); // @ㅁ
+	display_unit(); // @보정 ★
 
     DigitStringMessage();
     BitOnOffMessage((uint8_t) ThisDigitData);
@@ -668,6 +670,7 @@ uint16_t ShiftRightCur(void) {
     return (0);
 }
 
+// @보정 #1023
 void ldr_correctT_plus(uint8_t p) {
 	uint16_t max = CurMenuStatus.M_EditDigitMaxValue; // 25
 	uint16_t min = CurMenuStatus.M_EditDigitMinValue; // 10
@@ -906,7 +909,9 @@ bool isCorrVoltAndAmp(uint16_t now_menu) {
 	return 0;
 }
 
-uint16_t CusorDataUp(void) {
+
+uint16_t CusorDataUp(void) { // @보정 #1023
+// up key를 누르면
     uint16_t i, dp;
 	uint8_t pos;
 
@@ -915,9 +920,9 @@ uint16_t CusorDataUp(void) {
 	pos = 0;
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
-		if (isCorrTempMenu(ThisSelMenuNm)) { // 온도 보정
+		if (isCorrTempMenu(ThisSelMenuNm)) { // 온도 @보정
 			ldr_correctT_plus(pos);
-		} else if (isCorrVoltAndAmp(ThisSelMenuNm)) { // 전압, 전류 보정
+		} else if (isCorrVoltAndAmp(ThisSelMenuNm)) { // 전압, 전류 @보정
 			ldr_correctV_plus(pos);
 		} else { // 일반
 			ldr_normal_plus(pos);
@@ -1005,6 +1010,7 @@ void ldr_nomal_minus(uint8_t p) {
 
 
 uint16_t CusorDataDn(void) {
+// down key 눌렀을 때 ! => 마이너스
     uint16_t i, dp;
 	uint8_t pos;
 
@@ -1014,11 +1020,11 @@ uint16_t CusorDataDn(void) {
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
 
-		if (isCorrTempMenu(ThisSelMenuNm)) {
+		if (isCorrTempMenu(ThisSelMenuNm)) {	// @보정
 			ldr_correctT_minus(pos);
-		} else if (isCorrVoltAndAmp(ThisSelMenuNm))  {
+		} else if (isCorrVoltAndAmp(ThisSelMenuNm))  { // @보정
 			ldr_correctV_minus(pos);
-		} else {
+		} else { // 일반
 			ldr_nomal_minus(pos);
 		}
 
