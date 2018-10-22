@@ -831,42 +831,31 @@ void ldr_correctV_minus(uint8_t p) {
 	}
 }
 
+unsigned long long my_pow(unsigned long long base, int exp) {
+	unsigned long long res = 1;
+	while (exp) {
+		if (exp & 1) res *= base;
+		exp >>= 1;
+		base *= base;
+	} return res;
+}
 
+void changeNumberPlusMethod(uint16_t a) {
+	uint16_t i = my_pow(10, a); //
+	uint16_t j = i / 10; //
+	uint16_t k = 9 * j; //
+
+	if ( (ThisDigitData % i / j) == 9 ) {
+	// 9 라면?
+		// 0으로 만들어야 한다.
+		ThisDigitData = ThisDigitData - k;
+		return;
+	}
+	ThisDigitData = ThisDigitData + j;
+}
 
 void ldr_normal_plus(uint8_t p) {
-	switch (p) {
-		case 1:
-			ThisDigitData++;
-			break;
-		case 2:
-			ThisDigitData = ThisDigitData + 10;
-			break;
-		case 3:
-			ThisDigitData = ThisDigitData + 100;
-			break;
-		case 4:
-			ThisDigitData = ThisDigitData + 1000;
-			break;
-		case 5:
-			ThisDigitData = ThisDigitData + 10000;
-			break;
-		case 6:
-			ThisDigitData = ThisDigitData + 100000;
-			break;
-		case 7:
-			ThisDigitData = ThisDigitData + 1000000;
-			break;
-		case 8:
-			ThisDigitData = ThisDigitData + 10000000;
-			break;
-		case 9:
-			ThisDigitData = ThisDigitData + 100000000;
-			break;
-		case 10:
-			ThisDigitData = ThisDigitData + 1000000000;
-			break;
-	}
-
+	changeNumberPlusMethod(p);
 }
 
 bool isCorrTempMenu(uint16_t now_menu) {
@@ -963,49 +952,21 @@ uint16_t CusorDataUp(void) { // @보정 #1023
     return (0);
 }
 
-void ldr_nomal_minus(uint8_t p) {
-	switch (p) {
-		case 1:
-			ThisDigitData--;
-			break;
+void changeNumberMinusMethod(uint16_t a) {
+	uint16_t i = my_pow(10, a); //
+	uint16_t j = i / 10; //
+	uint16_t k = 9 * j; //
 
-		case 2:
-			ThisDigitData = ThisDigitData - 10;
-			break;
-
-		case 3:
-			ThisDigitData = ThisDigitData - 100;
-			break;
-
-		case 4:
-			ThisDigitData = ThisDigitData - 1000;
-			break;
-
-		case 5:
-			ThisDigitData = ThisDigitData - 10000;
-			break;
-
-		case 6:
-			ThisDigitData = ThisDigitData - 100000;
-			break;
-
-		case 7:
-			ThisDigitData = ThisDigitData - 1000000;
-			break;
-
-		case 8:
-			ThisDigitData = ThisDigitData - 10000000;
-			break;
-
-		case 9:
-			ThisDigitData = ThisDigitData - 100000000;
-			break;
-
-		case 10:
-			ThisDigitData = ThisDigitData - 1000000000;
-			break;
+	if ( (ThisDigitData % i / j) == 0 ) {
+	// 0 이라면?
+		// 9 으로 만들어야 한다.
+		ThisDigitData = ThisDigitData + k;
+		return;
 	}
-
+	ThisDigitData = ThisDigitData - j;
+}
+void ldr_nomal_minus(uint8_t p) {
+	changeNumberMinusMethod(p);
 }
 
 
