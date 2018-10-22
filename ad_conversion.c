@@ -89,7 +89,7 @@ bool is_update_AD() {
         SumCnt++;
 
 
-		sum_count = 500;
+		sum_count = 1000;
 
 
         if (SumCnt >= sum_count) {

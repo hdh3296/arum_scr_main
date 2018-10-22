@@ -15,7 +15,7 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_VERSION 0						//version
 #define DFL_SCR_GOAL_VOLTAGE 50 // V
 #define DFL_SCR_GOAL_CURRENT 50 // 5.0A
-#define DFL_SCR_GOAL_SENSOR 1000 // 1000mV 전위
+#define DFL_SCR_GOAL_SENSOR 2700 // 1000mV 전위
 // 센서 정/역 디폴트
 #define DFL_REVERSE_0 1
 #define DFL_REVERSE_1 1

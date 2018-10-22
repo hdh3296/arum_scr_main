@@ -1425,11 +1425,11 @@ void compareGoalNowSensor(void) {
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
-		if (now < (goal-50)) {
+		if (now < (goal-0)) {
 			if (gateRSTDoValue < MAX_GATE) {
 				gateRSTDoValue += 1;
 			}
-		} else if (now > (goal+50)) {
+		} else if (now > (goal+0)) {
 			// 전류를 많이 보내 줘야 한다.
 			if (gateRSTDoValue > MIN_GATE) {
 				gateRSTDoValue -= 1;
