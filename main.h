@@ -107,7 +107,7 @@ typedef struct {
 
 	uint16_t nowMicomAdVoltage;
 	uint16_t nowMicomAdCurrent;
-	uint16_t nowMicomAdSensor;
+	uint16_t nowMicomMainAdSensor;
 	uint16_t nowMicomAdVolume;
 	bool bNowMicomAdVoltage_updted;
 	bool bNowMicomAdCurrent_updted;

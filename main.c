@@ -687,7 +687,7 @@ void scr_micom_setNowInVoltage_mV(uint8_t ch) {
 		switch (ch) {
 			case 0:
 				// AN0 센서
-				scr.nowMicomAdSensor = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.nowMicomMainAdSensor = adc_updated_analog_mV[ch]; // 현재 아날로그 값
 				scr.bNowMicomAdSensor_updted = TRUE;
 				break;
 			case 1:
@@ -1234,32 +1234,32 @@ void offRSTGATEWhenOn(void) {
 }
 
 // ## 정/역
-uint16_t allSensorFinal_mV[ZSU_CH_MAX+1][2];
-void reverseZSU8ch(uint16_t ch) {
+uint16_t finalSensor_mV_old[ZSU_CH_MAX+1][2];
+void reverseZSU8ch_old(uint16_t ch) {
 
 	if (zsu_ch0_ch7_analog[ch] >= 2500) {
 		// +500
-		allSensorFinal_mV[ch][0] = S_PLUS; // +
-		allSensorFinal_mV[ch][1] = (zsu_ch0_ch7_analog[ch] - 2500); // 500
+		finalSensor_mV_old[ch][0] = S_PLUS; // +
+		finalSensor_mV_old[ch][1] = (zsu_ch0_ch7_analog[ch] - 2500); // 500
 		return;
 	}
 
 	// -500
-	allSensorFinal_mV[ch][0] = S_MINUS; // -
-	allSensorFinal_mV[ch][1] = (2500 - zsu_ch0_ch7_analog[ch]); // 500
+	finalSensor_mV_old[ch][0] = S_MINUS; // -
+	finalSensor_mV_old[ch][1] = (2500 - zsu_ch0_ch7_analog[ch]); // 500
 }
-void reverseMainSensor(uint16_t sensor) {
+void reverseMainSensor_old(uint16_t sensor) {
 
 	if (sensor >= 2500) {
 		// +500
-		allSensorFinal_mV[8][0] = S_PLUS; // +
-		allSensorFinal_mV[8][1] = (sensor - 2500); // 500
+		finalSensor_mV_old[8][0] = S_PLUS; // +
+		finalSensor_mV_old[8][1] = (sensor - 2500); // 500
 		return;
 	}
 
 	// -500
-	allSensorFinal_mV[8][0] = S_MINUS; // -
-	allSensorFinal_mV[8][1] = (2500 - sensor); // 500
+	finalSensor_mV_old[8][0] = S_MINUS; // -
+	finalSensor_mV_old[8][1] = (2500 - sensor); // 500
 }
 
 bool chkSetReverse(uint16_t i) { // ##
@@ -1289,47 +1289,64 @@ bool chkSetReverse(uint16_t i) { // ##
 	return 1; // 가정, 정(+)
 }
 
-
-void filterGoodValue(void) {
+void filterGoodValue_old(void) { // #1023 알람 테스트 함수때 필요하다.
+// 메뉴 설정값과 현재 입력 값의 기호가 같은지 체크 한다.
+// 이것은 알람 테스트 기능에서 필요한 함수이다.
 	uint16_t i;
 	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
-		if (allSensorFinal_mV[i][0] == chkSetReverse(i)) {
-			// 정 방향 이면, 그대로
-			allSensorFinal_mV[i][0] = S_GOOD;
+		if (finalSensor_mV_old[i][0] == chkSetReverse(i)) {
+			// 메뉴 설정 값과 입력 값이 같다면,
+			finalSensor_mV_old[i][0] = S_GOOD;
 		} else {
-			allSensorFinal_mV[i][0] = S_ERROR;
+			finalSensor_mV_old[i][0] = S_ERROR;
 		}
 	}
 }
-
-
-uint16_t getMaxValue(void) {
+uint16_t getMaxValue_old(void) {
 	uint16_t max = 0;
 	uint16_t i;
 	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
-		if (allSensorFinal_mV[i][0] == S_GOOD) {
-			if (allSensorFinal_mV[i][1] > max) {
-				max = allSensorFinal_mV[i][1];
+		if (finalSensor_mV_old[i][0] == S_GOOD) {
+			if (finalSensor_mV_old[i][1] > max) {
+				max = finalSensor_mV_old[i][1];
 			}
 		}
 	}
-
 	return max;
 }
 
+
+
+
+// #1023 추후 센서 알람 테스트 시에 참고 함수 @중요
 volatile uint16_t sensorMax;
-uint16_t getFinalMaxSensor(void) {
+uint16_t getMicomFinalMaxSensor_old(void) {
 	uint16_t ch;
 	// 모든(총 9개) 센서 입력값을 버퍼에 저장한다.
 	for (ch = 0; ch < ZSU_CH_MAX; ch++) {
-		reverseZSU8ch(ch);
+		reverseZSU8ch_old(ch); // 2500 기준으로 각 채널 값에 +/- 기호 값을 저장하였다.
 	}
-	reverseMainSensor(scr.nowMicomAdSensor);
+	reverseMainSensor_old(scr.nowMicomMainAdSensor); // 2500 기준으로 메인 채널 값에 +/- 기호 값을 저장하였다.
 
 	// 이 중에 최대 값을 리턴한다.
-	filterGoodValue(); // ##
-	sensorMax = getMaxValue();
+	filterGoodValue_old(); // ##
+	sensorMax = getMaxValue_old();
 	return sensorMax;
+}
+// #1022 그냥 현재 센서 입력 값 중에 가장 큰 값을 마이컴단 값으로 가져오면 된다.
+uint16_t getMicomFinalMaxSensor(uint16_t now_main) {
+	uint16_t max = now_main;
+	uint16_t i;
+	// 총 9개 센서 현재 입력값 중에 최대 값을 얻기 위해서
+	// 하지만 기본적으로 메인의 값을 기본 값으로 가져가므로
+	// zsu 값 8개에 대해서 만 루프 돌리면 된다.
+	for (i = 0; i < ZSU_CH_MAX; i++) {
+		// 가장 큰 값을 뽑아야 한다.
+		if (zsu_ch0_ch7_analog[i] > max) {
+			max = zsu_ch0_ch7_analog[i];
+		}
+	}
+	return max;
 }
 
 
@@ -1386,16 +1403,25 @@ void compareGoalNowCurrent(void) {
 		}
 	}
 }
-// 센서
+
+uint16_t getMicomGoalSensorVal(uint16_t val) {
+	return val;
+}
+
+
 void compareGoalNowSensor(void) {
-	uint16_t goal = scr.goalSetSensor; // micom단, 목표 센서 mV
+// 센서 제어
+	// 마이컴 단에서는 그냥 2500mv 라는 기준치 없다.
+	uint16_t goal; // micom단, 목표 센서 mV
+		// 로더에 설정된 목표 값은 +/- 값 이므로, 마이컴 단 값으로 변환 시켜줘야 한다.
 	uint16_t now; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
 	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
 	if (scr.bNowMicomAdSensor_updted) {
 		scr.bNowMicomAdSensor_updted = FALSE;
 
-		now = getFinalMaxSensor();
+		goal = getMicomGoalSensorVal(scr.goalSetSensor);
+		now = getMicomFinalMaxSensor(scr.nowMicomMainAdSensor);
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
@@ -1413,7 +1439,7 @@ void compareGoalNowSensor(void) {
 }
 
 void controlGateTotal(void) {
-
+// 전압, 전류, 센서 제어
 	if (isOverVoltage()) {
 		compareGoalNowVoltage();
 		return;
@@ -1422,7 +1448,7 @@ void controlGateTotal(void) {
 		return;
 	}
 
-	// 정상 적이면 그대로 센서에 의해서 제어
+	// ★ 센서 제어
 	compareGoalNowSensor();
 }
 
@@ -1530,41 +1556,7 @@ void main(void) {
         CLRWDT();
 		oscillator_fail_loop();
 
-// ========= 이 기능은 단순히 히터 on, off 기능이다. ========
-// 단순히 온도 상한선에 따라서 on, off 해주는 것이 가장 중요한 것이다.
-
-// 히터 on, off 기능
-//
-//        for (ch = 0; ch < MAX_CH; ch++) {
-//            heater_setUseNouse(ch);
-//            heater_setOnOffNone(ch);
-//
-//			heater_setTempError(ch);
-//
-//			heater[ch].db_errorCode = heater_chkEtcError(ch);
-//            heater[ch].anlog_correctedVoltage_mV = heater[ch].adc_nowAnalog_mV; // 현재 전압
-//            heater[ch].anlog_correctedAmp_mV = heater[ch].anlog_nowAmp_mV; // 현재 전류
-//			// 전압/전류 보정된 최종 실제(유저) 데이터 저장
-//			heater[ch].userNowInVoltage_V = heater_getRealVoltage(ch);
-//			heater[ch].userNowInAmp_100mA = heater_getRealAmp(ch);
-//
-//
-//            heater[ch].db_heatingOnState = heater_getOnState(heater[ch].db_finaldutycycle);
-//            heater[ch].analog_goalSetVoltage_mV = heater_getAnalogGoalSetVoltage_mv(ch);
-//            heater[ch].analog_goalSetCurrent_mV = heater_getAnalogGoalAmp_mv(ch);
-//
-//
-//			// 셋팅 온도 보정된 아날로그 값 데이터 베이스 저장
-//			heater[ch].db_setOnTemp_mV = temp_getAnalogTo(getSetTempLow(ch), ch);
-//			heater[ch].db_setOffTemp_mV = temp_getAnalogTo(getSetTempHigh(ch), ch);
-//			// 보정값 database에 저장하기
-//			heater[ch].corrTempSet = getSetCorrT(ch);
-//			heater[ch].userCorrVoltSet = getSetCorrV(ch);
-//			heater[ch].userCorrAmpSet  = getSetCorrA(ch);
-//
-//        }
-// --- system loop ----------------------------------
-// adc
+// ad conversion
 // * 10개 채널의 입력 mV 값 읽어 오는게 목적이다.
         adc_loop();
 
@@ -1594,8 +1586,7 @@ void main(void) {
 		scr.goalSetAmp = iF_scr_goalCurrent;
 		scr.goalSetSensor = iF_scr_goalSensor;
 
-		// 메인 보드의 총 4개의 아날로그 채널 값 획득하기 (저장하기)
-		// 전압/전류/센서/볼륨
+		// 메인 보드의 총 4개(전압/전류/센서/볼륨)의 아날로그 채널 값 획득하기 (저장하기)
 		for (ch = 0; ch < ADC_CH_MAX; ch++) {
 			scr_micom_setNowInVoltage_mV(ch);
 		}
@@ -1613,8 +1604,6 @@ void main(void) {
 			// PWM 처럼 게이트 제어하는 함수이다.
 			controlGateTotal();
 		}
-
-
 
 		// ZSU use/not_use 셋팅 값 저장하기
 		bufZSU_use_not[0] = cF_ch0_use;
