@@ -49,15 +49,19 @@ const uint8_t GroupLineMessage[][17] = {
     "zsu :ch6 e/d    ", //16
     "zsu :ch7 e/d    ", //16
 	// 센서 정/역
-	"zsu :ch0 R/F    ", //16
-	"zsu :ch1 R/F    ", //16
-	"zsu :ch2 R/F    ", //16
-	"zsu :ch3 R/F    ", //16
-	"zsu :ch4 R/F    ", //16
-	"zsu :ch5 R/F    ", //16
-	"zsu :ch6 R/F    ", //16
-	"zsu :ch7 R/F    ", //16
-	"main:--- R/F    ", //16
+	// 정방향 센서 : 징크 Zinc
+	//				- 양전하   수위 검출 용도
+	// 역방향 센서 : CUCU/SO4
+	//				- 음전하 수위 검출 용도
+	"zsu:ch0 REF TYPE", //16
+	"zsu:ch1 REF TYPE", //16
+	"zsu:ch2 REF TYPE", //16
+	"zsu:ch3 REF TYPE", //16
+	"zsu:ch4 REF TYPE", //16
+	"zsu:ch5 REF TYPE", //16
+	"zsu:ch6 REF TYPE", //16
+	"zsu:ch7 REF TYPE", //16
+	"main:   REF TYPE", //16
 
     "etc :currentType", //16
 
@@ -104,8 +108,8 @@ const uint8_t ch_use_sel_list[][17] = {
     "Use             ", //1
 };
 const uint8_t ch_reverse_sel_list[][17] = {
-    "Reverse         ", //0
-    "Forward         ", //1
+    "Zinc            ", //0
+    "CUCU/SO4        ", //1
 };
 
 
