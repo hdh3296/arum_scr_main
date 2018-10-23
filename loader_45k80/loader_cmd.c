@@ -393,9 +393,6 @@ void display_unit(void) {
 }
 
 void Integer_Digit_1023T(uint32_t ThisDigitData) {
-
-
-
 	// 여기에서 ThisDigitData 값을 로더에 표시해준다.
     if (CurMenuStatus.M_EditDigitMaxValue < 10) {
         CurMenuStatus.M_EditDigitShiftCnt = 1;
@@ -437,13 +434,11 @@ void Integer_Digit_1023T(uint32_t ThisDigitData) {
 void Integer_Digit(void) {
 	uint32_t original_num;
 
-
 	if (ThisSelMenuNm == 4) { // #1023 @임시 삭제해야 한다. !!!
 		original_num = getSignaNumber(ThisDigitData);
 		Integer_Digit_1023T(original_num);
 		return;
 	}
-
 
     if (ThisDigitData > CurMenuStatus.M_EditDigitMaxValue) {
         ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
@@ -869,7 +864,7 @@ void changeNumberPlusMethod(uint16_t a) {
 	if ( (ThisDigitData % i / j) == 9 ) {
 	// 9 라면?
 		// 0으로 만들어야 한다.
-		ThisDigitData = ThisDigitData - k;
+		//ThisDigitData = ThisDigitData - k;
 		return;
 	}
 	ThisDigitData = ThisDigitData + j;
@@ -923,7 +918,7 @@ bool isCorrVoltAndAmp(uint16_t now_menu) {
 // plus 키를 눌렀을 때
 // 여기서는 그냥 더해 주면 된다.
 // 최대 값될때만 최대값 한 번 유지 해주면 된다.
-void yang(uint8_t p) { // +
+void yang_whenUp(uint8_t p) { // +
 	uint16_t max = (CurMenuStatus.M_EditDigitMaxValue - 10000); // 12500 - 10000 = 2500
 	uint16_t i;
 	switch (p) {
@@ -942,7 +937,7 @@ void yang(uint8_t p) { // +
 			break;
 	}
 }
-void um(uint8_t p) { // -
+void um_whenUp(uint8_t p) { // -
 	uint16_t max = CurMenuStatus.M_EditDigitMinValue; // 7500
 	uint16_t i;
 	switch (p) {
@@ -964,14 +959,68 @@ void um(uint8_t p) { // -
 			break;
 	}
 }
-void signPlusTest(uint8_t p) {
+void signUpTest(uint8_t p) {
 
 	if (ThisDigitData >= 10000) {
-		yang(p);
+		yang_whenUp(p);
 	} else {
-		um(p);
+		um_whenUp(p);
 	}
+}
+////////////////////
+// down key 눌렀을 때
+void yang_whenDn(uint8_t p) { // +
+	uint16_t max = (CurMenuStatus.M_EditDigitMaxValue - 10000); // 12500 - 10000 = 2500
+	uint16_t i, m;
 
+	changeNumberMinusMethod(p);
+	switch (p) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+
+			//
+			if ( ThisDigitData < 10000 ) {
+				ThisDigitData = 10000;
+			}
+			if (ThisDigitData > CurMenuStatus.M_EditDigitMaxValue)
+				ThisDigitData = 10000;
+			break;
+		case 5: //
+			ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
+			break;
+	}
+}
+void um_whenDn(uint8_t p) { // -
+	uint16_t max = CurMenuStatus.M_EditDigitMinValue; // 7500
+	uint16_t i;
+	switch (p) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			changeNumberPlusMethod(p);
+
+			i = (ThisDigitData % 10000);
+			if ( i >= 10000 ) {
+				ThisDigitData = 9999;
+			}
+			break;
+		case 5: // sign
+			ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
+			break;
+	}
+}
+// down key
+void signDownTest(uint8_t p) {
+	if (ThisDigitData >= 10000) {
+		// 양의 방향이냐
+		yang_whenDn(p);
+	} else {
+		// 음의 방향이냐에 따라서 틀리다. !!!
+		um_whenDn(p);
+	}
 }
 
 uint32_t getSignaNumber(uint32_t oriNum) {
@@ -993,7 +1042,7 @@ uint16_t CusorDataUp(void) { // @보정 #1023
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
 		if (ThisSelMenuNm == 4) { // goal sensor !
-			signPlusTest(pos);
+			signUpTest(pos);
 		} else if (isCorrTempMenu(ThisSelMenuNm)) { // 온도 @보정
 			ldr_correctT_plus(pos);
 		} else if (isCorrVoltAndAmp(ThisSelMenuNm)) { // 전압, 전류 @보정
@@ -1046,7 +1095,7 @@ void changeNumberMinusMethod(uint16_t a) {
 	if ( (ThisDigitData % i / j) == 0 ) {
 	// 0 이라면?
 		// 9 으로 만들어야 한다.
-		ThisDigitData = ThisDigitData + k;
+		//ThisDigitData = ThisDigitData + k;
 		return;
 	}
 	ThisDigitData = ThisDigitData - j;
@@ -1067,7 +1116,9 @@ uint16_t CusorDataDn(void) {
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
 
-		if (isCorrTempMenu(ThisSelMenuNm)) {	// @보정
+		if (ThisSelMenuNm == 4) { // goal sensor !
+			signDownTest(pos);
+		} else if (isCorrTempMenu(ThisSelMenuNm)) {	// @보정
 			ldr_correctT_minus(pos);
 		} else if (isCorrVoltAndAmp(ThisSelMenuNm))  { // @보정
 			ldr_correctV_minus(pos);
