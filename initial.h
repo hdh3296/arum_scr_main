@@ -16,7 +16,7 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define MSEC_L_1 214 // 213,4 = 46us
 
 
-/* ======== 포트 ============  */
+/* ======== 마이컴 MCU IO 포트 정의 ============  */
 #define pin_RUN_LED         RC3
 #define pin_RUN_LED_tris    TRISC3
 
@@ -25,29 +25,27 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_TX 				RE7		// tx
 #define pin_TX_tris 		TRISE7
 
+#define pin_AN0_ZINC          RA0
+#define pin_AN0_ZINC_tris     TRISA0
+#define pin_AN1_VR_SET        RA1
+#define pin_AN1_VR_SET_tris   TRISA1
+#define pin_AN2_CURR          RA2
+#define pin_AN2_CURR_tris     TRISA2
+#define pin_AN3_VOLT          RA3
+#define pin_AN3_VOLT_tris     TRISA3
 
-// PCR main 적용 포트 셋팅
-#define pin_VRMS_0          RA0
-#define pin_VRMS_0_tris     TRISA0
-#define pin_VRMS_1          RA1
-#define pin_VRMS_1_tris     TRISA1
-#define pin_VRMS_2          RA2
-#define pin_VRMS_2_tris     TRISA2
-#define pin_VRMS_3          RA3
-#define pin_VRMS_3_tris     TRISA3
-#define pin_VRMS_4          RA5
-#define pin_VRMS_4_tris     TRISA5
+#define pin_34_X          RA5 // xx
+#define pin_34_X_tris     TRISA5
 
-#define pin_ARMS_0          RE0
-#define pin_ARMS_0_tris     TRISE0
-#define pin_ARMS_1          RE1
-#define pin_ARMS_1_tris     TRISE1
-#define pin_ARMS_2          RE2
-#define pin_ARMS_2_tris     TRISE2
+#define pin_37_X          RE0
+#define pin_37_X_tris     TRISE0
+#define pin_38_X          RE1
+#define pin_38_X_tris     TRISE1
+#define pin_39_X          RE2
+#define pin_39_X_tris     TRISE2
 
-
-#define pin_ARMS_4          RB4
-#define pin_ARMS_4_tris     TRISB4
+#define pin_20_X          RB4
+#define pin_20_X_tris     TRISB4
 
 #define pin_CAN_RX 			RE4
 #define pin_CAN_RX_tris 	TRISE4
@@ -69,11 +67,15 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_GATE_T_PH           RC2 	// SSR_0
 #define pin_GATE_T_PH_tris    	TRISC2
 
-#define pin_AUTO		RD0
-#define pin_AUTO_tris	TRISD0
+#define pin_AUTO			RD0
+#define pin_AUTO_tris		TRISD0
+#define pin_KEY_POWER		RD1
+#define pin_KEY_POWER_tris  TRISD1
+#define pin_KEY_ALARM		RD2
+#define pin_KEY_ALARM_tris	TRISD2
+#define pin_50_60HZ			RD3
+#define pin_50_60HZ_tris	TRISD3
 
-#define EN_485 0
-#define DIS_485 1
 
 extern void initPort(void);
 extern void initTimer0(void);

@@ -12,25 +12,25 @@ pin_CAN_RX 		= 0;
 }
 
 void initAnalogPin(void) {
-    pin_VRMS_0_tris = 1;
-    pin_VRMS_0          = 0;
-    pin_VRMS_1_tris = 1;
-    pin_VRMS_1          = 0;
-    pin_VRMS_2_tris = 1;
-    pin_VRMS_2          = 0;
-    pin_VRMS_3_tris = 1;
-    pin_VRMS_3          = 0;
-    pin_VRMS_4_tris = 1;
-    pin_VRMS_4          = 0;
+    pin_AN0_ZINC_tris = 1;
+    pin_AN0_ZINC          = 0;
+    pin_AN1_VR_SET_tris = 1;
+    pin_AN1_VR_SET          = 0;
+    pin_AN2_CURR_tris = 1;
+    pin_AN2_CURR          = 0;
+    pin_AN3_VOLT_tris = 1;
+    pin_AN3_VOLT          = 0;
+    pin_34_X_tris = 1;
+    pin_34_X          = 0;
 
-    pin_ARMS_0_tris = 1;
-    pin_ARMS_0          = 0;
-    pin_ARMS_1_tris = 1;
-    pin_ARMS_1          = 0;
-    pin_ARMS_2_tris = 1;
-    pin_ARMS_2          = 0;
-    pin_ARMS_4_tris = 1;
-    pin_ARMS_4          = 0;
+    pin_37_X_tris = 1;
+    pin_37_X          = 0;
+    pin_38_X_tris = 1;
+    pin_38_X          = 0;
+    pin_39_X_tris = 1;
+    pin_39_X          = 0;
+    pin_20_X_tris = 1;
+    pin_20_X          = 0;
 
 }
 
@@ -69,6 +69,9 @@ void initPort(void) {
 
 	pin_AUTO_tris = 1;
 	pin_AUTO = 0;
+	pin_KEY_POWER_tris = 1;
+	pin_KEY_POWER = 0;
+
 
     initAnalogPin();
 
