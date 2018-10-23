@@ -213,12 +213,13 @@ uint16_t G2_Menu_Status_Set(void) {
 	/////////////////////////////////////////////////////////////////////
     //sub group7 - ch0 목표 센서(부식) 예시) 1000 mV
     /////////////////////////////////////////////////////////////////////
+    // ThisSelMenuNm => 4
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 5000;
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 12500;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  7500;
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_SENSOR;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
 

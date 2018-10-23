@@ -429,7 +429,7 @@ void Integer_Digit(void) {
     } else if (ThisDigitData < CurMenuStatus.M_EditDigitMinValue) {
         ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
     }
-
+	// 여기에서 ThisDigitData 값을 로더에 표시해준다.
     if (CurMenuStatus.M_EditDigitMaxValue < 10) {
         CurMenuStatus.M_EditDigitShiftCnt = 1;
         One_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
@@ -745,7 +745,8 @@ void ldr_correctT_minus(uint8_t p) {
 void ldr_correctV_plus(uint8_t p) {
 	uint16_t max = CurMenuStatus.M_EditDigitMaxValue; // 210 / 250
 	uint16_t min = CurMenuStatus.M_EditDigitMinValue; // 100
-	uint16_t pt_max, pt_min, nt_max, nt_min;
+	uint16_t pt_max, pt_min; // 플러스
+	uint16_t nt_max, nt_min; // 마이너스
 
 	pt_max = max; 					// 250
 	pt_min = SIGN_POSIT_V_OR_A;	// pt_min = (max + min + 1) / 2; 	// 200
@@ -853,7 +854,6 @@ void changeNumberPlusMethod(uint16_t a) {
 	}
 	ThisDigitData = ThisDigitData + j;
 }
-
 void ldr_normal_plus(uint8_t p) {
 	changeNumberPlusMethod(p);
 }
@@ -898,7 +898,40 @@ bool isCorrVoltAndAmp(uint16_t now_menu) {
 	return 0;
 }
 
+// plus 키를 눌렀을 때
+// 여기서는 그냥 더해 주면 된다.
+// 최대 값될때만 최대값 한 번 유지 해주면 된다.
+void yang(uint8_t p) { // +
+	uint16_t max = (CurMenuStatus.M_EditDigitMaxValue - 10000); // 12500 - 10000 = 2500
+	uint16_t i;
+	switch (p) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			changeNumberPlusMethod(p);
+			i = (ThisDigitData % 10000);
+			if ( i > max ) {
+				ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
+			}
+			break;
+		case 5: // sign
+			ThisDigitData = ThisDigitData - 10000;
+			break;
+	}
+}
+void um(uint8_t p) { // -
+	uint16_t max = (10000 - CurMenuStatus.M_EditDigitMinValue); // 10000 - 7500 = 2500
+}
+void signPlusTest(uint8_t p) {
 
+	if (ThisDigitData >= 10000) {
+		yang(p);
+	} else {
+		um(p);
+	}
+
+}
 uint16_t CusorDataUp(void) { // @보정 #1023
 // up key를 누르면
     uint16_t i, dp;
@@ -909,7 +942,9 @@ uint16_t CusorDataUp(void) { // @보정 #1023
 	pos = 0;
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
-		if (isCorrTempMenu(ThisSelMenuNm)) { // 온도 @보정
+		if (ThisSelMenuNm == 4) { // goal sensor !
+			signPlusTest(pos);
+		} else if (isCorrTempMenu(ThisSelMenuNm)) { // 온도 @보정
 			ldr_correctT_plus(pos);
 		} else if (isCorrVoltAndAmp(ThisSelMenuNm)) { // 전압, 전류 @보정
 			ldr_correctV_plus(pos);
@@ -917,7 +952,8 @@ uint16_t CusorDataUp(void) { // @보정 #1023
 			ldr_normal_plus(pos);
 		}
 
-        Integer_Digit();
+        Integer_Digit(); // ThisDigitData값을 여기에서 로더에 표시해 준다.
+        // +/- 기호가 들어갔을때 로더에 표시해주는 함수를 별도로 만들어야 겠다.
     } else if ((CurMenuStatus.M_EditStatus & DIGIT_STRING_EDIT)) {
         i = CurMenuStatus.M_EditDigitMaxValue;
 
