@@ -385,14 +385,9 @@ void ldr_sign_A(void) {
 }
 
 void display_unit() {
-/*
-    로더에 내가 편법으로 +/-, mV 등의 기호 표시 목적
-    또한, 보정을 위해서
-*/
+
 	switch	(ThisSelMenuNm){
 		case	4:
-			// 여하튼 해당 조건이면
-			// 뭔가 기호여부를 판단해주는 것을 넣어주면 좋겠다.
             ldr_sigh_T_1023T(); // 온도
 			break;
 	}
@@ -438,10 +433,24 @@ void Integer_Digit_1023T(uint32_t userNum) {
 }
 
 
+void getSignalUserNumXXX(uint32_t signalNum[], uint32_t digit) {
+	// 일단 digit값을 해석해야 한다.
+	if (digit >= 10000) {
+		signalNum[0] = SIGN_PLUS;
+		signalNum[1] = digit - 10000; // 12500 - 10000 = 2500
+	} else {
+		signalNum[0] = SIGN_MINUS;
+		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
+	}
+}
+
+
 void Integer_Digit(void) {
 
 	if (ThisSelMenuNm == 4) { // #1023 @임시 삭제해야 한다. !!!
 		// user 보여지는 값
+
+		getSignalUserNumXXX(ThisSignalUserNum, ThisDigitData);
 		Integer_Digit_1023T(ThisSignalUserNum[1]);
 		return;
 	}
