@@ -35,11 +35,11 @@ uint8_t new485Ladder[MAX_LADDER_BUF] = {
 extern void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p);
 extern void changeNumberMinusMethod(uint8_t p);
 
-uint32_t ThisUserNum[2];
+uint32_t ThisSignalUserNum[2];
 
 enum {
-	MINUS,
-	PLUS
+	SIGN_MINUS,
+	SIGN_PLUS
 };
 
 
@@ -323,7 +323,7 @@ uint16_t DigitStringMessage(void) {
 
 void ldr_sigh_T_1023T() {
 
-    if (ThisUserNum[0] == PLUS) {
+    if (ThisSignalUserNum[0] == SIGN_PLUS) {
         new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '+';
     } else {
         new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '-';
@@ -440,7 +440,7 @@ void Integer_Digit(void) {
 
 	if (ThisSelMenuNm == 4) { // #1023 @임시 삭제해야 한다. !!!
 		// user 보여지는 값
-		Integer_Digit_1023T(ThisUserNum[1]);
+		Integer_Digit_1023T(ThisSignalUserNum[1]);
 		return;
 	}
 
@@ -1029,27 +1029,40 @@ void signDownTest(uint8_t p) {
 void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
 	// 일단 digit값을 해석해야 한다.
 	if (digit >= 10000) {
-		signalNum[0] = PLUS;
+		signalNum[0] = SIGN_PLUS;
 		signalNum[1] = digit - 10000; // 12500 - 10000 = 2500
 	} else {
-		signalNum[0] = MINUS;
+		signalNum[0] = SIGN_MINUS;
 		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
 	}
 
 	// 이제 업키 누른거니깐,
 	switch (signalNum[0]) {
-		case PLUS:
+		case SIGN_PLUS:
 			// signalNum[1] 값 증가
 			signalNum[1] = changeNumberPlusMethod(p, signalNum[1]);
 			break;
-		case MINUS:
+		case SIGN_MINUS:
 			// signalNum[1] 값 증가
 			signalNum[1] = changeNumberPlusMethod(p, signalNum[1]);
 			break;
 	}
 }
 
+uint32_t updateThisDigitData(uint32_t signalNum[]) {
+	uint32_t thisdigitdata;
 
+	switch (signalNum[0]) {
+		case SIGN_PLUS:
+			thisdigitdata = 10000 + signalNum[1];
+			break;
+		case SIGN_MINUS:
+			thisdigitdata = 10000 - signalNum[1];
+			break;
+	}
+
+	return thisdigitdata;
+}
 uint16_t CusorDataUp(void) { // @보정 #1023
 // up key를 누르면
     uint16_t i, dp;
@@ -1068,8 +1081,8 @@ uint16_t CusorDataUp(void) { // @보정 #1023
 
 			// 내부 디짓값을 가지고 업키를 눌렀을 때
 			// LCD에 보여지는 값을 얻데이트 한다.
-			getFinalUserNumWhenUpKey(ThisUserNum, ThisDigitData, pos);
-
+			getFinalUserNumWhenUpKey(ThisSignalUserNum, ThisDigitData, pos);
+			ThisDigitData = updateThisDigitData(ThisSignalUserNum);
 			//signUpTest(pos);
 		} else { // 일반
 			ldr_normal_plus(pos);
