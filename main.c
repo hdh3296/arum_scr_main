@@ -67,7 +67,7 @@ enum {
 };
 
 
-Heater heater[MAX_CH];
+Heater heater[1];
 Heater scr;
 uint16_t zsu_ch0_ch7_analog[8]; // zsu 아날로그 채널 8개 저장 값
 

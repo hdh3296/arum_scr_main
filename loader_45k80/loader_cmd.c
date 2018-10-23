@@ -32,6 +32,7 @@ uint8_t new485Ladder[MAX_LADDER_BUF] = {
     0
 };
 
+extern uint32_t getSignaNumber(uint32_t oriNum);
 extern void changeNumberMinusMethod(uint16_t a);
 
 enum {
@@ -311,6 +312,20 @@ uint16_t DigitStringMessage(void) {
 }
 
 
+void ldr_sigh_T_1023T(void) {
+	uint16_t max = CurMenuStatus.M_EditDigitMaxValue; // 29
+	uint16_t min = CurMenuStatus.M_EditDigitMinValue; // 10
+	uint16_t pt_min;
+
+
+    if (ThisDigitData >= 10000) {
+        new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '+';
+    } else {
+        new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '-';
+    }
+}
+
+
 void ldr_sigh_T(void) {
 	uint16_t max = CurMenuStatus.M_EditDigitMaxValue; // 29
 	uint16_t min = CurMenuStatus.M_EditDigitMinValue; // 10
@@ -368,68 +383,19 @@ void display_unit(void) {
     또한, 보정을 위해서
 */
 	switch	(ThisSelMenuNm){
-		case	MENU_CTa_0:
+		case	4:
 			// 여하튼 해당 조건이면
 			// 뭔가 기호여부를 판단해주는 것을 넣어주면 좋겠다.
-            ldr_sigh_T(); // 온도
-			break;
-        case    MENU_CVb_0:
-            ldr_sigh_V(); // 전압
-            break;
-        case    MENU_CAc_0:
-            ldr_sign_A(); // 전류
-            break;
-
-		case	MENU_CTa_1:
-            ldr_sigh_T(); // 온도
-			break;
-        case    MENU_CVb_1:
-            ldr_sigh_V(); // 전압
-            break;
-        case    MENU_CAc_1:
-            ldr_sign_A(); // 전류
-            break;
-
-		case	MENU_CTa_2:
-			ldr_sigh_T(); // 온도
-			break;
-		case	MENU_CVb_2:
-			ldr_sigh_V(); // 전압
-			break;
-		case	MENU_CAc_2:
-			ldr_sign_A(); // 전류
-			break;
-
-		case	MENU_CTa_3:
-			ldr_sigh_T(); // 온도
-			break;
-		case	MENU_CVb_3:
-			ldr_sigh_V(); // 전압
-			break;
-		case	MENU_CAc_3:
-			ldr_sign_A(); // 전류
-			break;
-
-		case	MENU_CTa_4:
-			ldr_sigh_T(); // 온도
-			break;
-		case	MENU_CVb_4:
-			ldr_sigh_V(); // 전압
-			break;
-		case	MENU_CAc_4:
-			ldr_sign_A(); // 전류
+            ldr_sigh_T_1023T(); // 온도
 			break;
 	}
 
 }
 
-void Integer_Digit(void) {
+void Integer_Digit_1023T(uint32_t ThisDigitData) {
 
-    if (ThisDigitData > CurMenuStatus.M_EditDigitMaxValue) {
-        ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
-    } else if (ThisDigitData < CurMenuStatus.M_EditDigitMinValue) {
-        ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
-    }
+
+
 	// 여기에서 ThisDigitData 값을 로더에 표시해준다.
     if (CurMenuStatus.M_EditDigitMaxValue < 10) {
         CurMenuStatus.M_EditDigitShiftCnt = 1;
@@ -464,6 +430,59 @@ void Integer_Digit(void) {
     }
 
 	display_unit(); // @보정 ★
+
+}
+
+
+void Integer_Digit(void) {
+	uint32_t original_num;
+
+
+	if (ThisSelMenuNm == 4) { // #1023 @임시 삭제해야 한다. !!!
+		original_num = getSignaNumber(ThisDigitData);
+		Integer_Digit_1023T(original_num);
+		return;
+	}
+
+
+    if (ThisDigitData > CurMenuStatus.M_EditDigitMaxValue) {
+        ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
+    } else if (ThisDigitData < CurMenuStatus.M_EditDigitMinValue) {
+        ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
+    }
+
+	// 여기에서 ThisDigitData 값을 로더에 표시해준다.
+    if (CurMenuStatus.M_EditDigitMaxValue < 10) {
+        CurMenuStatus.M_EditDigitShiftCnt = 1;
+        One_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 100) {
+        CurMenuStatus.M_EditDigitShiftCnt = 2;
+        Two_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 1000) {
+        CurMenuStatus.M_EditDigitShiftCnt = 3;
+        Three_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 10000) {
+        CurMenuStatus.M_EditDigitShiftCnt = 4;
+        Four_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 100000) {
+        CurMenuStatus.M_EditDigitShiftCnt = 5;
+        Five_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 100000) {
+        CurMenuStatus.M_EditDigitShiftCnt = 6;
+        Six_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 1000000) {
+        CurMenuStatus.M_EditDigitShiftCnt = 7;
+        Seven_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 10000000) {
+        CurMenuStatus.M_EditDigitShiftCnt = 8;
+        Eight_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else if (CurMenuStatus.M_EditDigitMaxValue < 100000000) {
+        CurMenuStatus.M_EditDigitShiftCnt = 9;
+        Nine_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    } else {
+        CurMenuStatus.M_EditDigitShiftCnt = 10;
+        Ten_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+    }
 
     DigitStringMessage();
     BitOnOffMessage((uint8_t) ThisDigitData);
@@ -954,10 +973,19 @@ void signPlusTest(uint8_t p) {
 	}
 
 }
+
+uint32_t getSignaNumber(uint32_t oriNum) {
+	if (ThisDigitData >= 10000) {
+		return ThisDigitData;
+	} else {
+		return (10000 - ThisDigitData);
+	}
+}
 uint16_t CusorDataUp(void) { // @보정 #1023
 // up key를 누르면
     uint16_t i, dp;
 	uint8_t pos;
+
 
     i = SECONDLINE_BASE + CurMenuStatus.M_EditStart + CurMenuStatus.M_EditCursor;
 
@@ -974,8 +1002,8 @@ uint16_t CusorDataUp(void) { // @보정 #1023
 			ldr_normal_plus(pos);
 		}
 
-        Integer_Digit(); // ThisDigitData값을 여기에서 로더에 표시해 준다.
-        // +/- 기호가 들어갔을때 로더에 표시해주는 함수를 별도로 만들어야 겠다.
+		// +/- 기호가 들어갔을때 로더에 표시해주는 함수를 별도로 만들어야 겠다.
+		Integer_Digit(); // ThisDigitData값을 여기에서 로더에 표시해 준다.
     } else if ((CurMenuStatus.M_EditStatus & DIGIT_STRING_EDIT)) {
         i = CurMenuStatus.M_EditDigitMaxValue;
 
