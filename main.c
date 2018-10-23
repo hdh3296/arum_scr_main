@@ -1404,8 +1404,23 @@ void compareGoalNowCurrent(void) {
 	}
 }
 
+
 uint16_t getMicomGoalSensorVal(uint16_t val) {
-	return val;
+	uint32_t signalNumber[2];
+	uint16_t micomVal;
+
+	getSignalUserNumXXX(signalNumber, (uint32_t)val);
+
+	switch (signalNumber[0]) {
+		case SIGN_PLUS:
+			micomVal = signalNumber[1] + 2500;
+			break;
+		case SIGN_MINUS:
+			micomVal = 2500 - signalNumber[1];
+			break;
+	}
+
+	return micomVal;
 }
 
 

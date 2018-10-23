@@ -24,6 +24,11 @@ typedef unsigned char bool;
 
 
 enum {
+	SIGN_MINUS,
+	SIGN_PLUS
+};
+
+enum {
 	TERR_NONE = 0,
 	TERR_BREAK = 1,
 	TERR_SHORT = 2,

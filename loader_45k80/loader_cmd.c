@@ -39,10 +39,7 @@ extern uint32_t changeNumberMinusMethod(uint8_t p, uint32_t n);
 
 uint32_t ThisSignalUserNum[2];
 
-enum {
-	SIGN_MINUS,
-	SIGN_PLUS
-};
+
 
 
 
