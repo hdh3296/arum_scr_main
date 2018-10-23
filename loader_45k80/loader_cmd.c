@@ -32,6 +32,7 @@ uint8_t new485Ladder[MAX_LADDER_BUF] = {
     0
 };
 
+extern void changeNumberMinusMethod(uint16_t a);
 
 enum {
 	MENU_CTa_0 = 8,
@@ -898,6 +899,8 @@ bool isCorrVoltAndAmp(uint16_t now_menu) {
 	return 0;
 }
 
+
+
 // plus 키를 눌렀을 때
 // 여기서는 그냥 더해 주면 된다.
 // 최대 값될때만 최대값 한 번 유지 해주면 된다.
@@ -915,13 +918,32 @@ void yang(uint8_t p) { // +
 				ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
 			}
 			break;
-		case 5: // sign
-			ThisDigitData = ThisDigitData - 10000;
+		case 5: //
+			ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
 			break;
 	}
 }
 void um(uint8_t p) { // -
-	uint16_t max = (10000 - CurMenuStatus.M_EditDigitMinValue); // 10000 - 7500 = 2500
+	uint16_t max = CurMenuStatus.M_EditDigitMinValue; // 7500
+	uint16_t i;
+	switch (p) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			changeNumberMinusMethod(p);
+
+			i = (ThisDigitData % 10000);
+			// i = 7566
+			// max = 7500
+			if ( i < max ) {
+				ThisDigitData = 9999;
+			}
+			break;
+		case 5: // sign
+			ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
+			break;
+	}
 }
 void signPlusTest(uint8_t p) {
 
