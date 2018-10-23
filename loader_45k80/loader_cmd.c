@@ -32,8 +32,17 @@ uint8_t new485Ladder[MAX_LADDER_BUF] = {
     0
 };
 
-extern uint32_t getSignaNumber(uint32_t oriNum);
-extern void changeNumberMinusMethod(uint16_t a);
+extern void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p);
+extern void changeNumberMinusMethod(uint8_t p);
+
+uint32_t ThisUserNum[2];
+
+enum {
+	MINUS,
+	PLUS
+};
+
+
 
 enum {
 	MENU_CTa_0 = 8,
@@ -312,13 +321,9 @@ uint16_t DigitStringMessage(void) {
 }
 
 
-void ldr_sigh_T_1023T(void) {
-	uint16_t max = CurMenuStatus.M_EditDigitMaxValue; // 29
-	uint16_t min = CurMenuStatus.M_EditDigitMinValue; // 10
-	uint16_t pt_min;
+void ldr_sigh_T_1023T() {
 
-
-    if (ThisDigitData >= 10000) {
+    if (ThisUserNum[0] == PLUS) {
         new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '+';
     } else {
         new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '-';
@@ -377,7 +382,7 @@ void ldr_sign_A(void) {
     new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 5] = 'A';
 }
 
-void display_unit(void) {
+void display_unit() {
 /*
     로더에 내가 편법으로 +/-, mV 등의 기호 표시 목적
     또한, 보정을 위해서
@@ -392,38 +397,38 @@ void display_unit(void) {
 
 }
 
-void Integer_Digit_1023T(uint32_t ThisDigitData) {
-	// 여기에서 ThisDigitData 값을 로더에 표시해준다.
+void Integer_Digit_1023T(uint32_t userNum) {
+	// 여기에서 userNum 값을 로더에 표시해준다.
     if (CurMenuStatus.M_EditDigitMaxValue < 10) {
         CurMenuStatus.M_EditDigitShiftCnt = 1;
-        One_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        One_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 100) {
         CurMenuStatus.M_EditDigitShiftCnt = 2;
-        Two_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Two_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 1000) {
         CurMenuStatus.M_EditDigitShiftCnt = 3;
-        Three_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Three_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 10000) {
         CurMenuStatus.M_EditDigitShiftCnt = 4;
-        Four_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Four_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 100000) {
         CurMenuStatus.M_EditDigitShiftCnt = 5;
-        Five_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Five_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 100000) {
         CurMenuStatus.M_EditDigitShiftCnt = 6;
-        Six_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Six_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 1000000) {
         CurMenuStatus.M_EditDigitShiftCnt = 7;
-        Seven_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Seven_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 10000000) {
         CurMenuStatus.M_EditDigitShiftCnt = 8;
-        Eight_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Eight_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else if (CurMenuStatus.M_EditDigitMaxValue < 100000000) {
         CurMenuStatus.M_EditDigitShiftCnt = 9;
-        Nine_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Nine_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     } else {
         CurMenuStatus.M_EditDigitShiftCnt = 10;
-        Ten_Dig_Dsp(ThisDigitData, CurMenuStatus.M_EditDivide);
+        Ten_Dig_Dsp(userNum, CurMenuStatus.M_EditDivide);
     }
 
 	display_unit(); // @보정 ★
@@ -432,11 +437,10 @@ void Integer_Digit_1023T(uint32_t ThisDigitData) {
 
 
 void Integer_Digit(void) {
-	uint32_t original_num;
 
 	if (ThisSelMenuNm == 4) { // #1023 @임시 삭제해야 한다. !!!
-		original_num = getSignaNumber(ThisDigitData);
-		Integer_Digit_1023T(original_num);
+		// user 보여지는 값
+		Integer_Digit_1023T(ThisUserNum[1]);
 		return;
 	}
 
@@ -856,21 +860,20 @@ unsigned long long my_pow(unsigned long long base, int exp) {
 	} return res;
 }
 
-void changeNumberPlusMethod(uint16_t a) {
-	uint16_t i = my_pow(10, a); //
+uint32_t changeNumberPlusMethod(uint8_t p, uint32_t num) {
+	uint16_t i = my_pow(10, p); //
 	uint16_t j = i / 10; //
 	uint16_t k = 9 * j; //
 
-	if ( (ThisDigitData % i / j) == 9 ) {
+	if ( (num % i / j) == 9 ) {
 	// 9 라면?
 		// 0으로 만들어야 한다.
-		//ThisDigitData = ThisDigitData - k;
-		return;
+		return (num - k);
 	}
-	ThisDigitData = ThisDigitData + j;
+	return (num + j);
 }
 void ldr_normal_plus(uint8_t p) {
-	changeNumberPlusMethod(p);
+	ThisDigitData = changeNumberPlusMethod(p, ThisDigitData);
 }
 
 bool isCorrTempMenu(uint16_t now_menu) {
@@ -926,7 +929,7 @@ void yang_whenUp(uint8_t p) { // +
 		case 2:
 		case 3:
 		case 4:
-			changeNumberPlusMethod(p);
+//			changeNumberPlusMethod(p);
 			i = (ThisDigitData % 10000);
 			if ( i > max ) {
 				ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
@@ -999,7 +1002,7 @@ void um_whenDn(uint8_t p) { // -
 		case 2:
 		case 3:
 		case 4:
-			changeNumberPlusMethod(p);
+//			changeNumberPlusMethod(p);
 
 			if ( ThisDigitData >= 10000 ) {
 				ThisDigitData = 9999;
@@ -1021,13 +1024,32 @@ void signDownTest(uint8_t p) {
 	}
 }
 
-uint32_t getSignaNumber(uint32_t oriNum) {
-	if (ThisDigitData >= 10000) {
-		return ThisDigitData;
+
+
+void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
+	// 일단 digit값을 해석해야 한다.
+	if (digit >= 10000) {
+		signalNum[0] = PLUS;
+		signalNum[1] = digit - 10000; // 12500 - 10000 = 2500
 	} else {
-		return (10000 - ThisDigitData);
+		signalNum[0] = MINUS;
+		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
+	}
+
+	// 이제 업키 누른거니깐,
+	switch (signalNum[0]) {
+		case PLUS:
+			// signalNum[1] 값 증가
+			signalNum[1] = changeNumberPlusMethod(p, signalNum[1]);
+			break;
+		case MINUS:
+			// signalNum[1] 값 증가
+			signalNum[1] = changeNumberPlusMethod(p, signalNum[1]);
+			break;
 	}
 }
+
+
 uint16_t CusorDataUp(void) { // @보정 #1023
 // up key를 누르면
     uint16_t i, dp;
@@ -1039,16 +1061,20 @@ uint16_t CusorDataUp(void) { // @보정 #1023
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
 		if (ThisSelMenuNm == 4) { // goal sensor !
-			signUpTest(pos);
-		} else if (isCorrTempMenu(ThisSelMenuNm)) { // 온도 @보정
-			ldr_correctT_plus(pos);
-		} else if (isCorrVoltAndAmp(ThisSelMenuNm)) { // 전압, 전류 @보정
-			ldr_correctV_plus(pos);
+			// up key가 눌렸을 때
+			// user 수 자리수 별로
+			// 맨 앞자리는 기호 이므로 기호 변화
+			// 나머지 자리는 증가 !!!
+
+			// 내부 디짓값을 가지고 업키를 눌렀을 때
+			// LCD에 보여지는 값을 얻데이트 한다.
+			getFinalUserNumWhenUpKey(ThisUserNum, ThisDigitData, pos);
+
+			//signUpTest(pos);
 		} else { // 일반
 			ldr_normal_plus(pos);
 		}
 
-		// +/- 기호가 들어갔을때 로더에 표시해주는 함수를 별도로 만들어야 겠다.
 		Integer_Digit(); // ThisDigitData값을 여기에서 로더에 표시해 준다.
     } else if ((CurMenuStatus.M_EditStatus & DIGIT_STRING_EDIT)) {
         i = CurMenuStatus.M_EditDigitMaxValue;
@@ -1084,7 +1110,7 @@ uint16_t CusorDataUp(void) { // @보정 #1023
     return (0);
 }
 
-void changeNumberMinusMethod(uint16_t a) {
+void changeNumberMinusMethod(uint8_t a) {
 	uint16_t i = my_pow(10, a); //
 	uint16_t j = i / 10; //
 	uint16_t k = 9 * j; //
