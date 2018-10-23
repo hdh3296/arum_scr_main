@@ -947,11 +947,10 @@ void um_whenUp(uint8_t p) { // -
 		case 4:
 			changeNumberMinusMethod(p);
 
-			i = (ThisDigitData % 10000);
-			// i = 7566
-			// max = 7500
-			if ( i < max ) {
-				ThisDigitData = 9999;
+
+			if ( ThisDigitData < max ) {
+			// 6500 < 7500
+				ThisDigitData = max;
 			}
 			break;
 		case 5: // sign
@@ -1002,8 +1001,7 @@ void um_whenDn(uint8_t p) { // -
 		case 4:
 			changeNumberPlusMethod(p);
 
-			i = (ThisDigitData % 10000);
-			if ( i >= 10000 ) {
+			if ( ThisDigitData >= 10000 ) {
 				ThisDigitData = 9999;
 			}
 			break;
@@ -1034,7 +1032,6 @@ uint16_t CusorDataUp(void) { // @보정 #1023
 // up key를 누르면
     uint16_t i, dp;
 	uint8_t pos;
-
 
     i = SECONDLINE_BASE + CurMenuStatus.M_EditStart + CurMenuStatus.M_EditCursor;
 
