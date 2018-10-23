@@ -33,7 +33,9 @@ uint8_t new485Ladder[MAX_LADDER_BUF] = {
 };
 
 extern void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p);
-extern void changeNumberMinusMethod(uint8_t p);
+extern void getFinalUserNumWhenDnKey(uint32_t signalNum[], uint32_t digit, uint8_t p);
+
+extern uint32_t changeNumberMinusMethod(uint8_t p, uint32_t n);
 
 uint32_t ThisSignalUserNum[2];
 
@@ -875,6 +877,22 @@ uint32_t changeNumberPlusMethod(uint8_t p, uint32_t num) {
 void ldr_normal_plus(uint8_t p) {
 	ThisDigitData = changeNumberPlusMethod(p, ThisDigitData);
 }
+uint32_t changeNumberMinusMethod(uint8_t p, uint32_t num) {
+	uint16_t i = my_pow(10, p); //
+	uint16_t j = i / 10; //
+	uint16_t k = 9 * j; //
+
+	if ( (num % i / j) == 0 ) {
+	// 0 이라면?
+		// 9 으로 만들어야 한다.
+		return (num + k);
+	}
+	return num - j;
+}
+void ldr_nomal_minus(uint8_t p) {
+	ThisDigitData = changeNumberMinusMethod(p, ThisDigitData);
+}
+
 
 bool isCorrTempMenu(uint16_t now_menu) {
 	if (now_menu == MENU_CTa_0)
@@ -948,7 +966,6 @@ void um_whenUp(uint8_t p) { // -
 		case 2:
 		case 3:
 		case 4:
-			changeNumberMinusMethod(p);
 
 
 			if ( ThisDigitData < max ) {
@@ -975,7 +992,6 @@ void yang_whenDn(uint8_t p) { // +
 	uint16_t max = (CurMenuStatus.M_EditDigitMaxValue - 10000); // 12500 - 10000 = 2500
 	uint16_t i, m;
 
-	changeNumberMinusMethod(p);
 	switch (p) {
 		case 1:
 		case 2:
@@ -1025,6 +1041,12 @@ void signDownTest(uint8_t p) {
 }
 
 
+uint32_t getSignalNumPlusMax(uint32_t max) {
+	return (max - 10000);
+}
+uint32_t getSignalNumMinusMax(uint32_t min) {
+	return (10000 - min);
+}
 
 void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
 	// 일단 digit값을 해석해야 한다.
@@ -1036,18 +1058,72 @@ void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
 		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
 	}
 
-	// 이제 업키 누른거니깐,
-	switch (signalNum[0]) {
-		case SIGN_PLUS:
-			// signalNum[1] 값 증가
+	switch (p) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
 			signalNum[1] = changeNumberPlusMethod(p, signalNum[1]);
+			// max, min
+			if (signalNum[0] == SIGN_PLUS) {
+				if (signalNum[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
+					signalNum[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
+				}
+			} else {
+				if (signalNum[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
+					signalNum[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
+				}
+			}
 			break;
-		case SIGN_MINUS:
-			// signalNum[1] 값 증가
-			signalNum[1] = changeNumberPlusMethod(p, signalNum[1]);
+		case 5:
+			// 반대 sign으로 변경
+			if (signalNum[0] == SIGN_PLUS) {
+				signalNum[0] = SIGN_MINUS;
+			} else {
+				signalNum[0] = SIGN_PLUS;
+			}
 			break;
 	}
 }
+// down key
+void getFinalUserNumWhenDnKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
+	// 일단 digit값을 해석해야 한다.
+	if (digit >= 10000) {
+		signalNum[0] = SIGN_PLUS;
+		signalNum[1] = digit - 10000; // 12500 - 10000 = 2500
+	} else {
+		signalNum[0] = SIGN_MINUS;
+		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
+	}
+
+	switch (p) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			signalNum[1] = changeNumberMinusMethod(p, signalNum[1]);
+			// max, min
+			if (signalNum[0] == SIGN_PLUS) {
+				if (signalNum[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
+					signalNum[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
+				}
+			} else {
+				if (signalNum[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
+					signalNum[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
+				}
+			}
+			break;
+		case 5:
+			// 반대 sign으로 변경
+			if (signalNum[0] == SIGN_PLUS) {
+				signalNum[0] = SIGN_MINUS;
+			} else {
+				signalNum[0] = SIGN_PLUS;
+			}
+			break;
+	}
+}
+
 
 uint32_t updateThisDigitData(uint32_t signalNum[]) {
 	uint32_t thisdigitdata;
@@ -1123,23 +1199,6 @@ uint16_t CusorDataUp(void) { // @보정 #1023
     return (0);
 }
 
-void changeNumberMinusMethod(uint8_t a) {
-	uint16_t i = my_pow(10, a); //
-	uint16_t j = i / 10; //
-	uint16_t k = 9 * j; //
-
-	if ( (ThisDigitData % i / j) == 0 ) {
-	// 0 이라면?
-		// 9 으로 만들어야 한다.
-		//ThisDigitData = ThisDigitData + k;
-		return;
-	}
-	ThisDigitData = ThisDigitData - j;
-}
-void ldr_nomal_minus(uint8_t p) {
-	changeNumberMinusMethod(p);
-}
-
 
 uint16_t CusorDataDn(void) {
 // down key 눌렀을 때 ! => 마이너스
@@ -1153,11 +1212,8 @@ uint16_t CusorDataDn(void) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
 
 		if (ThisSelMenuNm == 4) { // goal sensor !
-			signDownTest(pos);
-		} else if (isCorrTempMenu(ThisSelMenuNm)) {	// @보정
-			ldr_correctT_minus(pos);
-		} else if (isCorrVoltAndAmp(ThisSelMenuNm))  { // @보정
-			ldr_correctV_minus(pos);
+			getFinalUserNumWhenDnKey(ThisSignalUserNum, ThisDigitData, pos);
+			ThisDigitData = updateThisDigitData(ThisSignalUserNum);
 		} else { // 일반
 			ldr_nomal_minus(pos);
 		}

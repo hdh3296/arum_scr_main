@@ -15,7 +15,7 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_VERSION 0						//version
 #define DFL_SCR_GOAL_VOLTAGE 50 // V
 #define DFL_SCR_GOAL_CURRENT 50 // 5.0A
-#define DFL_SCR_GOAL_SENSOR  10000 // 1000mV 전위
+#define DFL_SCR_GOAL_SENSOR  10250 // 1000mV 전위
 // 센서 정/역 디폴트
 #define DFL_REVERSE_0 1
 #define DFL_REVERSE_1 1
@@ -217,7 +217,7 @@ uint16_t G2_Menu_Status_Set(void) {
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 12500;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  7500;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  6000;
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_SENSOR;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
