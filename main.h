@@ -9,6 +9,10 @@ typedef unsigned long uint32_t;
 typedef unsigned char bool;
 
 
+bool mysucess;
+uint16_t mysucessTimer;
+
+
 #define ZSU_CH_MAX	8
 
 #define RX_GOOD_SUCESS_T 20

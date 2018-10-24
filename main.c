@@ -28,6 +28,7 @@ bool bef_b_pannel_comm_not;
 bool b_pannel_comm_break_flag; // 판넬 통신이 딱 두절 되는 순간 !! => 전원을 off한거와 같은 효과
 bool b_pannel_comm_break_flag_ch[5] = {0,};
 
+uint8_t nRunStep;
 
 
 enum {
@@ -1520,6 +1521,71 @@ void onRSTGATEWhenAuto(void) {
 	autoTGateOnOff();
 }
 
+// #1024 4단계 테스트 알람
+bool isJustNowPowerOn(void) {
+	static bool bBefOffState = 1;
+
+	if (pin_KEY_POWER == KEY_POWER_OFF) {
+	// off
+		bBefOffState = 1;
+	} else {
+	// on
+		if (bBefOffState) {
+			bBefOffState = 0;
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+bool isRunEnable(void) {
+	return pin_KEY_POWER == KEY_POWER_ON;
+}
+
+
+void controlSensorSuWi(void) {
+	// 46us = 1도
+	if (!pin_AUTO) {
+		// 수동 볼륨에 의해서 gateRSTDoValue 값을 획득한다.
+		if (scr.bNowMicomAdVolume_updted) {
+			scr.bNowMicomAdVolume_updted = FALSE;
+			gateRSTDoValue = test_manualVol();
+		}
+	} else {
+		// PWM 처럼 게이트 제어하는 함수이다.
+		controlGateTotal();
+	}
+}
+
+
+void loop_allStepRun(uint8_t step) {
+	switch (step) {
+		case 1:
+			//checkSRP();
+			break;
+		case 2:
+			//checkSOP();
+			break;
+		case 3:
+			//checkAOP();
+			break;
+		case 4:
+			//checkARP();
+			break;
+		case 5:
+			controlSensorSuWi();
+			break;
+		default:
+			break;
+	}
+}
+
+
+void initRun(void) {
+
+	gateRSTDoValue = MAX_GATE;
+}
 
 // -------------------------------------
 // - main loop ------------------------
@@ -1564,6 +1630,10 @@ void main(void) {
 	tiemrTzeroTimer = 0;
 
 	pwstartTiemr = 0;
+
+	mysucessTimer = 0xffff;
+
+
     while (1) {
         unsigned int i;
         uint8_t ch;
@@ -1606,20 +1676,6 @@ void main(void) {
 			scr_micom_setNowInVoltage_mV(ch);
 		}
 
-		// 게이트 PWM 처럼 제어하기위한 목적으로
-		// 게이트 ON 할 시점의 도수 값 획득하기 (저장하기)
-		// 이 도수 값을 가지고 타이머 영역에서 46us 마다 1도이므로 이를 비교하여 게이트를 ON할 목적이다.
-		if (!pin_AUTO) {
-			// 수동 볼륨에 의해서 gateRSTDoValue 값을 획득한다.
-			if (scr.bNowMicomAdVolume_updted) {
-				scr.bNowMicomAdVolume_updted = FALSE;
-				gateRSTDoValue = test_manualVol();
-			}
-		} else {
-			// PWM 처럼 게이트 제어하는 함수이다.
-			controlGateTotal();
-		}
-
 		// ZSU use/not_use 셋팅 값 저장하기
 		bufZSU_use_not[0] = cF_ch0_use;
 		bufZSU_use_not[1] = cF_ch1_use;
@@ -1629,6 +1685,20 @@ void main(void) {
 		bufZSU_use_not[5] = cF_ch5_use;
 		bufZSU_use_not[6] = cF_ch6_use;
 		bufZSU_use_not[7] = cF_ch7_use;
+
+		// #1024 4단계 테스트 알람 기능 구현하기
+		if (isJustNowPowerOn()) {
+			// 테스트 시작 !!!!
+			mysucessTimer = 0;
+			nRunStep = 5; // setp 초기화
+		}
+
+		if (isRunEnable()) {
+			// 전체 제어 순서
+			loop_allStepRun(nRunStep);
+		} else {
+			initRun();
+		}
     }
 }
 
@@ -1677,7 +1747,7 @@ void interrupt isr(void) {
         loader_msecTimer();
         timer_msec++;
 		if (pwstartTiemr < 0xffff) pwstartTiemr++;
-        if (timer_msec >= 1000) {
+        if ((timer_msec >= 1000) && (mysucessTimer < 5000)) {
             timer_msec = 0;
 			pin_RUN_LED = ~pin_RUN_LED;
         }
@@ -1698,6 +1768,8 @@ void interrupt isr(void) {
 		if (not_rx_pannel_chkTimer < 0xffff) {
 			not_rx_pannel_chkTimer++;
 		}
+
+		if (mysucessTimer < 0xffff) mysucessTimer++;
     }
 
 
