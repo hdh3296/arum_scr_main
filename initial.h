@@ -5,6 +5,10 @@
 
 #include    "main.h"
 
+enum {
+	RY_OFF = 0,
+	RY_ON = 1
+};
 
 extern volatile bit RB0x @ ((unsigned) &PORTB * 8) + 0;
 extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
@@ -17,8 +21,6 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 
 
 /* ======== 마이컴 MCU IO 포트 정의 ============  */
-#define pin_RUN_LED         RC3
-#define pin_RUN_LED_tris    TRISC3
 
 #define pin_RX 				RE6		// rx
 #define pin_Rx_tris 		TRISE6
@@ -67,6 +69,15 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_GATE_T_PH           RC2 	// SSR_0
 #define pin_GATE_T_PH_tris    	TRISC2
 
+#define pin_RUN_LED         RC3
+#define pin_RUN_LED_tris    TRISC3
+
+#define pin_RY_RUN			RC4
+#define pin_RY_RUN_pin		TRISC4
+#define pin_RY_ALARM		RC5
+#define pin_RY_ALARM_pin	TRISC5
+
+
 #define pin_AUTO			RD0
 #define pin_AUTO_tris		TRISD0
 #define pin_KEY_POWER		RD1
@@ -74,7 +85,9 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_KEY_ALARM		RD2
 #define pin_KEY_ALARM_tris	TRISD2
 #define pin_50HZ			RD3
-#define pin_50HZ_tris	TRISD3
+#define pin_50HZ_tris		TRISD3
+
+
 
 
 extern void initPort(void);

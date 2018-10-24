@@ -9,8 +9,8 @@
 #include    "pwm.h"
 #include    "can\my_can.h"
 
-#define MAX_GATE	240
-#define MIN_GATE	60
+#define MAX_GATE_min_voltage	240 // 토크 0 따라서, 전압 0
+#define MIN_GATE_max_voltage	60
 
 
 #define MAX_CH 5
@@ -29,6 +29,12 @@ bool b_pannel_comm_break_flag; // 판넬 통신이 딱 두절 되는 순간 !! => 전원을 off
 bool b_pannel_comm_break_flag_ch[5] = {0,};
 
 uint8_t nRunStep;
+
+enum {
+	STEP_CHKING,
+	STEP_ERROR,
+	STEP_GOOD
+}
 
 
 enum {
@@ -797,12 +803,12 @@ enum {
 };
 
 enum {
-    ERR_NONE  = 0,
+    ERR_NONE_X  = 0,
     ERR_BREAK = 1,
     ERR_SHORT = 2,
     ERR_NOT_HEATING = 3,
     ERR_ETC,
-} ErrorCode;
+} ErrorCodeXXX;
 
 bool isPwmOnState(uint8_t ch) {
 	return heater[ch].db_heatingOnState;
@@ -843,7 +849,7 @@ uint8_t heater_chkEtcError(uint8_t ch) {
     } else if (heater[ch].db_tempShortBreak == 2) { // 숏트
         return ERR_SHORT;
     }
-    return ERR_NONE;
+    return 0;
 }
 
 
@@ -1124,7 +1130,7 @@ bool bSzeroTimerStart;
 bool bTzeroTimerStart;
 
 
-uint16_t gateRSTDoValue; // 수동에의해 최종 몇 도 조절 할지의 값이다.
+uint16_t gateRSTDo_time; // 수동에의해 최종 몇 도 조절 할지의 값이다.
 // 이 값이 결국은 PWM 의 듀티값과 같다고 보면 된다.
 // 이값을 조절함으로 써 목표 전압/전류/센서 값을 제어하면 된다.
 
@@ -1150,7 +1156,7 @@ void whenRZeroEdgeUp(void) {
 		// 제로 타이머 증가
 		tiemrRzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (tiemrRzeroTimer >= gateRSTDoValue) {
+		if (tiemrRzeroTimer >= gateRSTDo_time) {
 			tiemrRzeroTimer = 0;
 			pin_GATE_R_PH = GATE_H;
 			bRzeroTimerStart = 0;
@@ -1163,7 +1169,7 @@ void whenSZeroEdgeUp(void) {
 		// 제로 타이머 증가
 		tiemrSzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (tiemrSzeroTimer >= gateRSTDoValue) {
+		if (tiemrSzeroTimer >= gateRSTDo_time) {
 			tiemrSzeroTimer = 0;
 			pin_GATE_S_PH = GATE_H;
 			bSzeroTimerStart = 0;
@@ -1176,7 +1182,7 @@ void whenTZeroEdgeUp(void) {
 		// 제로 타이머 증가
 		tiemrTzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (tiemrTzeroTimer >= gateRSTDoValue) {
+		if (tiemrTzeroTimer >= gateRSTDo_time) {
 			tiemrTzeroTimer = 0;
 			pin_GATE_T_PH = GATE_H;
 			bTzeroTimerStart = 0;
@@ -1389,8 +1395,8 @@ void compareGoalNowVoltage(void) {
 	if (scr.bNowMicomAdVoltage_updted) {
 		scr.bNowMicomAdVoltage_updted = FALSE;
 
-		if (gateRSTDoValue < MAX_GATE) {
-			gateRSTDoValue += 1;
+		if (gateRSTDo_time < MAX_GATE_min_voltage) {
+			gateRSTDo_time += 1;
 		}
 	}
 }
@@ -1399,8 +1405,8 @@ void compareGoalNowCurrent(void) {
 	if (scr.bNowMicomAdCurrent_updted) {
 		scr.bNowMicomAdCurrent_updted = FALSE;
 
-		if (gateRSTDoValue < MAX_GATE) {
-			gateRSTDoValue += 1;
+		if (gateRSTDo_time < MAX_GATE_min_voltage) {
+			gateRSTDo_time += 1;
 		}
 	}
 }
@@ -1442,13 +1448,13 @@ void compareGoalNowSensor(void) {
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
 		if (now < (goal-0)) {
-			if (gateRSTDoValue < MAX_GATE) {
-				gateRSTDoValue += 1;
+			if (gateRSTDo_time < MAX_GATE_min_voltage) {
+				gateRSTDo_time += 1;
 			}
 		} else if (now > (goal+0)) {
 			// 전류를 많이 보내 줘야 한다.
-			if (gateRSTDoValue > MIN_GATE) {
-				gateRSTDoValue -= 1;
+			if (gateRSTDo_time > MIN_GATE_max_voltage) {
+				gateRSTDo_time -= 1;
 			}
 		}
 	}
@@ -1480,7 +1486,7 @@ void autoRGateOnOff(void) {
 		// 제로 타이머 증가
 		tiemrRzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (tiemrRzeroTimer >= gateRSTDoValue) {
+		if (tiemrRzeroTimer >= gateRSTDo_time) {
 			tiemrRzeroTimer = 0;
 			pin_GATE_R_PH = GATE_H;
 			bRzeroTimerStart = 0;
@@ -1493,7 +1499,7 @@ void autoSGateOnOff(void) {
 		// 제로 타이머 증가
 		tiemrSzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (tiemrSzeroTimer >= gateRSTDoValue) {
+		if (tiemrSzeroTimer >= gateRSTDo_time) {
 			tiemrSzeroTimer = 0;
 			pin_GATE_S_PH = GATE_H;
 			bSzeroTimerStart = 0;
@@ -1506,7 +1512,7 @@ void autoTGateOnOff(void) {
 		// 제로 타이머 증가
 		tiemrTzeroTimer++;
 		// 제로 타이머가 설정 시간 되면, 게이트 하이 !
-		if (tiemrTzeroTimer >= gateRSTDoValue) {
+		if (tiemrTzeroTimer >= gateRSTDo_time) {
 			tiemrTzeroTimer = 0;
 			pin_GATE_T_PH = GATE_H;
 			bTzeroTimerStart = 0;
@@ -1539,18 +1545,16 @@ bool isJustNowPowerOn(void) {
 	return 0;
 }
 
-bool isRunEnable(void) {
-	return pin_KEY_POWER == KEY_POWER_ON;
-}
+
 
 
 void controlSensorSuWi(void) {
 	// 46us = 1도
 	if (!pin_AUTO) {
-		// 수동 볼륨에 의해서 gateRSTDoValue 값을 획득한다.
+		// 수동 볼륨에 의해서 gateRSTDo_time 값을 획득한다.
 		if (scr.bNowMicomAdVolume_updted) {
 			scr.bNowMicomAdVolume_updted = FALSE;
-			gateRSTDoValue = test_manualVol();
+			gateRSTDo_time = test_manualVol();
 		}
 	} else {
 		// PWM 처럼 게이트 제어하는 함수이다.
@@ -1558,14 +1562,85 @@ void controlSensorSuWi(void) {
 	}
 }
 
+enum {
+	TYPE_ZINC,
+	TYPE_CUCUSO4
+};
+uint8_t isSRPError(void) {
+/* 1단계 알람 테스트 기능 구현하기
+	* SRP MAX
+	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
+	* SRP Time : check time
+*/
+	uint8_t senseorType; // zinc / cucs
+	uint16_t nowSensorSuwi; // 현재 수위 입력 값 (사용자 읽기용)
+	uint16_t SRP_low; 		// 설정값 메뉴
+	uint16_t SRP_max;		// 설정값 메뉴
+	uint16_t setChkTime_SRP; // 설정값 메뉴
+
+	if (chkTimer_SRP > setChkTime_SRP) {
+		return STEP_GOOD;
+	}
+
+
+	switch (senseorType) {
+		case TYPE_ZINC:
+			if (nowSensorSuwi > SRP_low) {
+				return STEP_ERROR;
+			}
+			break;
+		case TYPE_CUCUSO4:
+			if (nowSensorSuwi > SRP_max) {
+				return STEP_ERROR;
+			}
+			break;
+	}
+
+	return STEP_CHKING;
+}
+bool isSOPError(void) {
+	return 0;
+}
+
+
+void processErrorCode(uint8_t errorcode) {
+
+}
+
+enum {
+	ERR_NONE,
+	ERR_SRP,	// 센서 역전
+	ERR_SOP,	// 단선
+	ERR_AOP,	//
+	ERR_ARP,
+	ERR_UPR,
+	ERR_OPR,
+	ERR_FOP // RST 상
+};
+
 
 void loop_allStepRun(uint8_t step) {
+	static uint8_t errorCode;
+	uint8_t chk;
+
 	switch (step) {
 		case 1:
-			//checkSRP();
+			// 설정 시간 동안
+			chk = isSRPError();
+			if (chk == STEP_ERROR) {
+				errorCode = ERR_SRP;
+				break;
+			} else if (chk == STEP_GOOD) {
+				errorCode = ERR_NONE;
+				step = 2;
+				break;
+			}
 			break;
 		case 2:
-			//checkSOP();
+			if (isSOPError()) {
+				errorCode = ERR_SOP;
+				break;
+			}
 			break;
 		case 3:
 			//checkAOP();
@@ -1579,12 +1654,17 @@ void loop_allStepRun(uint8_t step) {
 		default:
 			break;
 	}
+
+	processErrorCode(errorCode);
+
 }
 
 
-void initRun(void) {
+void initSystem(void) {
 
-	gateRSTDoValue = MAX_GATE;
+	gateRSTDo_time = MAX_GATE_min_voltage;
+	pin_RY_RUN = RY_OFF;
+	pin_RY_ALARM = RY_OFF;
 }
 
 // -------------------------------------
@@ -1621,7 +1701,7 @@ void main(void) {
 	b_pannel_comm_break_flag = 0;
 
 	// 초기화
-	gateRSTDoValue = MAX_GATE;
+	gateRSTDo_time = MAX_GATE_min_voltage;
 	bRzeroTimerStart = 0;
 	bSzeroTimerStart = 0;
 	bTzeroTimerStart = 0;
@@ -1690,14 +1770,15 @@ void main(void) {
 		if (isJustNowPowerOn()) {
 			// 테스트 시작 !!!!
 			mysucessTimer = 0;
-			nRunStep = 5; // setp 초기화
+			// setp 및 변수들 초기화
+			nRunStep = 5;
+			chkTimer_SRP = 0;
 		}
-
-		if (isRunEnable()) {
+		if (pin_KEY_POWER == KEY_POWER_ON) {
 			// 전체 제어 순서
 			loop_allStepRun(nRunStep);
 		} else {
-			initRun();
+			initSystem();
 		}
     }
 }
@@ -1770,6 +1851,7 @@ void interrupt isr(void) {
 		}
 
 		if (mysucessTimer < 0xffff) mysucessTimer++;
+		if (chkTimer_SRP < 0xffff) chkTimer_SRP++;
     }
 
 

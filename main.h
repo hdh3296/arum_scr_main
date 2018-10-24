@@ -11,6 +11,7 @@ typedef unsigned char bool;
 
 bool mysucess;
 uint16_t mysucessTimer;
+uint16_t chkTimer_SRP;
 
 
 #define ZSU_CH_MAX	8

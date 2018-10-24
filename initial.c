@@ -59,8 +59,6 @@ void initPort(void) {
     pin_GATE_T_PH_tris = 0;
     pin_GATE_T_PH = 0;
 
-    pin_RUN_LED_tris = 0;
-    pin_RUN_LED = 0;
 
     pin_Rx_tris = 1;
     pin_RX = 0;
@@ -76,6 +74,14 @@ void initPort(void) {
 	pin_KEY_ALARM		= 0;
 	pin_50HZ_tris	= 1;
 	pin_50HZ			= 0;
+
+    pin_RUN_LED_tris = 0;
+    pin_RUN_LED = 0;
+
+	pin_RY_RUN_pin		= 0;
+	pin_RY_RUN			= RY_OFF;
+	pin_RY_ALARM_pin	= 0;
+	pin_RY_ALARM		= RY_OFF;
 
 
     initAnalogPin();
