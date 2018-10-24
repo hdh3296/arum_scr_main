@@ -12,9 +12,16 @@
 #define MAX_GATE_min_voltage	240 // 토크 0 따라서, 전압 0
 #define MIN_GATE_max_voltage	60
 
+enum {
+	LED_ON	= 0,
+	LED_OFF = 1
+};
 
 #define MAX_CH 5
 uint8_t bufZSU_use_not[ZSU_CH_MAX];
+
+volatile uint16_t db_ldrSetSRPMAX;
+volatile uint16_t db_ldrSetSRPMIN;
 
 
 uint8_t rx_db_enableSet[MAX_CH];
@@ -34,7 +41,8 @@ enum {
 	STEP_CHKING,
 	STEP_ERROR,
 	STEP_GOOD
-}
+};
+
 
 
 enum {
@@ -131,125 +139,7 @@ uint16_t getCurTempTo(uint16_t now) {
 	입력 		: 현재 아날로그 입력 값
 	return  : 유저 실제 온도 값 ex) 30 도
 */
-	if (now < analogTempList[1]) { // 1200
-		return 0;
-	} else if (now < analogTempList[2]) { //  1300
-		return 1;
-	} else if (now < analogTempList[3]) {
-		return 2;
-	} else if (now < analogTempList[4]) {
-		return 3;
-	} else if (now < analogTempList[5]) {
-		return 4;
-	} else if (now < analogTempList[6]) {
-		return 5;
-	} else if (now < analogTempList[7]) {
-		return 6;
-	} else if (now < analogTempList[8]) {
-		return 7;
-	} else if (now < analogTempList[9]) {
-		return 8;
-	} else if (now < analogTempList[10]) {
-		return 9;
-	} else if (now < analogTempList[11]) { // 1100
-		return 10;
-	} else if (now < analogTempList[12]) { // 1200
-		return 11;
-	} else if (now < analogTempList[13]) { //  1300
-		return 12;
-	} else if (now < analogTempList[14]) {
-		return 13;
-	} else if (now < analogTempList[15]) {
-		return 14;
-	} else if (now < analogTempList[16]) {
-		return 15;
-	} else if (now < analogTempList[17]) {
-		return 16;
-	} else if (now < analogTempList[18]) {
-		return 17;
-	} else if (now < analogTempList[19]) {
-		return 18;
-	} else if (now < analogTempList[20]) {
-		return 19;
-	} else if (now < analogTempList[21]) {
-		return 20;
-	} else if (now < analogTempList[22]) {
-		return 21;
-	} else if (now < analogTempList[23]) {
-		return 22;
-	} else if (now < analogTempList[24]) {
-		return 23;
-	} else if (now < analogTempList[25]) {
-		return 24;
-	} else if (now < analogTempList[26]) {
-		return 25;
-	} else if (now < analogTempList[27]) {
-		return 26;
-	} else if (now < analogTempList[28]) { // <----
-		return 27;
-	} else if (now < analogTempList[29]) {
-		return 28;
-	} else if (now < analogTempList[30]) {
-		return 29;
-	} else if (now < analogTempList[31]) {
-		return 30;
-	} else if (now < analogTempList[32]) {
-		return 31;
-	} else if (now < analogTempList[33]) {
-		return 32;
-	} else if (now < analogTempList[34]) {
-		return 33;
-	} else if (now < analogTempList[35]) {
-		return 34;
-	} else if (now < analogTempList[36]) {
-		return 35;
-	} else if (now < analogTempList[37]) {
-		return 36;
-	} else if (now < analogTempList[38]) {
-		return 37;
-	} else if (now < analogTempList[39]) {
-		return 38;
-	} else if (now < analogTempList[40]) {
-		return 39;
-	} else if (now < analogTempList[41]) {
-		return 40;
-	} else if (now < analogTempList[42]) {
-		return 41;
-	} else if (now < analogTempList[43]) {
-		return 42;
-	} else if (now < analogTempList[44]) {
-		return 43;
-	} else if (now < analogTempList[45]) {
-		return 44;
-	} else if (now < analogTempList[46]) {
-		return 45;
-	} else if (now < analogTempList[47]) {
-		return 46;
-	} else if (now < analogTempList[48]) {
-		return 47;
-	} else if (now < analogTempList[49]) {
-		return 48;
-	} else if (now < analogTempList[50]) {
-		return 49;
-	} else if (now < analogTempList[51]) {
-		return 50;
-	} else if (now < analogTempList[52]) {
-		return 51;
-	} else if (now < analogTempList[53]) {
-		return 52;
-	} else if (now < analogTempList[54]) {
-		return 53;
-	} else if (now < analogTempList[55]) {
-		return 54;
-	} else if (now < analogTempList[56]) {
-		return 55;
-	} else if (now < analogTempList[57]) {
-		return 56;
-	} else if (now < analogTempList[58]) {
-		return 57;
-	} else if (now < analogTempList[59]) {
-		return 58;
-	}
+
 	return 59;
 }
 
@@ -260,127 +150,7 @@ uint16_t getAnalogTo(uint16_t temp) {
 
 	return : 아날로그 (온도)
 */
-	if (temp < 1) {
-		return analogTempList[0]; // <= 0 ~ 10 도
-	} else if (temp < 2) {
-		return analogTempList[1];
-	} else if (temp < 3) {
-		return analogTempList[2];
-	} else if (temp < 4) {
-		return analogTempList[3];
-	} else if (temp < 5) {
-		return analogTempList[4];
-	} else if (temp < 6) {
-		return analogTempList[5];
-	} else if (temp < 7) {
-		return analogTempList[6];
-	} else if (temp < 8) {
-		return analogTempList[7];
-	} else if (temp < 9) {
-		return analogTempList[8];
-	} else if (temp < 10) {
-		return analogTempList[9];
-	} else if (temp < 11) {
-		return analogTempList[10]; // <= 0 ~ 10 도
-	} else if (temp < 12) {
-		return analogTempList[11];
-	} else if (temp < 13) {
-		return analogTempList[12];
-	} else if (temp < 14) {
-		return analogTempList[13];
-	} else if (temp < 15) {
-		return analogTempList[14];
-	} else if (temp < 16) {
-		return analogTempList[15];
-	} else if (temp < 17) {
-		return analogTempList[16];
-	} else if (temp < 18) {
-		return analogTempList[17];
-	} else if (temp < 19) {
-		return analogTempList[18];
-	} else if (temp < 20) {
-		return analogTempList[19];
-	} else if (temp < 21) {
-		return analogTempList[20];
-	} else if (temp < 22) {
-		return analogTempList[21];
-	} else if (temp < 23) {
-		return analogTempList[22];
-	} else if (temp < 24) {
-		return analogTempList[23];
-	} else if (temp < 25) {
-		return analogTempList[24];
-	} else if (temp < 26) {
-		return analogTempList[25];
-	} else if (temp < 27) {
-		return analogTempList[26];
-	} else if (temp < 28) {
-		return analogTempList[27];
-	} else if (temp < 29) {
-		return analogTempList[28];
-	} else if (temp < 30) {
-		return analogTempList[29];
-	} else if (temp < 31) {
-		return analogTempList[30];
-	} else if (temp < 32) {
-		return analogTempList[31];
-	} else if (temp < 33) {
-		return analogTempList[32];
-	} else if (temp < 34) {
-		return analogTempList[33];
-	} else if (temp < 35) {
-		return analogTempList[34];
-	} else if (temp < 36) {
-		return analogTempList[35];
-	} else if (temp < 37) {
-		return analogTempList[36];
-	} else if (temp < 38) {
-		return analogTempList[37];
-	} else if (temp < 39) {
-		return analogTempList[38];
-	} else if (temp < 40) {
-		return analogTempList[39];
-	} else if (temp < 41) {
-		return analogTempList[40];
-	} else if (temp < 42) {
-		return analogTempList[41];
-	} else if (temp < 43) {
-		return analogTempList[42];
-	} else if (temp < 44) {
-		return analogTempList[43];
-	} else if (temp < 45) {
-		return analogTempList[44];
-	} else if (temp < 46) {
-		return analogTempList[45];
-	} else if (temp < 47) {
-		return analogTempList[46];
-	} else if (temp < 48) {
-		return analogTempList[47];
-	} else if (temp < 49) {
-		return analogTempList[48];
-	} else if (temp < 50) {
-		return analogTempList[49];
-	} else if (temp < 51) {
-		return analogTempList[50];
-	} else if (temp < 52) {
-		return analogTempList[51];
-	} else if (temp < 53) {
-		return analogTempList[52];
-	} else if (temp < 54) {
-		return analogTempList[53];
-	} else if (temp < 55) {
-		return analogTempList[54];
-	} else if (temp < 56) {
-		return analogTempList[55];
-	} else if (temp < 57) {
-		return analogTempList[56];
-	} else if (temp < 58) {
-		return analogTempList[57];
-	} else if (temp < 59) {
-		return analogTempList[58];
-	} else if (temp < 60) {
-		return analogTempList[59];
-	}
+
 	return 4999;
 }
 
@@ -1253,34 +1023,6 @@ void offRSTGATEWhenOn(void) {
 	}
 }
 
-// 정/역
-uint16_t finalSensor_mV_old[ZSU_CH_MAX+1][2];
-void reverseZSU8ch_old(uint16_t ch) {
-
-	if (zsu_ch0_ch7_analog[ch] >= 2500) {
-		// +500
-		finalSensor_mV_old[ch][0] = S_PLUS; // +
-		finalSensor_mV_old[ch][1] = (zsu_ch0_ch7_analog[ch] - 2500); // 500
-		return;
-	}
-
-	// -500
-	finalSensor_mV_old[ch][0] = S_MINUS; // -
-	finalSensor_mV_old[ch][1] = (2500 - zsu_ch0_ch7_analog[ch]); // 500
-}
-void reverseMainSensor_old(uint16_t sensor) {
-
-	if (sensor >= 2500) {
-		// +500
-		finalSensor_mV_old[8][0] = S_PLUS; // +
-		finalSensor_mV_old[8][1] = (sensor - 2500); // 500
-		return;
-	}
-
-	// -500
-	finalSensor_mV_old[8][0] = S_MINUS; // -
-	finalSensor_mV_old[8][1] = (2500 - sensor); // 500
-}
 
 bool getSensorTypeByCh(uint16_t i) {
 	// 9개의 정/역 비교를 위한 로더 설정 값
@@ -1309,50 +1051,9 @@ bool getSensorTypeByCh(uint16_t i) {
 	return 1; // 가정, 정(+)
 }
 
-void filterGoodValue_old(void) { // #1023 알람 테스트 함수때 필요하다.
-// 메뉴 설정값과 현재 입력 값의 기호가 같은지 체크 한다.
-// 이것은 알람 테스트 기능에서 필요한 함수이다.
-	uint16_t i;
-	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
-		if (finalSensor_mV_old[i][0] == getSensorTypeByCh(i)) {
-			// 메뉴 설정 값과 입력 값이 같다면,
-			finalSensor_mV_old[i][0] = S_GOOD;
-		} else {
-			finalSensor_mV_old[i][0] = S_ERROR;
-		}
-	}
-}
-uint16_t getMaxValue_old(void) {
-	uint16_t max = 0;
-	uint16_t i;
-	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
-		if (finalSensor_mV_old[i][0] == S_GOOD) {
-			if (finalSensor_mV_old[i][1] > max) {
-				max = finalSensor_mV_old[i][1];
-			}
-		}
-	}
-	return max;
-}
 
 
 
-
-// #1023 추후 센서 알람 테스트 시에 참고 함수 @중요
-volatile uint16_t sensorMax;
-uint16_t getMicomFinalMaxSensor_old(void) {
-	uint16_t ch;
-	// 모든(총 9개) 센서 입력값을 버퍼에 저장한다.
-	for (ch = 0; ch < ZSU_CH_MAX; ch++) {
-		reverseZSU8ch_old(ch); // 2500 기준으로 각 채널 값에 +/- 기호 값을 저장하였다.
-	}
-	reverseMainSensor_old(scr.nowMicomMainAdSensor); // 2500 기준으로 메인 채널 값에 +/- 기호 값을 저장하였다.
-
-	// 이 중에 최대 값을 리턴한다.
-	filterGoodValue_old();
-	sensorMax = getMaxValue_old();
-	return sensorMax;
-}
 // #1022 그냥 현재 센서 입력 값 중에 가장 큰 값을 마이컴단 값으로 가져오면 된다.
 uint16_t getMicomFinalMaxSensor(uint16_t now_main) {
 	uint16_t max = now_main;
@@ -1589,51 +1290,47 @@ uint16_t micom_getSensorNowSuwi(uint8_t ch) {
 
 
 // #1025
-volatile uint16_t a, b;
+uint16_t get_micom_SRP_max() {
+	return db_ldrSetSRPMAX;
+}
+uint16_t get_micom_SRP_min() {
+	return db_ldrSetSRPMIN;
+}
+
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
 	* SRP MAX
 	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SRP Time : check time
 */
-	uint8_t ch;
+	uint8_t ch = 0;
 	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
-	uint16_t micom_nowSensorSuwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
+	uint16_t micom_nowIn_sensorJunwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
 	//---------------------------------------------
-	uint16_t micom_SRP_max = micom_getLdrSetSRP_max(iF_SRP_max);		// 설정값 메뉴 (전체)
-	uint16_t micom_SRP_min = micom_getLdrSetSRP_min(iF_SRP_min); 		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 //	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
 	uint16_t setChkTime_SRP = 10000; // 설정값 메뉴
+	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
 		return STEP_GOOD;
 	}
 
-	// 실제 에러 체크 (총 9개 센서에 대해서)
-//	for (ch = 0; ch < 9; ch++) {
 
-ch = 0;
-		senseorType[ch] = getSensorTypeByCh(ch); // 센서 타입 : zinc = 0
-		micom_nowSensorSuwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
-a = micom_SRP_min; // 4000
-b = micom_nowSensorSuwi[ch]; // 1775
-		switch (senseorType[ch]) {
-			case TYPE_ZINC:
-				// 1775 < 4000
-				if (micom_nowSensorSuwi[ch] < micom_SRP_min) {
-					return STEP_ERROR;
-				}
-				break;
-			case TYPE_CUCUSO4:
-				if (micom_nowSensorSuwi[ch] > micom_SRP_max) {
-					return STEP_ERROR;
-				}
-				break;
-		}
-//	}
-
-
-
+	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
+	switch (getSensorTypeByCh(ch)) {
+		case TYPE_ZINC:
+			if (micom_nowIn_sensorJunwi[0] < micom_SRP_min) {
+				return STEP_ERROR;
+			}
+			break;
+		case TYPE_CUCUSO4:
+			if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
+				return STEP_ERROR;
+			}
+			break;
+	}
 
 	return STEP_CHKING;
 }
@@ -1657,23 +1354,31 @@ enum {
 	ERR_FOP // RST 상
 };
 
-
+// #1025
 void loop_allStepRun(uint8_t step) {
 	static uint8_t errorCode;
-	uint8_t chk;
+	uint8_t errchk;
 
 	switch (step) {
 		case 1:
 			// 설정 시간 동안
 			// sensor별 = type | 현재 수위값 |
-			chk = isSRPError(); // 0 ~ 7 , 8(main)
+			errchk = isSRPError(); // 0 ~ 7 , 8(main)
 			// 하나라도 에러 발생하면 !
-			if (chk == STEP_ERROR) {
+			if (errchk == STEP_ERROR) {
+				// error !
 				errorCode = ERR_SRP;
 				break;
-			} else if (chk == STEP_GOOD) {
+			} else if (errchk == STEP_GOOD) {
+				// good !
+				// 에러 X
 				errorCode = ERR_NONE;
 				step = 2;
+				break;
+			} else if (errchk == STEP_CHKING){
+				// 체킹 계속 진행 ~~
+				// 현재 에러 X
+				errorCode = ERR_NONE;
 				break;
 			}
 			break;
@@ -1710,8 +1415,6 @@ void initSystem(void) {
 
 
 // #1025 coding 영역
-volatile uint16_t db_ldrSetSRPMAX;
-volatile uint16_t db_ldrSetSRPMIN;
 
 void database_SRP_MAX() {
 	uint16_t micom_SRP_max = getMicomGoalSensorVal(iF_SRP_max);
@@ -1774,7 +1477,7 @@ void main(void) {
 
 	mysucessTimer = 0xffff;
 
-
+	pin_RUN_LED = LED_OFF; // 1 = off
     while (1) {
         unsigned int i;
         uint8_t ch;
@@ -1834,19 +1537,19 @@ void main(void) {
 		database_SRP_MAX();
 
 
-//		if (isJustNowPowerOn()) {
-//			// 테스트 시작 !!!!
-//			mysucessTimer = 0;
-//			// setp 및 변수들 초기화
-//			nRunStep = 1;
-//			chkTimer_SRP_msec = 0;
-//		}
-//		if (pin_KEY_POWER == KEY_POWER_ON) {
-//			// 전체 제어 순서
-//			loop_allStepRun(nRunStep);
-//		} else {
-//			initSystem();
-//		}
+		if (isJustNowPowerOn()) {
+			// 테스트 시작 !!!!
+			mysucessTimer = 0;
+			// setp 및 변수들 초기화
+			nRunStep = 1;
+			chkTimer_SRP_msec = 0;
+		}
+		if (pin_KEY_POWER == KEY_POWER_ON) {
+			// 전체 제어 순서
+			loop_allStepRun(nRunStep);
+		} else {
+			initSystem();
+		}
     }
 }
 
@@ -1897,7 +1600,7 @@ void interrupt isr(void) {
 		if (pwstartTiemr < 0xffff) pwstartTiemr++;
         if ((timer_msec >= 1000) && (mysucessTimer < 5000)) {
             timer_msec = 0;
-			pin_RUN_LED = ~pin_RUN_LED;
+			//pin_RUN_LED = ~pin_RUN_LED;
         }
 
         NoCanInt++;

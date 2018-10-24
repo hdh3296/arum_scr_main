@@ -393,7 +393,7 @@ void ldr_sign_A(void) {
 void display_unit() {
 
 	switch	(ThisSelMenuNm){
-		case	GOAL_SENSOR:
+		case	GOAL_SENSOR: // #1025
 		case    SRP_MAX:
 		case	SRP_MIN:
 
