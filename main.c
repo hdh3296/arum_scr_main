@@ -1297,13 +1297,13 @@ uint16_t get_micom_SRP_min() {
 	return db_ldrSetSRPMIN;
 }
 
+volatile	uint8_t ch = 0;
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
 	* SRP MAX
 	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SRP Time : check time
 */
-	uint8_t ch = 0;
 	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
 	uint16_t micom_nowIn_sensorJunwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
 	//---------------------------------------------
@@ -1314,6 +1314,7 @@ uint8_t isSRPError(void) {
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
+        ch = 0;
 		return STEP_GOOD;
 	}
 
@@ -1322,11 +1323,13 @@ uint8_t isSRPError(void) {
 	switch (getSensorTypeByCh(ch)) {
 		case TYPE_ZINC:
 			if (micom_nowIn_sensorJunwi[0] < micom_SRP_min) {
+                ch = 0;
 				return STEP_ERROR;
 			}
 			break;
 		case TYPE_CUCUSO4:
 			if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
+                ch = 0;
 				return STEP_ERROR;
 			}
 			break;
@@ -1355,9 +1358,9 @@ enum {
 };
 
 // #1025
+volatile	uint8_t errchk;
 void loop_allStepRun(uint8_t step) {
 	static uint8_t errorCode;
-	uint8_t errchk;
 
 	switch (step) {
 		case 1:

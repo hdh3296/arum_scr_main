@@ -17,15 +17,15 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_SCR_GOAL_CURRENT 100 // 10.0A
 #define DFL_SCR_GOAL_SENSOR  10250 // 1000mV 전위
 // 센서 정/역 디폴트
-#define DFL_REVERSE_0 1
-#define DFL_REVERSE_1 1
-#define DFL_REVERSE_2 1
-#define DFL_REVERSE_3 1
-#define DFL_REVERSE_4 1
-#define DFL_REVERSE_5 1
-#define DFL_REVERSE_6 1
-#define DFL_REVERSE_7 1
-#define DFL_REVERSE_8 1
+#define DFL_REVERSE_0 0 // 0 : zinc
+#define DFL_REVERSE_1 0
+#define DFL_REVERSE_2 0
+#define DFL_REVERSE_3 0
+#define DFL_REVERSE_4 0
+#define DFL_REVERSE_5 0
+#define DFL_REVERSE_6 0
+#define DFL_REVERSE_7 0
+#define DFL_REVERSE_8 0
 
 #define DFL_CH0_TEMP_LOW 27	 //11234	  //2800
 #define DFL_CH1_GOAL_CURRENT 10121 // 7A
