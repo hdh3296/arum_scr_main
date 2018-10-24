@@ -1297,7 +1297,7 @@ uint16_t get_micom_SRP_min() {
 	return db_ldrSetSRPMIN;
 }
 
-volatile uint16_t xxx;
+volatile uint16_t d_xxx;
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
 	* SRP MAX
@@ -1315,22 +1315,22 @@ uint8_t isSRPError(void) {
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
-        xxx = 0;
+        d_xxx = 0;
 		return STEP_GOOD;
 	}
-    
+
 
 	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
 	switch (getSensorTypeByCh(ch)) {
 		case TYPE_ZINC:
 			if (micom_nowIn_sensorJunwi[0] < micom_SRP_min) {
-                xxx = 0;
+                d_xxx = 0;
 				return STEP_ERROR;
 			}
 			break;
 		case TYPE_CUCUSO4:
 			if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
-                xxx = 0;
+                d_xxx = 0;
 				return STEP_ERROR;
 			}
 			break;
