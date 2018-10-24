@@ -490,7 +490,7 @@ uint16_t G4_Menu_Status_Set(void) {
 }
 
 
-// 정/역 메뉴 9개 + 테스트 메뉴 1개 ##
+// 정/역 메뉴 9개 + 테스트 메뉴 1개
 uint16_t G5_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
@@ -501,7 +501,7 @@ uint16_t G5_Menu_Status_Set(void) {
     sub_gr = 0;
 
 	/////////////////////////////////////////////////////////////////////
-	// 0 센서 +/- 센서 type 설정 0채널 ##
+	// 0 센서 +/- 센서 type 설정 0채널
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
 	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_0; // 데이어/플래쉬

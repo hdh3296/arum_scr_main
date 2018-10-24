@@ -1233,7 +1233,7 @@ void offRSTGATEWhenOn(void) {
 	}
 }
 
-// ## 정/역
+// 정/역
 uint16_t finalSensor_mV_old[ZSU_CH_MAX+1][2];
 void reverseZSU8ch_old(uint16_t ch) {
 
@@ -1262,7 +1262,7 @@ void reverseMainSensor_old(uint16_t sensor) {
 	finalSensor_mV_old[8][1] = (2500 - sensor); // 500
 }
 
-bool chkSetReverse(uint16_t i) { // ##
+bool chkSetReverse(uint16_t i) {
 	// 9개의 정/역 비교를 위한 로더 설정 값
 	switch (i) {
 		case 0:
@@ -1329,7 +1329,7 @@ uint16_t getMicomFinalMaxSensor_old(void) {
 	reverseMainSensor_old(scr.nowMicomMainAdSensor); // 2500 기준으로 메인 채널 값에 +/- 기호 값을 저장하였다.
 
 	// 이 중에 최대 값을 리턴한다.
-	filterGoodValue_old(); // ##
+	filterGoodValue_old();
 	sensorMax = getMaxValue_old();
 	return sensorMax;
 }

@@ -73,8 +73,8 @@ extern volatile bit RB1x @ ((unsigned) &PORTB * 8) + 1;
 #define pin_KEY_POWER_tris  TRISD1
 #define pin_KEY_ALARM		RD2
 #define pin_KEY_ALARM_tris	TRISD2
-#define pin_50_60HZ			RD3
-#define pin_50_60HZ_tris	TRISD3
+#define pin_50HZ			RD3
+#define pin_50HZ_tris	TRISD3
 
 
 extern void initPort(void);

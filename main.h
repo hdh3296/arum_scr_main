@@ -22,6 +22,20 @@ typedef unsigned char bool;
 #define ON_RELAY 1
 #define OFF_RELAY 0
 
+enum {
+	KEY_POWER_ON = 0,
+	KEY_POWER_OFF = 1
+};
+enum {
+	KEY_ALARM_ON = 0,
+	KEY_ALARM_OFF = 1
+};
+enum {
+	KEY_50HZ_ON = 0,
+	KEY_50HZ_OFF = 1
+};
+
+
 
 enum {
 	SIGN_MINUS,
