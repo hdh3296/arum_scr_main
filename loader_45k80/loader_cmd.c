@@ -1222,7 +1222,7 @@ uint16_t CusorDataDn(void) {
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
 
-		if (ThisSelMenuNm == 4) { // goal sensor !
+		if (isThisSelMenuNmIsSignDigit_1024()) { // goal sensor !
 			getFinalUserNumWhenDnKey(ThisSignalUserNumbuf, ThisDigitData, pos);
 			ThisDigitData = updateThisDigitData(ThisSignalUserNumbuf);
 		} else { // ¿œπ›
