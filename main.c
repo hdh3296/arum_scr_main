@@ -1297,13 +1297,14 @@ uint16_t get_micom_SRP_min() {
 	return db_ldrSetSRPMIN;
 }
 
-volatile	uint8_t ch = 0;
+volatile uint16_t xxx;
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
 	* SRP MAX
 	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SRP Time : check time
 */
+    uint8_t ch = 0;
 	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
 	uint16_t micom_nowIn_sensorJunwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
 	//---------------------------------------------
@@ -1314,22 +1315,22 @@ uint8_t isSRPError(void) {
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
-        ch = 0;
+        xxx = 0;
 		return STEP_GOOD;
 	}
-
+    
 
 	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
 	switch (getSensorTypeByCh(ch)) {
 		case TYPE_ZINC:
 			if (micom_nowIn_sensorJunwi[0] < micom_SRP_min) {
-                ch = 0;
+                xxx = 0;
 				return STEP_ERROR;
 			}
 			break;
 		case TYPE_CUCUSO4:
 			if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
-                ch = 0;
+                xxx = 0;
 				return STEP_ERROR;
 			}
 			break;
@@ -1432,6 +1433,10 @@ void database_SRP_MAX() {
 	db_ldrSetSRPMIN = micom_SRP_min;
 }
 
+bool isCoditionContorl() {
+	return ( (pin_KEY_POWER == KEY_POWER_ON)
+		&& (powerOnStartTimer > 1000) );
+}
 
 
 // -------------------------------------
@@ -1481,6 +1486,7 @@ void main(void) {
 	mysucessTimer = 0xffff;
 
 	pin_RUN_LED = LED_OFF; // 1 = off
+	powerOnStartTimer = 0;
     while (1) {
         unsigned int i;
         uint8_t ch;
@@ -1546,8 +1552,9 @@ void main(void) {
 			// setp 및 변수들 초기화
 			nRunStep = 1;
 			chkTimer_SRP_msec = 0;
+			powerOnStartTimer = 0;
 		}
-		if (pin_KEY_POWER == KEY_POWER_ON) {
+		if (isCoditionContorl()) {
 			// 전체 제어 순서
 			loop_allStepRun(nRunStep);
 		} else {
@@ -1625,6 +1632,7 @@ void interrupt isr(void) {
 
 		if (mysucessTimer < 0xffff) mysucessTimer++;
 		if (chkTimer_SRP_msec < 0xffff) chkTimer_SRP_msec++;
+		if (powerOnStartTimer < 0xffff) powerOnStartTimer++;
     }
 
 
