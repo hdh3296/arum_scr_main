@@ -395,6 +395,8 @@ void display_unit() {
 	switch	(ThisSelMenuNm){
 		case	GOAL_SENSOR:
 		case    SRP_MAX:
+		case	SRP_MIN:
+
             ldr_sigh_T_1023T(); // ¿Âµµ
 			break;
 	}

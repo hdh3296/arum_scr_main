@@ -1588,9 +1588,6 @@ uint16_t micom_getSensorNowSuwi(uint8_t ch) {
 }
 
 
-uint16_t micom_getLdrSetSRP_min(uint16_t setvalue) {
-	return getMicomGoalSensorVal(setvalue);
-}
 // #1025
 volatile uint16_t a, b;
 uint8_t isSRPError(void) {
@@ -1714,9 +1711,11 @@ void initSystem(void) {
 
 // #1025 coding 영역
 volatile uint16_t db_ldrSetSRPMAX;
+volatile uint16_t db_ldrSetSRPMIN;
+
 void database_SRP_MAX() {
 	uint16_t micom_SRP_max = getMicomGoalSensorVal(iF_SRP_max);
-//	uint16_t micom_SRP_min = micom_getLdrSetSRP_min(iF_SRP_min);		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_min = getMicomGoalSensorVal(iF_SRP_min);		// 설정값 메뉴 (전체)
 
 	// 1. 유저값 +1000 (-1000)
 	// 2. 로더변수 11000 (1000 -1000 = 9000)
@@ -1724,6 +1723,7 @@ void database_SRP_MAX() {
 
 	// #1025
 	db_ldrSetSRPMAX = micom_SRP_max;
+	db_ldrSetSRPMIN = micom_SRP_min;
 }
 
 
