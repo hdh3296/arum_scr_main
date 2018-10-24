@@ -64,11 +64,12 @@ const uint8_t GroupLineMessage[][17] = {
 	"main:   REF TYPE", //16
 
     "etc :currentType", //16
+	"SRP : MAX       ", //16
+    "SRP : MIN       ", //16
+    "SRP : TIME      ", //9  // group1
 
-	"CH-3:ch correctV", //16
-    "CH-3:ch correctA", //16
 
-    "CH-4:On Temp    ", //9  // group1
+
     "CH-4:Off Temp   ", //10
     "CH-4:Set Volt(V)", //14
     "CH-4:Set Amp(A) ", //15
@@ -87,6 +88,7 @@ const uint8_t GroupLineMessage[][17] = {
     "CH-5:ch correctT", //16
     "CH-5:ch correctV", //16
     "CH-5:ch correctA", //16
+
 
 };
 
@@ -203,11 +205,11 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_SCR_GOAL_VOLTAGE     		IntzData033
 #define F_SCR_GOAL_CURRENT     		IntzData034
 #define F_SCR_GOAL_SENSOR       	IntzData035
+#define F_SRP_MAX     				IntzData036
+#define F_SRP_MIN			       	IntzData037
+#define F_SRP_TIME		     		IntzData038
 
-#define F_CH1_GOAL_CURRENT     		IntzData036
 
-#define F_CH2_GOAL_VOLTAGE       	IntzData037
-#define F_CH2_GOAL_CURRENT     		IntzData038
 
 #define F_CH3_GOAL_VOLTAGE       	IntzData039
 #define F_CH3_GOAL_CURRENT     		IntzData040
@@ -240,16 +242,16 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define cF_A_type_num   	cF_ByteData(F_A_TYPE_NUM)
 
-// 센서 정/역 설정 final 저장 값
-#define cF_reverse_0      		cF_ByteData(F_REVERSE_0)
-#define cF_reverse_1 			cF_ByteData(F_REVERSE_1)
-#define cF_reverse_2 			cF_ByteData(F_REVERSE_2)
-#define cF_reverse_3 			cF_ByteData(F_REVERSE_3)
-#define cF_reverse_4 			cF_ByteData(F_REVERSE_4)
-#define cF_reverse_5 			cF_ByteData(F_REVERSE_5)
-#define cF_reverse_6 			cF_ByteData(F_REVERSE_6)
-#define cF_reverse_7 			cF_ByteData(F_REVERSE_7)
-#define cF_reverse_8 			cF_ByteData(F_REVERSE_8)
+// 센서 zinc, cocuso4 type 설정 값
+#define cF_sensorType_0      		cF_ByteData(F_REVERSE_0)
+#define cF_sensorType_1 			cF_ByteData(F_REVERSE_1)
+#define cF_sensorType_2 			cF_ByteData(F_REVERSE_2)
+#define cF_sensorType_3 			cF_ByteData(F_REVERSE_3)
+#define cF_sensorType_4 			cF_ByteData(F_REVERSE_4)
+#define cF_sensorType_5 			cF_ByteData(F_REVERSE_5)
+#define cF_sensorType_6 			cF_ByteData(F_REVERSE_6)
+#define cF_sensorType_7 			cF_ByteData(F_REVERSE_7)
+#define cF_sensorType_8 			cF_ByteData(F_REVERSE_8)
 
 
 
@@ -278,11 +280,11 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_scr_goalVoltage 			iF_IntData(F_SCR_GOAL_VOLTAGE)
 #define iF_scr_goalCurrent 			iF_IntData(F_SCR_GOAL_CURRENT)
 #define iF_scr_goalSensor 			iF_IntData(F_SCR_GOAL_SENSOR)
+#define iF_SRP_max 					iF_IntData(F_SRP_MAX)
+#define iF_SRP_min 					iF_IntData(F_SRP_MIN)
+#define iF_SRP_time		 			iF_IntData(F_SRP_TIME)
 
-#define iF_ch1_goalCurrent 			iF_IntData(F_CH1_GOAL_CURRENT)
 
-#define iF_ch2_goalVoltage 			iF_IntData(F_CH2_GOAL_VOLTAGE)
-#define iF_ch2_goalCurrent 			iF_IntData(F_CH2_GOAL_CURRENT)
 
 #define iF_ch3_goalVoltage 			iF_IntData(F_CH3_GOAL_VOLTAGE)
 #define iF_ch3_goalCurrent 			iF_IntData(F_CH3_GOAL_CURRENT)

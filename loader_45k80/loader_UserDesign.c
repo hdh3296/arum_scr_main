@@ -28,10 +28,10 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_REVERSE_8 1
 
 #define DFL_CH0_TEMP_LOW 27	 //11234	  //2800
-#define DFL_CH1_GOAL_CURRENT 50 // 7A
+#define DFL_CH1_GOAL_CURRENT 10121 // 7A
+#define DFL_CH2_GOAL_VOLTAGE 10122 // V
+#define DFL_CH2_GOAL_CURRENT 02000 // 7A
 
-#define DFL_CH2_GOAL_VOLTAGE 100 // V
-#define DFL_CH2_GOAL_CURRENT 50 // 7A
 
 
 #define DFL_CH3_GOAL_VOLTAGE 100 // V
@@ -625,6 +625,44 @@ uint16_t G6_Menu_Status_Set(void) {
 	UserMenuSerialNm++;
 	sub_gr++;
 
+	/////////////////////////////////////////////////////////////////////
+    //SRP MAX
+    /////////////////////////////////////////////////////////////////////
+    // ThisSelMenuNm => ??
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // 10000 +
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; //  0000 -
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_MAX;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+    UserMenuSerialNm++;
+    sub_gr++;
+	/////////////////////////////////////////////////////////////////////
+    //SRP MIN
+    /////////////////////////////////////////////////////////////////////
+    // ThisSelMenuNm => ??
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // 10000 +
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; //  0000 -
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_MIN;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+    UserMenuSerialNm++;
+    sub_gr++;
+	/////////////////////////////////////////////////////////////////////
+    //SRP TIME
+    /////////////////////////////////////////////////////////////////////
+    // ThisSelMenuNm => ??
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue =  12345; // 10000 +
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  	0; //  0000 -
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_TIME;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+    UserMenuSerialNm++;
+    sub_gr++;
+
+
 	// end ----------------
     MenuStatus[UserMenuSerialNm].M_EditGroupNm = 0xff;
     return (0);
@@ -726,11 +764,12 @@ uint16_t DefaultValueSet(void) {
 		iSR_IntData(F_SCR_GOAL_CURRENT) = DFL_SCR_GOAL_CURRENT;
         iSR_IntData(F_SCR_GOAL_SENSOR) 	= DFL_SCR_GOAL_SENSOR;
 
+        iSR_IntData(F_SRP_MAX) = DFL_CH1_GOAL_CURRENT;
+        iSR_IntData(F_SRP_MIN) = DFL_CH2_GOAL_VOLTAGE;
+        iSR_IntData(F_SRP_TIME) = DFL_CH2_GOAL_CURRENT;
 
-        iSR_IntData(F_CH1_GOAL_CURRENT) = DFL_CH1_GOAL_CURRENT;
 
-        iSR_IntData(F_CH2_GOAL_VOLTAGE) = DFL_CH2_GOAL_VOLTAGE;
-        iSR_IntData(F_CH2_GOAL_CURRENT) = DFL_CH2_GOAL_CURRENT;
+
 
         iSR_IntData(F_CH3_GOAL_VOLTAGE) = DFL_CH3_GOAL_VOLTAGE;
         iSR_IntData(F_CH3_GOAL_CURRENT) = DFL_CH3_GOAL_CURRENT;

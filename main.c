@@ -121,6 +121,9 @@ void offPwmAll(void) {
 }
 
 
+
+
+
 volatile uint16_t teat_correct;
 uint16_t getCurTempTo(uint16_t now) {
 /*
@@ -1118,6 +1121,7 @@ bool getCheckCommBreakPnnel(void) {
 /*/////////////////////////////////
 /* #부식방지 시스템
 /*//////////////////////////////////
+
 #define GATE_H		1
 #define	GATE_L	0
 #define PIN_R_PH_HIGH	1
@@ -1128,7 +1132,6 @@ uint16_t pwstartTiemr; // 최초 전원 켰을 때 순간 게이트 on 되는 문제 때문에 추가
 bool bRzeroTimerStart;
 bool bSzeroTimerStart;
 bool bTzeroTimerStart;
-
 
 uint16_t gateRSTDo_time; // 수동에의해 최종 몇 도 조절 할지의 값이다.
 // 이 값이 결국은 PWM 의 듀티값과 같다고 보면 된다.
@@ -1149,6 +1152,16 @@ uint16_t timerTGateHighChk;
 uint16_t tiemrRzeroTimer;
 uint16_t tiemrSzeroTimer;
 uint16_t tiemrTzeroTimer;
+
+uint16_t micom_sensor_0_8_mV[9];
+void micom_saveTotal8sensorNowValue(void) {
+	uint8_t ch;
+	for (ch = 0; ch < 8; ch++) {
+		micom_sensor_0_8_mV[ch] = zsu_ch0_ch7_analog[ch];
+	}
+	micom_sensor_0_8_mV[ch] = scr.nowMicomMainAdSensor;
+}
+
 
 
 void whenRZeroEdgeUp(void) {
@@ -1269,27 +1282,27 @@ void reverseMainSensor_old(uint16_t sensor) {
 	finalSensor_mV_old[8][1] = (2500 - sensor); // 500
 }
 
-bool chkSetReverse(uint16_t i) {
+bool getSensorTypeByCh(uint16_t i) {
 	// 9개의 정/역 비교를 위한 로더 설정 값
 	switch (i) {
 		case 0:
-			return cF_reverse_0;
+			return cF_sensorType_0;
 		case 1:
-			return cF_reverse_1;
+			return cF_sensorType_1;
 		case 2:
-			return cF_reverse_2;
+			return cF_sensorType_2;
 		case 3:
-			return cF_reverse_3;
+			return cF_sensorType_3;
 		case 4:
-			return cF_reverse_4;
+			return cF_sensorType_4;
 		case 5:
-			return cF_reverse_5;
+			return cF_sensorType_5;
 		case 6:
-			return cF_reverse_6;
+			return cF_sensorType_6;
 		case 7:
-			return cF_reverse_7;
+			return cF_sensorType_7;
 		case 8:
-			return cF_reverse_8;
+			return cF_sensorType_8;
 	}
 
 
@@ -1301,7 +1314,7 @@ void filterGoodValue_old(void) { // #1023 알람 테스트 함수때 필요하다.
 // 이것은 알람 테스트 기능에서 필요한 함수이다.
 	uint16_t i;
 	for (i = 0; i < (ZSU_CH_MAX+1); i++) {
-		if (finalSensor_mV_old[i][0] == chkSetReverse(i)) {
+		if (finalSensor_mV_old[i][0] == getSensorTypeByCh(i)) {
 			// 메뉴 설정 값과 입력 값이 같다면,
 			finalSensor_mV_old[i][0] = S_GOOD;
 		} else {
@@ -1442,7 +1455,7 @@ void compareGoalNowSensor(void) {
 	if (scr.bNowMicomAdSensor_updted) {
 		scr.bNowMicomAdSensor_updted = FALSE;
 
-		goal = getMicomGoalSensorVal(scr.goalSetSensor);
+		goal = getMicomGoalSensorVal(scr.goalSetSensor); // ★
 		now = getMicomFinalMaxSensor(scr.nowMicomMainAdSensor);
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
@@ -1566,35 +1579,68 @@ enum {
 	TYPE_ZINC,
 	TYPE_CUCUSO4
 };
+
+uint16_t micom_getSensorNowSuwi(uint8_t ch) {
+
+	return micom_sensor_0_8_mV[ch];
+
+}
+
+
+uint16_t micom_getLdrSetSRP_max(uint16_t setvalue) {
+
+	return 1000;
+}
+
+uint16_t micom_getLdrSetSRP_min(uint16_t setvalue) {
+	return 4000;
+}
+
+volatile uint16_t a, b;
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
 	* SRP MAX
 	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SRP Time : check time
 */
-	uint8_t senseorType; // zinc / cucs
-	uint16_t nowSensorSuwi; // 현재 수위 입력 값 (사용자 읽기용)
-	uint16_t SRP_low; 		// 설정값 메뉴
-	uint16_t SRP_max;		// 설정값 메뉴
-	uint16_t setChkTime_SRP; // 설정값 메뉴
+	uint8_t ch;
+	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
+	uint16_t micom_nowSensorSuwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
+	//---------------------------------------------
+	uint16_t micom_SRP_max = micom_getLdrSetSRP_max(iF_SRP_max);		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_min = micom_getLdrSetSRP_min(iF_SRP_min); 		// 설정값 메뉴 (전체)
+//	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
+	uint16_t setChkTime_SRP = 10000; // 설정값 메뉴
 
-	if (chkTimer_SRP > setChkTime_SRP) {
+	if (chkTimer_SRP_msec > setChkTime_SRP) {
 		return STEP_GOOD;
 	}
 
+	// 실제 에러 체크 (총 9개 센서에 대해서)
+//	for (ch = 0; ch < 9; ch++) {
 
-	switch (senseorType) {
-		case TYPE_ZINC:
-			if (nowSensorSuwi > SRP_low) {
-				return STEP_ERROR;
-			}
-			break;
-		case TYPE_CUCUSO4:
-			if (nowSensorSuwi > SRP_max) {
-				return STEP_ERROR;
-			}
-			break;
-	}
+ch = 0;
+		senseorType[ch] = getSensorTypeByCh(ch); // zinc = 0
+		micom_nowSensorSuwi[ch] = micom_getSensorNowSuwi(ch);
+a = micom_SRP_min; // 4000
+b = micom_nowSensorSuwi[ch]; // 1775
+		switch (senseorType[ch]) {
+			case TYPE_ZINC:
+				// 1775 < 4000
+				if (micom_nowSensorSuwi[ch] < micom_SRP_min) {
+					return STEP_ERROR;
+				}
+				break;
+			case TYPE_CUCUSO4:
+				if (micom_nowSensorSuwi[ch] > micom_SRP_max) {
+					return STEP_ERROR;
+				}
+				break;
+		}
+//	}
+
+
+
 
 	return STEP_CHKING;
 }
@@ -1626,7 +1672,9 @@ void loop_allStepRun(uint8_t step) {
 	switch (step) {
 		case 1:
 			// 설정 시간 동안
-			chk = isSRPError();
+			// sensor별 = type | 현재 수위값 |
+			chk = isSRPError(); // 0 ~ 7 , 8(main)
+			// 하나라도 에러 발생하면 !
 			if (chk == STEP_ERROR) {
 				errorCode = ERR_SRP;
 				break;
@@ -1767,12 +1815,14 @@ void main(void) {
 		bufZSU_use_not[7] = cF_ch7_use;
 
 		// #1024 4단계 테스트 알람 기능 구현하기
+		micom_saveTotal8sensorNowValue();
+
 		if (isJustNowPowerOn()) {
 			// 테스트 시작 !!!!
 			mysucessTimer = 0;
 			// setp 및 변수들 초기화
-			nRunStep = 5;
-			chkTimer_SRP = 0;
+			nRunStep = 1;
+			chkTimer_SRP_msec = 0;
 		}
 		if (pin_KEY_POWER == KEY_POWER_ON) {
 			// 전체 제어 순서
@@ -1851,7 +1901,7 @@ void interrupt isr(void) {
 		}
 
 		if (mysucessTimer < 0xffff) mysucessTimer++;
-		if (chkTimer_SRP < 0xffff) chkTimer_SRP++;
+		if (chkTimer_SRP_msec < 0xffff) chkTimer_SRP_msec++;
     }
 
 
