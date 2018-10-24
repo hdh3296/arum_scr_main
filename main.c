@@ -1670,8 +1670,6 @@ void interrupt isr(void) {
 		offRSTGATEWhenOn();
 	}
 
-
-
     if (TMR0IF) {
         TMR0IF = 0;
         TMR0L = MSEC_L;
