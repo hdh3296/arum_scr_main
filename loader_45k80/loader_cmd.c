@@ -37,10 +37,19 @@ extern void getFinalUserNumWhenDnKey(uint32_t signalNum[], uint32_t digit, uint8
 
 extern uint32_t changeNumberMinusMethod(uint8_t p, uint32_t n);
 
-uint32_t ThisSignalUserNum[2];
+uint32_t ThisSignalUserNumbuf[2];
 
+enum {
+	GOAL_SENSOR = 4,
+	SRP_MAX = 34,
+	SRP_MIN	= 35
+};
 
-
+bool isThisSelMenuNmIsSignDigit_1024(void) {
+	return ( (ThisSelMenuNm == GOAL_SENSOR)
+		|| (ThisSelMenuNm == SRP_MAX)
+		|| (ThisSelMenuNm == SRP_MIN) );
+}
 
 
 enum {
@@ -322,7 +331,7 @@ uint16_t DigitStringMessage(void) {
 
 void ldr_sigh_T_1023T() {
 
-    if (ThisSignalUserNum[0] == SIGN_PLUS) {
+    if (ThisSignalUserNumbuf[0] == SIGN_PLUS) {
         new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '+';
     } else {
         new485Ladder[SECONDLINE_BASE + CurMenuStatus.M_EditStart + 0] = '-';
@@ -384,7 +393,8 @@ void ldr_sign_A(void) {
 void display_unit() {
 
 	switch	(ThisSelMenuNm){
-		case	4:
+		case	GOAL_SENSOR:
+		case    SRP_MAX:
             ldr_sigh_T_1023T(); // 온도
 			break;
 	}
@@ -430,25 +440,27 @@ void Integer_Digit_1023T(uint32_t userNum) {
 }
 
 
-void getSignalUserNumXXX(uint32_t signalNum[], uint32_t digit) {
-	// 일단 digit값을 해석해야 한다.
-	if (digit >= 10000) {
-		signalNum[0] = SIGN_PLUS;
-		signalNum[1] = digit - 10000; // 12500 - 10000 = 2500
+void getSignalUserNumXXX(uint32_t dest[], uint32_t src) {
+	// 로더 변수 값을 가지고 해당 버퍼에 +/- 기호 값을 담아 저장한다.
+	// 예시) src = 9000 이라면, => -1000
+	if (src >= 10000) {
+		dest[0] = SIGN_PLUS;		// +
+		dest[1] = src - 10000; 	// 12500 - 10000 = 2500
 	} else {
-		signalNum[0] = SIGN_MINUS;
-		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
+		dest[0] = SIGN_MINUS;
+		dest[1] = 10000 - src; // 10000 - 7500 = 2500
 	}
 }
 
 
+
 void Integer_Digit(void) {
 
-	if (ThisSelMenuNm == 4) { // #1023 @임시 삭제해야 한다. !!!
+	if (isThisSelMenuNmIsSignDigit_1024()) { // #1025
 		// user 보여지는 값
-
-		getSignalUserNumXXX(ThisSignalUserNum, ThisDigitData);
-		Integer_Digit_1023T(ThisSignalUserNum[1]);
+		// 					저장할 버퍼, 			입력 로더 변수
+		getSignalUserNumXXX(ThisSignalUserNumbuf, ThisDigitData);
+		Integer_Digit_1023T(ThisSignalUserNumbuf[1]);
 		return;
 	}
 
@@ -984,14 +996,6 @@ void um_whenUp(uint8_t p) { // -
 			break;
 	}
 }
-void signUpTest(uint8_t p) {
-
-	if (ThisDigitData >= 10000) {
-		yang_whenUp(p);
-	} else {
-		um_whenUp(p);
-	}
-}
 ////////////////////
 // down key 눌렀을 때
 void yang_whenDn(uint8_t p) { // +
@@ -1054,14 +1058,16 @@ uint32_t getSignalNumMinusMax(uint32_t min) {
 	return (10000 - min);
 }
 
-void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
+void getFinalUserNumWhenUpKey(uint32_t dset[], uint32_t src, uint8_t p) {
+// up 키늘 눌렀을 때 처리 할 내용들을 담은 함수이다.
+// 즉, up 키를 누르면 dest 값을 얻데이트 한다.(더하기)
 	// 일단 digit값을 해석해야 한다.
-	if (digit >= 10000) {
-		signalNum[0] = SIGN_PLUS;
-		signalNum[1] = digit - 10000; // 12500 - 10000 = 2500
+	if (src >= 10000) {
+		dset[0] = SIGN_PLUS;
+		dset[1] = src - 10000; // 12500 - 10000 = 2500
 	} else {
-		signalNum[0] = SIGN_MINUS;
-		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
+		dset[0] = SIGN_MINUS;
+		dset[1] = 10000 - src; // 10000 - 7500 = 2500
 	}
 
 	switch (p) {
@@ -1069,24 +1075,24 @@ void getFinalUserNumWhenUpKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
 		case 2:
 		case 3:
 		case 4:
-			signalNum[1] = changeNumberPlusMethod(p, signalNum[1]);
+			dset[1] = changeNumberPlusMethod(p, dset[1]);
 			// max, min
-			if (signalNum[0] == SIGN_PLUS) {
-				if (signalNum[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
-					signalNum[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
+			if (dset[0] == SIGN_PLUS) {
+				if (dset[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
+					dset[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
 				}
 			} else {
-				if (signalNum[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
-					signalNum[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
+				if (dset[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
+					dset[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
 				}
 			}
 			break;
 		case 5:
 			// 반대 sign으로 변경
-			if (signalNum[0] == SIGN_PLUS) {
-				signalNum[0] = SIGN_MINUS;
+			if (dset[0] == SIGN_PLUS) {
+				dset[0] = SIGN_MINUS;
 			} else {
-				signalNum[0] = SIGN_PLUS;
+				dset[0] = SIGN_PLUS;
 			}
 			break;
 	}
@@ -1155,17 +1161,14 @@ uint16_t CusorDataUp(void) { // @보정 #1023
 	pos = 0;
     if ((CurMenuStatus.M_EditStatus & DIGIT_EDIT)) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
-		if (ThisSelMenuNm == 4) { // goal sensor !
-			// up key가 눌렸을 때
-			// user 수 자리수 별로
-			// 맨 앞자리는 기호 이므로 기호 변화
-			// 나머지 자리는 증가 !!!
-
-			// 내부 디짓값을 가지고 업키를 눌렀을 때
-			// LCD에 보여지는 값을 얻데이트 한다.
-			getFinalUserNumWhenUpKey(ThisSignalUserNum, ThisDigitData, pos);
-			ThisDigitData = updateThisDigitData(ThisSignalUserNum);
-			//signUpTest(pos);
+		if (isThisSelMenuNmIsSignDigit_1024()) { // goal sensor !
+		// ThisSelMenuNm == 4,,,, 등등 +/- 가 있는 메뉴 라면,
+			//						+/- 기호 있는 수 		, 로더 변수값 		, 커서위치
+			getFinalUserNumWhenUpKey(ThisSignalUserNumbuf, ThisDigitData, pos);
+			ThisDigitData = updateThisDigitData(ThisSignalUserNumbuf);
+			// 1. +/- 값에 업데이트 한다.
+			// 2. 로더 변수 값을 업데이트 한다.
+			// ------------------------
 		} else { // 일반
 			ldr_normal_plus(pos);
 		}
@@ -1218,8 +1221,8 @@ uint16_t CusorDataDn(void) {
 		pos = CurMenuStatus.M_EditDigitShiftCnt - CurMenuStatus.M_EditDigitCursor;
 
 		if (ThisSelMenuNm == 4) { // goal sensor !
-			getFinalUserNumWhenDnKey(ThisSignalUserNum, ThisDigitData, pos);
-			ThisDigitData = updateThisDigitData(ThisSignalUserNum);
+			getFinalUserNumWhenDnKey(ThisSignalUserNumbuf, ThisDigitData, pos);
+			ThisDigitData = updateThisDigitData(ThisSignalUserNumbuf);
 		} else { // 일반
 			ldr_nomal_minus(pos);
 		}

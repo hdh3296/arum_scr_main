@@ -1425,11 +1425,12 @@ void compareGoalNowCurrent(void) {
 }
 
 
-uint16_t getMicomGoalSensorVal(uint16_t val) {
+uint16_t getMicomGoalSensorVal(uint16_t ldrValue) { // #1025
+// src : 로더값 => 반환 dest : 마이컴단 값
 	uint32_t signalNumber[2];
 	uint16_t micomVal;
-
-	getSignalUserNumXXX(signalNumber, (uint32_t)val);
+						// +/- 값
+	getSignalUserNumXXX(signalNumber, (uint32_t)ldrValue);
 
 	switch (signalNumber[0]) {
 		case SIGN_PLUS:
@@ -1440,7 +1441,7 @@ uint16_t getMicomGoalSensorVal(uint16_t val) {
 			break;
 	}
 
-	return micomVal;
+	return micomVal; // 마이컴단 mV (수위 값 나온다.)
 }
 
 
@@ -1454,7 +1455,7 @@ void compareGoalNowSensor(void) {
 	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
 	if (scr.bNowMicomAdSensor_updted) {
 		scr.bNowMicomAdSensor_updted = FALSE;
-
+									// 로더변수
 		goal = getMicomGoalSensorVal(scr.goalSetSensor); // ★
 		now = getMicomFinalMaxSensor(scr.nowMicomMainAdSensor);
 
@@ -1587,15 +1588,10 @@ uint16_t micom_getSensorNowSuwi(uint8_t ch) {
 }
 
 
-uint16_t micom_getLdrSetSRP_max(uint16_t setvalue) {
-
-	return 1000;
-}
-
 uint16_t micom_getLdrSetSRP_min(uint16_t setvalue) {
-	return 4000;
+	return getMicomGoalSensorVal(setvalue);
 }
-
+// #1025
 volatile uint16_t a, b;
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
@@ -1620,8 +1616,8 @@ uint8_t isSRPError(void) {
 //	for (ch = 0; ch < 9; ch++) {
 
 ch = 0;
-		senseorType[ch] = getSensorTypeByCh(ch); // zinc = 0
-		micom_nowSensorSuwi[ch] = micom_getSensorNowSuwi(ch);
+		senseorType[ch] = getSensorTypeByCh(ch); // 센서 타입 : zinc = 0
+		micom_nowSensorSuwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 a = micom_SRP_min; // 4000
 b = micom_nowSensorSuwi[ch]; // 1775
 		switch (senseorType[ch]) {
@@ -1714,6 +1710,23 @@ void initSystem(void) {
 	pin_RY_RUN = RY_OFF;
 	pin_RY_ALARM = RY_OFF;
 }
+
+
+// #1025 coding 영역
+volatile uint16_t db_ldrSetSRPMAX;
+void database_SRP_MAX() {
+	uint16_t micom_SRP_max = getMicomGoalSensorVal(iF_SRP_max);
+//	uint16_t micom_SRP_min = micom_getLdrSetSRP_min(iF_SRP_min);		// 설정값 메뉴 (전체)
+
+	// 1. 유저값 +1000 (-1000)
+	// 2. 로더변수 11000 (1000 -1000 = 9000)
+	// 3. 마이컴단_전위 2500 +1000 = 3500 (2500 -1000 = 1500)
+
+	// #1025
+	db_ldrSetSRPMAX = micom_SRP_max;
+}
+
+
 
 // -------------------------------------
 // - main loop ------------------------
@@ -1817,19 +1830,23 @@ void main(void) {
 		// #1024 4단계 테스트 알람 기능 구현하기
 		micom_saveTotal8sensorNowValue();
 
-		if (isJustNowPowerOn()) {
-			// 테스트 시작 !!!!
-			mysucessTimer = 0;
-			// setp 및 변수들 초기화
-			nRunStep = 1;
-			chkTimer_SRP_msec = 0;
-		}
-		if (pin_KEY_POWER == KEY_POWER_ON) {
-			// 전체 제어 순서
-			loop_allStepRun(nRunStep);
-		} else {
-			initSystem();
-		}
+		// #1025 SRP MAX값을 마이컴단 값으로 변환하여 저장하기 (데이터베이스화)
+		database_SRP_MAX();
+
+
+//		if (isJustNowPowerOn()) {
+//			// 테스트 시작 !!!!
+//			mysucessTimer = 0;
+//			// setp 및 변수들 초기화
+//			nRunStep = 1;
+//			chkTimer_SRP_msec = 0;
+//		}
+//		if (pin_KEY_POWER == KEY_POWER_ON) {
+//			// 전체 제어 순서
+//			loop_allStepRun(nRunStep);
+//		} else {
+//			initSystem();
+//		}
     }
 }
 

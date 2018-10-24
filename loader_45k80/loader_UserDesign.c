@@ -211,9 +211,9 @@ uint16_t G2_Menu_Status_Set(void) {
     UserMenuSerialNm++;
     sub_gr++;
 	/////////////////////////////////////////////////////////////////////
-    //sub group7 - ch0 목표 센서(부식) 예시) 1000 mV
+    //sub group7 - ch0 목표 센서(부식) 예시) 1000 mV ★
     /////////////////////////////////////////////////////////////////////
-    // ThisSelMenuNm => 4
+    // ThisSelMenuNm => 4 #1025
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 12500;
@@ -605,7 +605,7 @@ uint16_t G5_Menu_Status_Set(void) {
 }
 
 
-// ch4
+//
 uint16_t G6_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
@@ -628,11 +628,11 @@ uint16_t G6_Menu_Status_Set(void) {
 	/////////////////////////////////////////////////////////////////////
     //SRP MAX
     /////////////////////////////////////////////////////////////////////
-    // ThisSelMenuNm => ??
+    // ThisSelMenuNm => ?? #1025
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // 10000 +
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; //  0000 -
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // +1999
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; // -1999
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_MAX;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
