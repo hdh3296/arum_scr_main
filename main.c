@@ -1372,6 +1372,8 @@ void loop_allStepRun() {
 			if (errchk == STEP_ERROR) {
 				// error !
 				errorCode = ERR_SRP;
+
+nRunStep = 2;
 				break;
 			} else if (errchk == STEP_GOOD) {
 				// good !
