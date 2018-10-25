@@ -980,16 +980,16 @@ uint32_t getSignalNumMinusMax(uint32_t min) {
 	return (10000 - min);
 }
 
-void getFinalUserNumWhenUpKey(uint32_t dset[], uint32_t src, uint8_t p) {
+void getFinalUserNumWhenUpKey(uint32_t dest[], uint32_t src, uint8_t p) {
 // up 키늘 눌렀을 때 처리 할 내용들을 담은 함수이다.
 // 즉, up 키를 누르면 dest 값을 얻데이트 한다.(더하기)
 	// 일단 digit값을 해석해야 한다.
 	if (src >= 10000) {
-		dset[0] = SIGN_PLUS;
-		dset[1] = src - 10000; // 12500 - 10000 = 2500
+		dest[0] = SIGN_PLUS;
+		dest[1] = src - 10000; // 12500 - 10000 = 2500
 	} else {
-		dset[0] = SIGN_MINUS;
-		dset[1] = 10000 - src; // 10000 - 7500 = 2500
+		dest[0] = SIGN_MINUS;
+		dest[1] = 10000 - src; // 10000 - 7500 = 2500
 	}
 
 	switch (p) {
@@ -997,37 +997,40 @@ void getFinalUserNumWhenUpKey(uint32_t dset[], uint32_t src, uint8_t p) {
 		case 2:
 		case 3:
 		case 4:
-			dset[1] = changeNumberPlusMethod(p, dset[1]);
+			dest[1] = changeNumberPlusMethod(p, dest[1]);
 			// max, min
-			if (dset[0] == SIGN_PLUS) {
-				if (dset[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
-					dset[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
+			if (dest[0] == SIGN_PLUS) {
+				if (dest[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
+					dest[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
 				}
 			} else {
-				if (dset[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
-					dset[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
+				if (dest[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
+					dest[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
 				}
 			}
 			break;
 		case 5:
 			// 반대 sign으로 변경
-			if (dset[0] == SIGN_PLUS) {
-				dset[0] = SIGN_MINUS;
+			if (dest[0] == SIGN_PLUS) {
+				dest[0] = SIGN_MINUS;
+				if (dest[1] == 0) {
+					dest[1] = 1;
+				}
 			} else {
-				dset[0] = SIGN_PLUS;
+				dest[0] = SIGN_PLUS;
 			}
 			break;
 	}
 }
 // down key
-void getFinalUserNumWhenDnKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
+void getFinalUserNumWhenDnKey(uint32_t dest[], uint32_t src, uint8_t p) {
 	// 일단 digit값을 해석해야 한다.
-	if (digit >= 10000) {
-		signalNum[0] = SIGN_PLUS;
-		signalNum[1] = digit - 10000; // 12500 - 10000 = 2500
+	if (src >= 10000) {
+		dest[0] = SIGN_PLUS;
+		dest[1] = src - 10000; // 12500 - 10000 = 2500
 	} else {
-		signalNum[0] = SIGN_MINUS;
-		signalNum[1] = 10000 - digit; // 10000 - 7500 = 2500
+		dest[0] = SIGN_MINUS;
+		dest[1] = 10000 - src; // 10000 - 7500 = 2500
 	}
 
 	switch (p) {
@@ -1035,24 +1038,27 @@ void getFinalUserNumWhenDnKey(uint32_t signalNum[], uint32_t digit, uint8_t p) {
 		case 2:
 		case 3:
 		case 4:
-			signalNum[1] = changeNumberMinusMethod(p, signalNum[1]);
+			dest[1] = changeNumberMinusMethod(p, dest[1]);
 			// max, min
-			if (signalNum[0] == SIGN_PLUS) {
-				if (signalNum[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
-					signalNum[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
+			if (dest[0] == SIGN_PLUS) {
+				if (dest[1] > getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue)) {
+					dest[1] = getSignalNumPlusMax(CurMenuStatus.M_EditDigitMaxValue);
 				}
 			} else {
-				if (signalNum[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
-					signalNum[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
+				if (dest[1] > getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue)) {
+					dest[1] = getSignalNumMinusMax(CurMenuStatus.M_EditDigitMinValue);
 				}
 			}
 			break;
 		case 5:
 			// 반대 sign으로 변경
-			if (signalNum[0] == SIGN_PLUS) {
-				signalNum[0] = SIGN_MINUS;
+			if (dest[0] == SIGN_PLUS) {
+				dest[0] = SIGN_MINUS;
+				if (dest[1] == 0) {
+					dest[1] = 1;
+				}
 			} else {
-				signalNum[0] = SIGN_PLUS;
+				dest[0] = SIGN_PLUS;
 			}
 			break;
 	}
