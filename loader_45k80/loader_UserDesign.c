@@ -938,7 +938,7 @@ void ldr_setSecondLine(uint8_t ch) {
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
 
 	// Àü¾Ð
-    num = micom_getSensorNowSuwi(0); // <<<
+    num = micom_getSensorNowSuwi(0); // <<< #1025
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;

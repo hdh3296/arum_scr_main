@@ -9,10 +9,8 @@ typedef unsigned long uint32_t;
 typedef unsigned char bool;
 
 
-bool mysucess;
-uint16_t mysucessTimer;
 uint16_t chkTimer_SRP_msec;
-uint16_t powerOnStartTimer;
+uint16_t powerOnReadyDelayTimer;
 
 
 #define ZSU_CH_MAX	8

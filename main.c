@@ -1311,7 +1311,7 @@ uint8_t isSRPError(void) {
 	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 //	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
-	uint16_t setChkTime_SRP = 10000; // 설정값 메뉴
+	uint16_t setChkTime_SRP = 1000; // 설정값 메뉴
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
@@ -1360,10 +1360,10 @@ enum {
 
 // #1025
 volatile	uint8_t errchk;
-void loop_allStepRun(uint8_t step) {
+void loop_allStepRun() {
 	static uint8_t errorCode;
 
-	switch (step) {
+	switch (nRunStep) {
 		case 1:
 			// 설정 시간 동안
 			// sensor별 = type | 현재 수위값 |
@@ -1377,7 +1377,7 @@ void loop_allStepRun(uint8_t step) {
 				// good !
 				// 에러 X
 				errorCode = ERR_NONE;
-				step = 2;
+				nRunStep = 2;
 				break;
 			} else if (errchk == STEP_CHKING){
 				// 체킹 계속 진행 ~~
@@ -1387,10 +1387,10 @@ void loop_allStepRun(uint8_t step) {
 			}
 			break;
 		case 2:
-			if (isSOPError()) {
+			//if (isSOPError()) {
 				errorCode = ERR_SOP;
 				break;
-			}
+			//}
 			break;
 		case 3:
 			//checkAOP();
@@ -1435,7 +1435,7 @@ void database_SRP_MAX() {
 
 bool isCoditionContorl() {
 	return ( (pin_KEY_POWER == KEY_POWER_ON)
-		&& (powerOnStartTimer > 1000) );
+		&& (powerOnReadyDelayTimer > 1000) );
 }
 
 
@@ -1483,10 +1483,8 @@ void main(void) {
 
 	pwstartTiemr = 0;
 
-	mysucessTimer = 0xffff;
-
 	pin_RUN_LED = LED_OFF; // 1 = off
-	powerOnStartTimer = 0;
+	powerOnReadyDelayTimer = 0;
     while (1) {
         unsigned int i;
         uint8_t ch;
@@ -1547,18 +1545,16 @@ void main(void) {
 
 
 		if (isJustNowPowerOn()) {
-			// 테스트 시작 !!!!
-			mysucessTimer = 0;
-			// setp 및 변수들 초기화
-			nRunStep = 1;
-			chkTimer_SRP_msec = 0;
-			powerOnStartTimer = 0;
+			powerOnReadyDelayTimer = 0;
 		}
+
 		if (isCoditionContorl()) {
 			// 전체 제어 순서
 			loop_allStepRun(nRunStep);
 		} else {
 			initSystem();
+			nRunStep = 1;
+			chkTimer_SRP_msec = 0;
 		}
     }
 }
@@ -1608,7 +1604,7 @@ void interrupt isr(void) {
         loader_msecTimer();
         timer_msec++;
 		if (pwstartTiemr < 0xffff) pwstartTiemr++;
-        if ((timer_msec >= 1000) && (mysucessTimer < 5000)) {
+        if (timer_msec >= 1000) {
             timer_msec = 0;
 			//pin_RUN_LED = ~pin_RUN_LED;
         }
@@ -1630,9 +1626,8 @@ void interrupt isr(void) {
 			not_rx_pannel_chkTimer++;
 		}
 
-		if (mysucessTimer < 0xffff) mysucessTimer++;
 		if (chkTimer_SRP_msec < 0xffff) chkTimer_SRP_msec++;
-		if (powerOnStartTimer < 0xffff) powerOnStartTimer++;
+		if (powerOnReadyDelayTimer < 0xffff) powerOnReadyDelayTimer++;
     }
 
 
