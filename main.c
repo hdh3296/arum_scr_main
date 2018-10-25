@@ -1323,7 +1323,7 @@ uint8_t isSRPError(void) {
 	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
 	switch (getSensorTypeByCh(ch)) {
 		case TYPE_ZINC:
-			if (micom_nowIn_sensorJunwi[0] < micom_SRP_min) {
+			if (micom_nowIn_sensorJunwi[ch] < micom_SRP_min) {
                 d_xxx = 0;
 				return STEP_ERROR;
 			}
