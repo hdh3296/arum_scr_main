@@ -28,9 +28,9 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_REVERSE_8 0
 
 #define DFL_CH0_TEMP_LOW 27	 //11234	  //2800
-#define DFL_CH1_GOAL_CURRENT 10121 // 7A
-#define DFL_CH2_GOAL_VOLTAGE 10122 // V
-#define DFL_CH2_GOAL_CURRENT 02000 // 7A
+#define DFL_SRP_MAX 10121 // 7A
+#define DFL_SRP_MIN 10122 // V
+#define DFL_SRP_TIME 02000 // time
 
 
 
@@ -194,8 +194,7 @@ uint16_t G2_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 999; // @주의 : 최대 100V
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_VOLTAGE;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
     /////////////////////////////////////////////////////////////////////
@@ -204,10 +203,8 @@ uint16_t G2_Menu_Status_Set(void) {
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
-
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_CURRENT;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
 	/////////////////////////////////////////////////////////////////////
@@ -652,11 +649,10 @@ uint16_t G6_Menu_Status_Set(void) {
 	/////////////////////////////////////////////////////////////////////
     //SRP TIME
     /////////////////////////////////////////////////////////////////////
-    // ThisSelMenuNm => ??
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue =  12345; // 10000 +
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  	0; //  0000 -
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2345;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 0;
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_TIME;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -764,9 +760,9 @@ uint16_t DefaultValueSet(void) {
 		iSR_IntData(F_SCR_GOAL_CURRENT) = DFL_SCR_GOAL_CURRENT;
         iSR_IntData(F_SCR_GOAL_SENSOR) 	= DFL_SCR_GOAL_SENSOR;
 
-        iSR_IntData(F_SRP_MAX) = DFL_CH1_GOAL_CURRENT;
-        iSR_IntData(F_SRP_MIN) = DFL_CH2_GOAL_VOLTAGE;
-        iSR_IntData(F_SRP_TIME) = DFL_CH2_GOAL_CURRENT;
+        iSR_IntData(F_SRP_MAX) = DFL_SRP_MAX;
+        iSR_IntData(F_SRP_MIN) = DFL_SRP_MIN;
+        iSR_IntData(F_SRP_TIME) = DFL_SRP_TIME;
 
 
 

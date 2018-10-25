@@ -24,6 +24,7 @@ volatile uint16_t db_ldrSetSRPMAX;
 volatile uint16_t db_ldrSetSRPMIN;
 
 
+
 uint8_t rx_db_enableSet[MAX_CH];
 uint16_t dutycycleCompared[MAX_CH];
 
@@ -1308,6 +1309,7 @@ uint16_t get_micom_SRP_min() {
 	return db_ldrSetSRPMIN;
 }
 
+
 uint16_t get_micom_SOP_max() {
 	return db_ldrSetSRPMAX;
 }
@@ -1328,8 +1330,7 @@ uint8_t isSRPError(void) {
 	//---------------------------------------------
 	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
-//	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
-	uint16_t setChkTime_SRP = 1000; // 설정값 메뉴
+	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
@@ -1368,7 +1369,6 @@ uint8_t isSOPError(void) {
 	//---------------------------------------------
 	uint16_t micom_SRP_max = get_micom_SOP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SRP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
-//	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
 	uint16_t setChkTime_SRP = 1000; // 설정값 메뉴
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 

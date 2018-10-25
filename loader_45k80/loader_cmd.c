@@ -467,9 +467,9 @@ void Integer_Digit(void) {
 	}
 
     if (ThisDigitData > CurMenuStatus.M_EditDigitMaxValue) {
-        ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
-    } else if (ThisDigitData < CurMenuStatus.M_EditDigitMinValue) {
         ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
+    } else if (ThisDigitData < CurMenuStatus.M_EditDigitMinValue) {
+        ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
     }
 
 	// 여기에서 ThisDigitData 값을 로더에 표시해준다.
@@ -955,34 +955,6 @@ bool isCorrVoltAndAmp(uint16_t now_menu) {
 }
 
 
-
-// plus 키를 눌렀을 때
-// 여기서는 그냥 더해 주면 된다.
-// 최대 값될때만 최대값 한 번 유지 해주면 된다.
-void yang_whenUp(uint8_t p) { // +
-	uint16_t max = (CurMenuStatus.M_EditDigitMaxValue - 10000); // 12500 - 10000 = 2500
-	uint16_t i;
-	switch (p) {
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-//			changeNumberPlusMethod(p);
-			i = (ThisDigitData % 10000);
-			if ( i > max ) {
-				ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
-			}
-			break;
-		case 5: //
-			ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
-			break;
-	}
-}
-void um_whenUp(uint8_t p) { // -
-
-}
-////////////////////
-// down key 눌렀을 때
 
 
 uint32_t getSignalNumPlusMax(uint32_t max) {
