@@ -914,12 +914,11 @@ void ldr_normal_plus(uint8_t p) {
 uint32_t changeNumberMinusMethod(uint8_t p, uint32_t num) {
 	uint32_t i = pow_me(p); //
 	uint32_t j = i / 10; //
-	uint32_t k = 9 * j; //
 
 	if ( (num % i / j) == 0 ) {
 	// 0 이라면?
-		// 9 으로 만들어야 한다.
-		return (num + k);
+		// 그냥 아무짓도 하지 말고 원래 숫자 반환하자
+		return num;
 	}
 	return num - j;
 }
