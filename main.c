@@ -1426,7 +1426,7 @@ uint8_t allStepRun_5step() {
 			} else if (ichk == STEP_DONE) {
 				errcode = ERR_NONE;
 				chkTimer_commomError_msec = 0;
-				nRunStep = 3; // <<< next
+				nRunStep = 5; // <<< next
 				break;
 			}
 			break;
