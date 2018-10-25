@@ -22,6 +22,8 @@ uint8_t bufZSU_use_not[ZSU_CH_MAX];
 
 volatile uint16_t db_ldrSetSRPMAX;
 volatile uint16_t db_ldrSetSRPMIN;
+volatile uint16_t db_ldrSetSOPMAX;
+volatile uint16_t db_ldrSetSOPMIN;
 
 
 
@@ -1311,10 +1313,10 @@ uint16_t get_micom_SRP_min() {
 
 
 uint16_t get_micom_SOP_max() {
-	return db_ldrSetSRPMAX;
+	return db_ldrSetSOPMAX;
 }
 uint16_t get_micom_SOP_min() {
-	return db_ldrSetSRPMIN;
+	return db_ldrSetSOPMIN;
 }
 
 
@@ -1332,8 +1334,8 @@ uint8_t isSRPError(void) {
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
-    
-	if (chkTimer_SRP_msec > setChkTime_SRP) {
+
+	if (chkTimer_commomError_msec > setChkTime_SRP) {
 		return STEP_DONE;
 	}
 
@@ -1367,30 +1369,24 @@ uint8_t isSOPError(void) {
 	//----------------------------
 	uint16_t micom_nowIn_sensorJunwi[9]; // 현재 전위 값
 	//---------------------------------------------
-	uint16_t micom_SRP_max = get_micom_SOP_max();		// 설정값 메뉴 (전체)
-	uint16_t micom_SRP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
-	uint16_t setChkTime_SRP = 1000; // 설정값 메뉴
-	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
+	uint16_t micom_SOP_max = get_micom_SOP_max();		// 설정값 메뉴 (전체)
+	uint16_t micom_SOP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
+	uint16_t setChkTime_SOP = iF_SOP_time; // 설정값 메뉴
+	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 (마이컴단)
 
-	if (chkTimer_SRP_msec > setChkTime_SRP) {
+	if (chkTimer_commomError_msec > setChkTime_SOP) {
         d_xxx = 0;
 		return STEP_DONE;
 	}
 
 	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
-	switch (getSensorTypeByCh(ch)) {
-		case TYPE_ZINC:
-			if (micom_nowIn_sensorJunwi[ch] < micom_SRP_min) {
-                d_xxx = 0;
-				return STEP_ERROR;
-			}
-			break;
-		case TYPE_CUCUSO4:
-			if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
-                d_xxx = 0;
-				return STEP_ERROR;
-			}
-			break;
+	// 2300 <  현재 전위 < 2700 이하
+	if ( (micom_nowIn_sensorJunwi[ch] < micom_SOP_max)
+		&& (micom_nowIn_sensorJunwi[ch] > micom_SOP_min) ){
+		// 단선 에러 !
+		d_xxx = 0;
+		pin_RUN_LED = LED_ON;
+		return STEP_ERROR;
 	}
 
 	return STEP_CHKING;
@@ -1414,23 +1410,25 @@ uint8_t allStepRun_5step() {
 				break;
 			} else if (ichk == STEP_DONE) {
 				errcode = ERR_NONE;
+				chkTimer_commomError_msec = 0;
 				nRunStep = 2; // <<< next
 				break;
 			}
 			break;
 
 		case 2: // SOP
-//			ichk = isSOPError();
-//			if (ichk == STEP_ERROR) {
-//				return ERR_SOP; // 즉시, 반환
-//			} else if (ichk == STEP_CHKING) {
-//				errcode = ERR_NONE;
-//				break;
-//			} else if (ichk == STEP_DONE) {
-//				errcode = ERR_NONE;
-//				nRunStep = 3; // <<< next
-//				break;
-//			}
+			ichk = isSOPError();
+			if (ichk == STEP_ERROR) {
+				return ERR_SOP; // 즉시, 반환
+			} else if (ichk == STEP_CHKING) {
+				errcode = ERR_NONE;
+				break;
+			} else if (ichk == STEP_DONE) {
+				errcode = ERR_NONE;
+				chkTimer_commomError_msec = 0;
+				nRunStep = 3; // <<< next
+				break;
+			}
 			break;
 
 		case 3:
@@ -1460,9 +1458,11 @@ void initSystem(void) {
 
 // #1025 coding 영역
 
-void database_SRP_MAX() {
+void database_SRPSOPARLRM() {
 	uint16_t micom_SRP_max = getMicomGoalSensorVal(iF_SRP_max);
 	uint16_t micom_SRP_min = getMicomGoalSensorVal(iF_SRP_min);		// 설정값 메뉴 (전체)
+	uint16_t micom_SOP_max = getMicomGoalSensorVal(iF_SOP_max);
+	uint16_t micom_SOP_min = getMicomGoalSensorVal(iF_SOP_min);		// 설정값 메뉴 (전체)
 
 	// 1. 유저값 +1000 (-1000)
 	// 2. 로더변수 11000 (1000 -1000 = 9000)
@@ -1471,6 +1471,9 @@ void database_SRP_MAX() {
 	// #1025
 	db_ldrSetSRPMAX = micom_SRP_max;
 	db_ldrSetSRPMIN = micom_SRP_min;
+	db_ldrSetSOPMAX = micom_SOP_max;
+	db_ldrSetSOPMIN = micom_SOP_min;
+
 }
 
 bool isCoditionContorl() {
@@ -1582,7 +1585,7 @@ void main(void) {
 		micom_saveTotal8sensorNowValue();
 
 		// #1025 SRP MAX값을 마이컴단 값으로 변환하여 저장하기 (데이터베이스화)
-		database_SRP_MAX();
+		database_SRPSOPARLRM();
 
 
 		if (isJustNowPowerOn()) {
@@ -1595,7 +1598,8 @@ void main(void) {
 		} else {
 			initSystem();
 			nRunStep = 1;
-			chkTimer_SRP_msec = 0;
+			chkTimer_commomError_msec = 0;
+			pin_RUN_LED = LED_OFF;
 		}
     }
 }
@@ -1667,7 +1671,7 @@ void interrupt isr(void) {
 			not_rx_pannel_chkTimer++;
 		}
 
-		if (chkTimer_SRP_msec < 0xffff) chkTimer_SRP_msec++;
+		if (chkTimer_commomError_msec < 0xffff) chkTimer_commomError_msec++;
 		if (powerOnReadyDelayTimer < 0xffff) powerOnReadyDelayTimer++;
     }
 

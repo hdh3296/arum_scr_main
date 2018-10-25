@@ -33,7 +33,7 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_SRP_TIME 1000 // time
 
 #define DFL_SOP_MAX 10200 // V
-#define DFL_SOP_MIN 10201 // 7A
+#define DFL_SOP_MIN 9800 // 7A
 #define DFL_SOP_TIME 2000 // V
 
 
@@ -670,7 +670,7 @@ uint16_t G6_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // +1999
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; // -1999
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_MAX;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SOP_MAX;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
@@ -683,7 +683,7 @@ uint16_t G6_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // 10000 +
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; //  0000 -
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_MIN;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SOP_MIN;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
@@ -694,7 +694,7 @@ uint16_t G6_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50000;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 0;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_TIME;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SOP_TIME;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;

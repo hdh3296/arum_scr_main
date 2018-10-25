@@ -284,9 +284,9 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_SRP_max 					iF_IntData(F_SRP_MAX)
 #define iF_SRP_min 					iF_IntData(F_SRP_MIN)
 #define iF_SRP_time		 			iF_IntData(F_SRP_TIME)
-#define iF_sop_max 					iF_IntData(F_SOP_MAX)
-#define iF_sop_min 					iF_IntData(F_SOP_MIN)
-#define iF_sop_time 				iF_IntData(F_SOP_TIME)
+#define iF_SOP_max 					iF_IntData(F_SOP_MAX)
+#define iF_SOP_min 					iF_IntData(F_SOP_MIN)
+#define iF_SOP_time 				iF_IntData(F_SOP_TIME)
 
 
 

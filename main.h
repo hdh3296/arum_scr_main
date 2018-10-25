@@ -9,7 +9,7 @@ typedef unsigned long uint32_t;
 typedef unsigned char bool;
 
 
-uint16_t chkTimer_SRP_msec;
+uint16_t chkTimer_commomError_msec;
 uint16_t powerOnReadyDelayTimer;
 
 
