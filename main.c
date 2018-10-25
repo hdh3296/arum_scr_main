@@ -1308,6 +1308,14 @@ uint16_t get_micom_SRP_min() {
 	return db_ldrSetSRPMIN;
 }
 
+uint16_t get_micom_SOP_max() {
+	return db_ldrSetSRPMAX;
+}
+uint16_t get_micom_SOP_min() {
+	return db_ldrSetSRPMIN;
+}
+
+
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
 	* SRP MAX
@@ -1355,11 +1363,11 @@ uint8_t isSOPError(void) {
 	* SRP Time : check time
 */
     uint8_t ch = 0;
-	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
-	uint16_t micom_nowIn_sensorJunwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
+	//----------------------------
+	uint16_t micom_nowIn_sensorJunwi[9]; // 현재 전위 값
 	//---------------------------------------------
-	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
-	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_max = get_micom_SOP_max();		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
 //	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
 	uint16_t setChkTime_SRP = 1000; // 설정값 메뉴
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
@@ -1412,17 +1420,17 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 2: // SOP
-			ichk = isSOPError();
-			if (ichk == STEP_ERROR) {
-				return ERR_SOP; // 즉시, 반환
-			} else if (ichk == STEP_CHKING) {
-				errcode = ERR_NONE;
-				break;
-			} else if (ichk == STEP_DONE) {
-				errcode = ERR_NONE;
-				nRunStep = 3; // <<< next
-				break;
-			}
+//			ichk = isSOPError();
+//			if (ichk == STEP_ERROR) {
+//				return ERR_SOP; // 즉시, 반환
+//			} else if (ichk == STEP_CHKING) {
+//				errcode = ERR_NONE;
+//				break;
+//			} else if (ichk == STEP_DONE) {
+//				errcode = ERR_NONE;
+//				nRunStep = 3; // <<< next
+//				break;
+//			}
 			break;
 
 		case 3:
