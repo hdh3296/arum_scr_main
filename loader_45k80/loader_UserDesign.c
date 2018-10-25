@@ -934,26 +934,28 @@ void ldr_setFirstLine(uint8_t ch) {
 }
 
 void ldr_setSecondLine(uint8_t ch) {
-
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
 
 	// 전압
-    num = heater[ch].userNowInVoltage_V;
+    num = micom_getSensorNowSuwi(0); // <<<
+    ascii_1000   = num / 1000;
+    num = num % 1000;
     ascii_100   = num / 100;
     num = num % 100;
     ascii_10    =   num / 10;
     num = num % 10;
     ascii_1     = num;
 
+	ascii_1000 = getAscii(ascii_1000);
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
 
-    new485Ladder[SECONDLINE_BASE + 0] = ascii_100;
-    new485Ladder[SECONDLINE_BASE + 1] = ascii_10;
-    new485Ladder[SECONDLINE_BASE + 2] = ascii_1;
-    new485Ladder[SECONDLINE_BASE + 3] = 'V';
+    new485Ladder[SECONDLINE_BASE + 0] = ascii_1000;
+    new485Ladder[SECONDLINE_BASE + 1] = ascii_100;
+    new485Ladder[SECONDLINE_BASE + 2] = ascii_10;
+    new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
     new485Ladder[SECONDLINE_BASE + 4] = '/';
 
 
@@ -1088,7 +1090,34 @@ void loadTxLdrBuf_forDutycycle(uint8_t ch) {
 
 //////////================================
 // ch0 현재 상태 로더에서 보기 위한 함수
-void dspManyStateInfo_allCH(void) {
+void dsplayManyStateInfo_allCH(void) {
+/*
+    로더 초기화면에 현재 상태값 보여주기 위한 함수
+*/
+	uint16_t showIndex = getShowIndex();
+
+	switch (showIndex) {
+		case 0:
+            ldr_viewState(0);
+			break;
+		case 1:
+            ldr_viewState(1);
+			break;
+        case 2:
+            ldr_viewState(2);
+            break;
+        case 3:
+            ldr_viewState(3);
+            break;
+        case 4:
+            ldr_viewState(4);
+            break;
+		default:
+			break;
+	}
+}
+
+void dsplayManyStateInfo_allCH__copy(void) {
 /*
     로더 초기화면에 현재 상태값 보여주기 위한 함수
 */
@@ -1116,7 +1145,8 @@ void dspManyStateInfo_allCH(void) {
 }
 
 
-void dspManyStateInfo_pwm(void) {
+
+void dsplayManyStateInfo_pwm(void) {
 /*
     로더 초기화면에 현재 상태값 보여주기 위한 함수
 */
@@ -1175,10 +1205,10 @@ uint16_t DefaultDisplay(void) {
 
     switch (k) {
         case 0:
-            dspManyStateInfo_allCH();
+            dsplayManyStateInfo_allCH__copy();
             break;
         case 1:
-			dspManyStateInfo_pwm();
+			dsplayManyStateInfo_pwm();
             break;
         default:
             Default_Cur_State_Display();

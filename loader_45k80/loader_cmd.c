@@ -979,78 +979,10 @@ void yang_whenUp(uint8_t p) { // +
 	}
 }
 void um_whenUp(uint8_t p) { // -
-	uint16_t max = CurMenuStatus.M_EditDigitMinValue; // 7500
-	uint16_t i;
-	switch (p) {
-		case 1:
-		case 2:
-		case 3:
-		case 4:
 
-
-			if ( ThisDigitData < max ) {
-			// 6500 < 7500
-				ThisDigitData = max;
-			}
-			break;
-		case 5: // sign
-			ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
-			break;
-	}
 }
 ////////////////////
 // down key 눌렀을 때
-void yang_whenDn(uint8_t p) { // +
-	uint16_t max = (CurMenuStatus.M_EditDigitMaxValue - 10000); // 12500 - 10000 = 2500
-	uint16_t i, m;
-
-	switch (p) {
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-
-			//
-			if ( ThisDigitData < 10000 ) {
-				ThisDigitData = 10000;
-			}
-			if (ThisDigitData > CurMenuStatus.M_EditDigitMaxValue)
-				ThisDigitData = 10000;
-			break;
-		case 5: //
-			ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
-			break;
-	}
-}
-void um_whenDn(uint8_t p) { // -
-	uint16_t max = CurMenuStatus.M_EditDigitMinValue; // 7500
-	uint16_t i;
-	switch (p) {
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-//			changeNumberPlusMethod(p);
-
-			if ( ThisDigitData >= 10000 ) {
-				ThisDigitData = 9999;
-			}
-			break;
-		case 5: // sign
-			ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
-			break;
-	}
-}
-// down key
-void signDownTest(uint8_t p) {
-	if (ThisDigitData >= 10000) {
-		// 양의 방향이냐
-		yang_whenDn(p);
-	} else {
-		// 음의 방향이냐에 따라서 틀리다. !!!
-		um_whenDn(p);
-	}
-}
 
 
 uint32_t getSignalNumPlusMax(uint32_t max) {
