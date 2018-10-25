@@ -42,13 +42,19 @@ uint32_t ThisSignalUserNumbuf[2];
 enum {
 	GOAL_SENSOR = 4,
 	SRP_MAX = 34,
-	SRP_MIN	= 35
+	SRP_MIN	= 35,
+	SOP_MAX = 37,
+	SOP_MIN	= 38,
+
 };
 
 bool isThisSelMenuNmIsSignDigit_1024(void) {
+
 	return ( (ThisSelMenuNm == GOAL_SENSOR)
 		|| (ThisSelMenuNm == SRP_MAX)
-		|| (ThisSelMenuNm == SRP_MIN) );
+		|| (ThisSelMenuNm == SRP_MIN)
+		|| (ThisSelMenuNm == SOP_MAX)
+		|| (ThisSelMenuNm == SOP_MIN) );
 }
 
 
@@ -396,6 +402,8 @@ void display_unit() {
 		case	GOAL_SENSOR: // #1025
 		case    SRP_MAX:
 		case	SRP_MIN:
+		case	SOP_MAX:
+		case	SOP_MIN:
 
             ldr_sigh_T_1023T(); // ¿Âµµ
 			break;
@@ -894,6 +902,7 @@ uint32_t pow_me(uint8_t p) {
 		case 9:
 			return 1000000000;
 	}
+    return 1;
 }
 
 uint32_t changeNumberPlusMethod(uint8_t p, uint32_t num) {

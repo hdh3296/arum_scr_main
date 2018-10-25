@@ -1332,7 +1332,7 @@ uint8_t isSRPError(void) {
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
-
+    
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
 		return STEP_DONE;
 	}

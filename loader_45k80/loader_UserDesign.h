@@ -67,12 +67,13 @@ const uint8_t GroupLineMessage[][17] = {
 	"SRP : MAX       ", //16
     "SRP : MIN       ", //16
     "SRP : TIME      ", //9  // group1
+	"SOP : MAX       ", //16
+    "SOP : MIN       ", //16
+    "SOP : TIME      ", //9  // group1
 
 
 
-    "CH-4:Off Temp   ", //10
-    "CH-4:Set Volt(V)", //14
-    "CH-4:Set Amp(A) ", //15
+
     "CH-4:ch On/Off  ", //16
     "CH-4:ch Use/Not ", //16
     "CH-4:ch correctT", //16
@@ -209,12 +210,12 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_SRP_MIN			       	IntzData037
 #define F_SRP_TIME		     		IntzData038
 
+#define F_SOP_MAX       	IntzData039
+#define F_SOP_MIN     		IntzData040
+#define F_SOP_TIME       	IntzData041
 
 
-#define F_CH3_GOAL_VOLTAGE       	IntzData039
-#define F_CH3_GOAL_CURRENT     		IntzData040
 
-#define F_CH4_GOAL_VOLTAGE       	IntzData041
 #define F_CH4_GOAL_CURRENT     		IntzData042
 
 
@@ -283,13 +284,13 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_SRP_max 					iF_IntData(F_SRP_MAX)
 #define iF_SRP_min 					iF_IntData(F_SRP_MIN)
 #define iF_SRP_time		 			iF_IntData(F_SRP_TIME)
+#define iF_sop_max 					iF_IntData(F_SOP_MAX)
+#define iF_sop_min 					iF_IntData(F_SOP_MIN)
+#define iF_sop_time 				iF_IntData(F_SOP_TIME)
 
 
 
-#define iF_ch3_goalVoltage 			iF_IntData(F_CH3_GOAL_VOLTAGE)
-#define iF_ch3_goalCurrent 			iF_IntData(F_CH3_GOAL_CURRENT)
 
-#define iF_ch4_goalVoltage 			iF_IntData(F_CH4_GOAL_VOLTAGE)
 #define iF_ch4_goalCurrent 			iF_IntData(F_CH4_GOAL_CURRENT)
 
 
