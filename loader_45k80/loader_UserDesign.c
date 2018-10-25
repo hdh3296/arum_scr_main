@@ -650,8 +650,8 @@ uint16_t G6_Menu_Status_Set(void) {
     //SRP TIME
     /////////////////////////////////////////////////////////////////////
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2345;
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50000;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 0;
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SRP_TIME;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];

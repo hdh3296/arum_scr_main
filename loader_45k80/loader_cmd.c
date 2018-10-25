@@ -466,9 +466,9 @@ void Integer_Digit(void) {
 		return;
 	}
 
-    if (ThisDigitData > CurMenuStatus.M_EditDigitMaxValue) {
+    if (ThisDigitData >= CurMenuStatus.M_EditDigitMaxValue) {
         ThisDigitData = CurMenuStatus.M_EditDigitMaxValue;
-    } else if (ThisDigitData < CurMenuStatus.M_EditDigitMinValue) {
+    } else if (ThisDigitData <= CurMenuStatus.M_EditDigitMinValue) {
         ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
     }
 
@@ -873,19 +873,33 @@ void ldr_correctV_minus(uint8_t p) {
 	}
 }
 
-unsigned long long my_pow(unsigned long long base, int exp) {
-	unsigned long long res = 1;
-	while (exp) {
-		if (exp & 1) res *= base;
-		exp >>= 1;
-		base *= base;
-	} return res;
+uint32_t pow_me(uint8_t p) {
+	switch (p) {
+		case 1:
+			return 10;
+		case 2:
+			return 100;
+		case 3:
+			return 1000;
+		case 4:
+			return 10000;
+		case 5:
+			return 100000;
+		case 6:
+			return 1000000;
+		case 7:
+			return 10000000;
+		case 8:
+			return 100000000;
+		case 9:
+			return 1000000000;
+	}
 }
 
 uint32_t changeNumberPlusMethod(uint8_t p, uint32_t num) {
-	uint16_t i = my_pow(10, p); //
-	uint16_t j = i / 10; //
-	uint16_t k = 9 * j; //
+	uint32_t i = pow_me(p); //
+	uint32_t j = i / 10; //
+	uint32_t k = 9 * j; //
 
 	if ( (num % i / j) == 9 ) {
 	// 9 라면?
@@ -898,9 +912,9 @@ void ldr_normal_plus(uint8_t p) {
 	ThisDigitData = changeNumberPlusMethod(p, ThisDigitData);
 }
 uint32_t changeNumberMinusMethod(uint8_t p, uint32_t num) {
-	uint16_t i = my_pow(10, p); //
-	uint16_t j = i / 10; //
-	uint16_t k = 9 * j; //
+	uint32_t i = pow_me(p); //
+	uint32_t j = i / 10; //
+	uint32_t k = 9 * j; //
 
 	if ( (num % i / j) == 0 ) {
 	// 0 이라면?
