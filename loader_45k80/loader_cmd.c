@@ -39,6 +39,9 @@ extern uint32_t changeNumberMinusMethod(uint8_t p, uint32_t n);
 
 uint32_t ThisSignalUserNumbuf[2];
 
+uint8_t bThisMenuSaver[100]; // +/- 메뉴 여부 저장
+
+
 enum {
 	GOAL_SENSOR = 4,
 	SRP_MAX = 34,
@@ -50,11 +53,8 @@ enum {
 
 bool isThisSelMenuNmIsSignDigit_1024(void) {
 
-	return ( (ThisSelMenuNm == GOAL_SENSOR)
-		|| (ThisSelMenuNm == SRP_MAX)
-		|| (ThisSelMenuNm == SRP_MIN)
-		|| (ThisSelMenuNm == SOP_MAX)
-		|| (ThisSelMenuNm == SOP_MIN) );
+	return (bThisMenuSaver[ThisSelMenuNm]);
+
 }
 
 
@@ -398,16 +398,10 @@ void ldr_sign_A(void) {
 
 void display_unit() {
 
-	switch	(ThisSelMenuNm){
-		case	GOAL_SENSOR: // #1025
-		case    SRP_MAX:
-		case	SRP_MIN:
-		case	SOP_MAX:
-		case	SOP_MIN:
-
-            ldr_sigh_T_1023T(); // 온도
-			break;
+	if (bThisMenuSaver[ThisSelMenuNm]) {
+		ldr_sigh_T_1023T(); // 온도
 	}
+
 
 }
 

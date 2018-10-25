@@ -108,6 +108,7 @@ extern uint16_t SaveVerify;
 extern uint32_t ThisDigitData;
 extern uint16_t CurKeyPoint;
 
+extern uint8_t bThisMenuSaver[]; // +/- 메뉴 여부 저장
 
 /*
 typedef struct _Menu_Status {

@@ -141,6 +141,7 @@ uint16_t IntType_DIGIT_EDIT_Set(uint16_t main_gr, uint16_t sub_gr, uint16_t divi
     return (0);
 }
 
+
 // 그룹1 : 유저그룹
 uint16_t G1_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
@@ -166,7 +167,7 @@ uint16_t G1_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     //1 : 펌웨어 버전 정보
     /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
+	ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_VERSION;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
@@ -209,6 +210,7 @@ uint16_t G2_Menu_Status_Set(void) {
     //sub group7 - ch0 목표 센서(부식) 예시) 1000 mV ★
     /////////////////////////////////////////////////////////////////////
     // ThisSelMenuNm => 4 #1025
+    bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 12500;
@@ -624,6 +626,7 @@ uint16_t G6_Menu_Status_Set(void) {
     //SRP MAX
     /////////////////////////////////////////////////////////////////////
     // ThisSelMenuNm => ??
+    bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // +1999
@@ -636,6 +639,7 @@ uint16_t G6_Menu_Status_Set(void) {
     //SRP MIN
     /////////////////////////////////////////////////////////////////////
     // ThisSelMenuNm => ??
+    bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // 10000 +
@@ -661,6 +665,7 @@ uint16_t G6_Menu_Status_Set(void) {
     //SOP MAX #1025
     /////////////////////////////////////////////////////////////////////
     // ThisSelMenuNm => ?? #1025
+    bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // +1999
@@ -673,6 +678,7 @@ uint16_t G6_Menu_Status_Set(void) {
     //SOP MIN
     /////////////////////////////////////////////////////////////////////
     // ThisSelMenuNm => ??
+    bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // 10000 +
