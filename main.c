@@ -40,7 +40,7 @@ uint8_t nRunStep;
 enum {
 	STEP_CHKING,
 	STEP_ERROR,
-	STEP_GOOD
+	STEP_DONE
 };
 
 
@@ -63,6 +63,17 @@ enum {
 	S_PLUS,
 	S_GOOD,
 	S_ERROR
+};
+
+enum {
+	ERR_NONE,
+	ERR_SRP,	// 센서 역전
+	ERR_SOP,	// 단선
+	ERR_AOP,	//
+	ERR_ARP,
+	ERR_UPR,
+	ERR_OPR,
+	ERR_FOP // RST 상
 };
 
 
@@ -1297,7 +1308,6 @@ uint16_t get_micom_SRP_min() {
 	return db_ldrSetSRPMIN;
 }
 
-volatile uint16_t d_xxx;
 uint8_t isSRPError(void) {
 /* 1단계 알람 테스트 기능 구현하기
 	* SRP MAX
@@ -1315,10 +1325,49 @@ uint8_t isSRPError(void) {
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_SRP_msec > setChkTime_SRP) {
-        d_xxx = 0;
-		return STEP_GOOD;
+		return STEP_DONE;
 	}
 
+
+	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
+	switch (getSensorTypeByCh(ch)) {
+		case TYPE_ZINC:
+			if (micom_nowIn_sensorJunwi[ch] < micom_SRP_min) {
+				return STEP_ERROR;
+			}
+			break;
+		case TYPE_CUCUSO4:
+			if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
+				return STEP_ERROR;
+			}
+			break;
+	}
+
+	return STEP_CHKING;
+}
+
+
+volatile uint16_t d_xxx;
+uint8_t isSOPError(void) {
+/* 1단계 알람 테스트 기능 구현하기
+	* SRP MAX
+	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
+	* SRP Time : check time
+*/
+    uint8_t ch = 0;
+	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
+	uint16_t micom_nowIn_sensorJunwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
+	//---------------------------------------------
+	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
+//	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
+	uint16_t setChkTime_SRP = 1000; // 설정값 메뉴
+	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
+
+	if (chkTimer_SRP_msec > setChkTime_SRP) {
+        d_xxx = 0;
+		return STEP_DONE;
+	}
 
 	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
 	switch (getSensorTypeByCh(ch)) {
@@ -1338,62 +1387,44 @@ uint8_t isSRPError(void) {
 
 	return STEP_CHKING;
 }
-bool isSOPError(void) {
-	return 0;
-}
 
 
-void processErrorCode(uint8_t errorcode) {
 
-}
-
-enum {
-	ERR_NONE,
-	ERR_SRP,	// 센서 역전
-	ERR_SOP,	// 단선
-	ERR_AOP,	//
-	ERR_ARP,
-	ERR_UPR,
-	ERR_OPR,
-	ERR_FOP // RST 상
-};
 
 // #1025
-volatile	uint8_t errchk;
-void loop_allStepRun() {
-	static uint8_t errorCode;
+uint8_t allStepRun_5step() {
+	uint8_t errcode;
+	uint8_t ichk;
 
 	switch (nRunStep) {
-		case 1:
-			// 설정 시간 동안
-			// sensor별 = type | 현재 수위값 |
-			errchk = isSRPError(); // 0 ~ 7 , 8(main)
-			// 하나라도 에러 발생하면 !
-			if (errchk == STEP_ERROR) {
-				// error !
-				errorCode = ERR_SRP;
-
-nRunStep = 2;
+		case 1: // SRP
+			ichk = isSRPError();
+			if (ichk == STEP_ERROR) {
+				return ERR_SRP; // 즉시, 반환
+			} else if (ichk == STEP_CHKING) {
+				errcode = ERR_NONE;
 				break;
-			} else if (errchk == STEP_GOOD) {
-				// good !
-				// 에러 X
-				errorCode = ERR_NONE;
-				nRunStep = 2;
-				break;
-			} else if (errchk == STEP_CHKING){
-				// 체킹 계속 진행 ~~
-				// 현재 에러 X
-				errorCode = ERR_NONE;
+			} else if (ichk == STEP_DONE) {
+				errcode = ERR_NONE;
+				nRunStep = 2; // <<< next
 				break;
 			}
 			break;
-		case 2:
-			//if (isSOPError()) {
-				errorCode = ERR_SOP;
+
+		case 2: // SOP
+			ichk = isSOPError();
+			if (ichk == STEP_ERROR) {
+				return ERR_SOP; // 즉시, 반환
+			} else if (ichk == STEP_CHKING) {
+				errcode = ERR_NONE;
 				break;
-			//}
+			} else if (ichk == STEP_DONE) {
+				errcode = ERR_NONE;
+				nRunStep = 3; // <<< next
+				break;
+			}
 			break;
+
 		case 3:
 			//checkAOP();
 			break;
@@ -1407,8 +1438,7 @@ nRunStep = 2;
 			break;
 	}
 
-	processErrorCode(errorCode);
-
+	return errcode;
 }
 
 
@@ -1445,6 +1475,7 @@ bool isCoditionContorl() {
 // - main loop ------------------------
 void main(void) {
 	uint8_t ch;
+	uint8_t errorCode = ERR_NONE;
 
     di();
     initMCU();
@@ -1552,7 +1583,7 @@ void main(void) {
 
 		if (isCoditionContorl()) {
 			// 전체 제어 순서
-			loop_allStepRun(nRunStep);
+			errorCode = allStepRun_5step(nRunStep);
 		} else {
 			initSystem();
 			nRunStep = 1;
