@@ -4,7 +4,7 @@
 
 #include    "..\main.h"
 
-
+// #1026
 #define MAX_FLASH_BLOCK_NM 3  // (64 * 10 = 640 byte)	or ( (64/4) * 10 = 160 long)
 #define MAX_MENU 50
 
@@ -70,12 +70,12 @@ const uint8_t GroupLineMessage[][17] = {
 	"SOP : MAX       ", //16
     "SOP : MIN       ", //16
     "SOP : TIME      ", //9  // group1
+    "AOP : DUTY      ", //16
+    "AOP : TIME      ", //16
 
 
 
 
-    "CH-4:ch On/Off  ", //16
-    "CH-4:ch Use/Not ", //16
     "CH-4:ch correctT", //16
     "CH-4:ch correctV", //16
     "CH-4:ch correctA", //16
@@ -202,6 +202,7 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_CH4_CORRECT_V     ByteData039
 #define F_CH4_CORRECT_A     ByteData040
 
+// 64 바이트
 // ※ 두번째 블락 (인테져 타입은 두번째 블럭에서 처리 하고자 한다.)
 #define F_SCR_GOAL_VOLTAGE     		IntzData033
 #define F_SCR_GOAL_CURRENT     		IntzData034
@@ -214,13 +215,10 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_SOP_MIN     		IntzData040
 #define F_SOP_TIME       	IntzData041
 
+#define F_AOP_DUTY     		IntzData042
+#define F_AOP_TIME     		IntzData043
 
-
-#define F_CH4_GOAL_CURRENT     		IntzData042
-
-
-// -----------------------------------------------------------
-#define F_TEST_LONG         		longData033 					//1
+// 128 바이트
 ////////////////////////////////////////////////////////////////////////
 
 // 데이터 베이스
@@ -279,7 +277,7 @@ const uint8_t FlashMsgSel[][17] = {
 
 // ------------------------------------------------------------------
 #define iF_scr_goalVoltage 			iF_IntData(F_SCR_GOAL_VOLTAGE)
-#define iF_scr_goalCurrent 			iF_IntData(F_SCR_GOAL_CURRENT)
+#define iF_scr_goalAmp 				iF_IntData(F_SCR_GOAL_CURRENT)
 #define iF_scr_goalSensor 			iF_IntData(F_SCR_GOAL_SENSOR)
 #define iF_SRP_max 					iF_IntData(F_SRP_MAX)
 #define iF_SRP_min 					iF_IntData(F_SRP_MIN)
@@ -288,10 +286,8 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_SOP_min 					iF_IntData(F_SOP_MIN)
 #define iF_SOP_time 				iF_IntData(F_SOP_TIME)
 
-
-
-
-#define iF_ch4_goalCurrent 			iF_IntData(F_CH4_GOAL_CURRENT)
+#define iF_AOP_duty 			iF_IntData(F_AOP_DUTY)
+#define iF_AOP_time 			iF_IntData(F_AOP_TIME)
 
 
 // ==============================================

@@ -16,6 +16,16 @@ enum {
 	LED_ON	= 0,
 	LED_OFF = 1
 };
+// MAX Voltage : 최대 한계 전압 (정격 전압)
+uint16_t get_MaxVoltage_micom_mV(void){
+	return iF_scr_goalVoltage * 4;
+}
+// MAX Amp : 최대 한계 전류 (정격 전류)
+uint16_t get_MaxAmp_micom_mV(void){
+	return iF_scr_goalAmp * 4;
+}
+
+
 
 #define MAX_CH 5
 uint8_t bufZSU_use_not[ZSU_CH_MAX];
@@ -481,23 +491,23 @@ void scr_micom_setNowInVoltage_mV(uint8_t ch) {
 		switch (ch) {
 			case 0:
 				// AN0 센서
-				scr.nowMicomMainAdSensor = adc_updated_analog_mV[ch]; // 현재 아날로그 값
-				scr.bNowMicomAdSensor_updted = TRUE;
+				scr.nowMainAdSensor_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowAdSensor_micom_updted = TRUE;
 				break;
 			case 1:
 				// AN1 수동 볼륨 값
-				scr.nowMicomAdVolume = adc_updated_analog_mV[ch]; // 현재 아날로그 값
-				scr.bNowMicomAdVolume_updted = TRUE;
+				scr.nowAdVolume_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowAdVolume_micom_updted = TRUE;
 				break;
 			case 2:
 				// AN2 전류
-				scr.nowMicomAdCurrent = adc_updated_analog_mV[ch]; // 현재 아날로그 값
-				scr.bNowMicomAdCurrent_updted = TRUE;
+				scr.nowAdAmp_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowAdCurrent_micom_updted = TRUE;
 				break;
 			case 3:
 				// AN3 전압
-				scr.nowMicomAdVoltage = adc_updated_analog_mV[ch]; // 현재 아날로그 값
-				scr.bNowMicomAdVoltage_updted = TRUE;
+				scr.nowAdVoltage_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.bNowAdVoltage_micom_updted = TRUE;
 				break;
 			default:
 				break;
@@ -922,7 +932,7 @@ uint16_t gateRSTDo_time; // 수동에의해 최종 몇 도 조절 할지의 값이다.
 // 이값을 조절함으로 써 목표 전압/전류/센서 값을 제어하면 된다.
 
 uint16_t test_manualVol(void) {
-	uint16_t volAnalog = scr.nowMicomAdVolume; // 6~4994
+	uint16_t volAnalog = scr.nowAdVolume_micom_mV; // 6~4994
 	return (180 - (volAnalog / 28) + 60);
 }
 
@@ -943,7 +953,7 @@ void micom_saveTotal8sensorNowValue(void) {
 	for (ch = 0; ch < 8; ch++) {
 		micom_sensor_0_8_mV[ch] = zsu_ch0_ch7_analog[ch];
 	}
-	micom_sensor_0_8_mV[ch] = scr.nowMicomMainAdSensor;
+	micom_sensor_0_8_mV[ch] = scr.nowMainAdSensor_micom_mV;
 }
 
 
@@ -1102,26 +1112,26 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 
 
 bool isOverVoltage(void) {
-	uint16_t goal = (scr.goalSetVoltage_V * 4); // micom 목표 전압 100v -> 4000mV
-	uint16_t now = scr.nowMicomAdVoltage; // AN3, micom 현재 전압
+	uint16_t max = get_MaxVoltage_micom_mV(); // micom 목표 전압 100v -> 4000mV
+	uint16_t now = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
 
-    if (now > goal) {
+    if (now > max) {
         return 1;
     }   return 0;
 }
 bool isOverCurrent(void) {
-	uint16_t goal = (scr.goalSetAmp * 4); // micom 목표 전압 (50A : 2500mV 기준)
-	uint16_t now = scr.nowMicomAdCurrent; // AN3, micom 현재 전압
+	uint16_t max = get_MaxAmp_micom_mV(); // micom 목표 전류 (50A : 2500mV 기준)
+	uint16_t now = scr.nowAdAmp_micom_mV; // AN3, micom 현재 전류
 
-    if (now > goal) {
+    if (now > max) {
         return 1;
     }   return 0;
 }
 
 // 전압 제어
 void compareGoalNowVoltage(void) {
-	if (scr.bNowMicomAdVoltage_updted) {
-		scr.bNowMicomAdVoltage_updted = FALSE;
+	if (scr.bNowAdVoltage_micom_updted) {
+		scr.bNowAdVoltage_micom_updted = FALSE;
 
 		if (gateRSTDo_time < MAX_GATE_min_voltage) {
 			gateRSTDo_time += 1;
@@ -1130,8 +1140,8 @@ void compareGoalNowVoltage(void) {
 }
 // 전류 제어
 void compareGoalNowCurrent(void) {
-	if (scr.bNowMicomAdCurrent_updted) {
-		scr.bNowMicomAdCurrent_updted = FALSE;
+	if (scr.bNowAdCurrent_micom_updted) {
+		scr.bNowAdCurrent_micom_updted = FALSE;
 
 		if (gateRSTDo_time < MAX_GATE_min_voltage) {
 			gateRSTDo_time += 1;
@@ -1168,11 +1178,11 @@ void compareGoalNowSensor(void) {
 	uint16_t now; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
 	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
-	if (scr.bNowMicomAdSensor_updted) {
-		scr.bNowMicomAdSensor_updted = FALSE;
+	if (scr.bNowAdSensor_micom_updted) {
+		scr.bNowAdSensor_micom_updted = FALSE;
 									// 로더변수
-		goal = getMicomGoalSensorVal(scr.goalSetSensor); // ★
-		now = getMicomFinalMaxSensor(scr.nowMicomMainAdSensor);
+		goal = getMicomGoalSensorVal(iF_scr_goalSensor); // ★
+		now = getMicomFinalMaxSensor(scr.nowMainAdSensor_micom_mV);
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
@@ -1281,8 +1291,8 @@ void controlSensorSuWi(void) {
 	// 46us = 1도
 	if (!pin_AUTO) {
 		// 수동 볼륨에 의해서 gateRSTDo_time 값을 획득한다.
-		if (scr.bNowMicomAdVolume_updted) {
-			scr.bNowMicomAdVolume_updted = FALSE;
+		if (scr.bNowAdVolume_micom_updted) {
+			scr.bNowAdVolume_micom_updted = FALSE;
 			gateRSTDo_time = test_manualVol();
 		}
 	} else {
@@ -1336,6 +1346,7 @@ uint8_t isSRPError(void) {
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_commomError_msec > setChkTime_SRP) {
+		chkTimer_commomError_msec = 0;
 		return STEP_DONE;
 	}
 
@@ -1358,12 +1369,11 @@ uint8_t isSRPError(void) {
 }
 
 
-volatile uint16_t d_xxx;
 uint8_t isSOPError(void) {
-/* 1단계 알람 테스트 기능 구현하기
-	* SRP MAX
-	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
-	* SRP Time : check time
+/* 2단계 알람 테스트 기능 구현하기
+	* SOP MAX
+	* SOP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
+	* SOP Time : check time
 */
     uint8_t ch = 0;
 	//----------------------------
@@ -1375,7 +1385,7 @@ uint8_t isSOPError(void) {
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 (마이컴단)
 
 	if (chkTimer_commomError_msec > setChkTime_SOP) {
-        d_xxx = 0;
+		chkTimer_commomError_msec = 0;
 		return STEP_DONE;
 	}
 
@@ -1384,8 +1394,57 @@ uint8_t isSOPError(void) {
 	if ( (micom_nowIn_sensorJunwi[ch] < micom_SOP_max)
 		&& (micom_nowIn_sensorJunwi[ch] > micom_SOP_min) ){
 		// 단선 에러 !
-		d_xxx = 0;
+		return STEP_ERROR;
+	}
+
+	return STEP_CHKING;
+}
+
+
+
+uint8_t isAOPError(void) {
+/* 3단계 AOP
+	* AOP Duty
+	* AOP Time
+
+	SCR의 출력을 설정시간 만큼 한다.
+		* 설정 AOP Duty 만큼의 SCR 출력을 내보낸다.
+			+ 예시) 50 Duty이면, 90도/180도 해당 SCR 출력을 내보낸다.
+			+ 수동 볼륨과 같은 이치이다.
+		* 전압값은 정격의 50%이상
+		* 전류는 정격의 10%이하로 검출되면
+		* Anode 단선으로 판정하고 경보를 발생한다.
+
+		※ 정격 전압/전류    : 로더에 설정된 최대 한계 설정 값
+*/
+    uint8_t ch = 0;
+	//----------------------------
+	uint16_t duty = iF_AOP_duty;		// 설정값 메뉴 (전체)
+	uint16_t time = iF_SOP_time; // 설정값 메뉴
+	// 정격 전압의 50%
+	uint16_t rated50_Voltage_mV = (get_MaxVoltage_micom_mV()) / 2; // micom단 mV단으로 변경해야 한다. <<
+	// 정격 전류의 10%
+	uint16_t reted10_Amp_mV = (get_MaxAmp_micom_mV() / 10); // micom단 mV단으로 변경해야 한다.
+	// 현재 전압 값
+	uint16_t nowVoltage_mV = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
+	// 현재 전류 값
+	uint16_t nowAmp_mV = scr.nowAdAmp_micom_mV; // AN2, micom 현재 전류
+
+	if (chkTimer_commomError_msec > time) {
+		chkTimer_commomError_msec = 0;
+		return STEP_DONE;
+	}
+
+	// 전압값은 정격 50% 이상
+	if (nowVoltage_mV > rated50_Voltage_mV) {
+		// 에러 !
 		pin_RUN_LED = LED_ON;
+		return STEP_ERROR;
+	}
+	// 전압은 10% 이하
+	if (nowAmp_mV < reted10_Amp_mV) {
+		// 에러 !
+		//pin_RUN_LED = LED_ON;
 		return STEP_ERROR;
 	}
 
@@ -1410,7 +1469,6 @@ uint8_t allStepRun_5step() {
 				break;
 			} else if (ichk == STEP_DONE) {
 				errcode = ERR_NONE;
-				chkTimer_commomError_msec = 0;
 				nRunStep = 2; // <<< next
 				break;
 			}
@@ -1425,15 +1483,25 @@ uint8_t allStepRun_5step() {
 				break;
 			} else if (ichk == STEP_DONE) {
 				errcode = ERR_NONE;
-				chkTimer_commomError_msec = 0;
-				nRunStep = 5; // <<< next
+				nRunStep = 3; // <<< next
 				break;
 			}
 			break;
 
 		case 3:
-			//checkAOP();
+			ichk = isAOPError();
+			if (ichk == STEP_ERROR) {
+				return ERR_AOP; // 즉시, 반환
+			} else if (ichk == STEP_CHKING) {
+				errcode = ERR_NONE;
+				break;
+			} else if (ichk == STEP_DONE) {
+				errcode = ERR_NONE;
+				nRunStep = 4; // <<< next
+				break;
+			}
 			break;
+
 		case 4:
 			//checkARP();
 			break;
@@ -1560,11 +1628,6 @@ void main(void) {
 		}
 
 // #부식방지 시스템 -----------------------------------------
-
-		// 전압/전류/센서   로더 목표 설정값 가져오기       ---Goal Set Volt/Amp/Sensor
-		scr.goalSetVoltage_V = iF_scr_goalVoltage;
-		scr.goalSetAmp = iF_scr_goalCurrent;
-		scr.goalSetSensor = iF_scr_goalSensor;
 
 		// 메인 보드의 총 4개(전압/전류/센서/볼륨)의 아날로그 채널 값 획득하기 (저장하기)
 		for (ch = 0; ch < ADC_CH_MAX; ch++) {

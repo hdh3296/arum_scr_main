@@ -119,18 +119,15 @@ typedef struct {
 
 
 	// #부식방지
-    uint16_t goalSetVoltage_V;	// Goal 셋팅 전압 실제 예시) 1v => 마이컴에서 50mV
-    uint16_t goalSetAmp;	// Goal 셋팅 전류 실제(유저) 예시) 50A =>
-	uint16_t goalSetSensor;
+	uint16_t nowAdVoltage_micom_mV;
+	uint16_t nowAdAmp_micom_mV;
+	uint16_t nowMainAdSensor_micom_mV;
+	uint16_t nowAdVolume_micom_mV;
 
-	uint16_t nowMicomAdVoltage;
-	uint16_t nowMicomAdCurrent;
-	uint16_t nowMicomMainAdSensor;
-	uint16_t nowMicomAdVolume;
-	bool bNowMicomAdVoltage_updted;
-	bool bNowMicomAdCurrent_updted;
-	bool bNowMicomAdSensor_updted;
-	bool bNowMicomAdVolume_updted;
+	bool bNowAdVoltage_micom_updted;
+	bool bNowAdCurrent_micom_updted;
+	bool bNowAdSensor_micom_updted;
+	bool bNowAdVolume_micom_updted;
 
 
     uint16_t adc_nowAnalog_mV; 		// 현재, 입력 아날로그 (마이컴) => 전압/전류/센서/볼륨
