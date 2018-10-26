@@ -948,6 +948,11 @@ uint16_t tiemrRzeroTimer;
 uint16_t tiemrSzeroTimer;
 uint16_t tiemrTzeroTimer;
 
+uint16_t RZeroXChekTimer;
+uint16_t SZeroXChekTimer;
+uint16_t TZeroXChekTimer;
+
+
 uint16_t micom_sensor_0_8_mV[9];
 void micom_saveTotal8sensorNowValue(void) {
 	uint8_t ch;
@@ -1504,7 +1509,6 @@ uint8_t isARPError(void) {
 	} else {
 		// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
 		if (now_mV[ch] > (start_mV[ch] + 150)) {
-			pin_RUN_LED = LED_ON;
 			return STEP_ERROR;
 		}
 	}
@@ -1533,7 +1537,6 @@ uint8_t isUPRWarning(void) {
 	}
 
 	if (tiemr_30UjiChkUpper_msec > 30000) {
-		pin_RUN_LED = LED_ON;
 		return STEP_ERROR;
 	}
 
@@ -1550,17 +1553,46 @@ uint8_t isOPRError(void) {
 	// -------------------------------------------------------------------
 
 	if (now < set) {
-		pin_RUN_LED = LED_ON;
 		return STEP_ERROR;
 	}
 	return STEP_CHKING;
 }
 
 
+uint8_t isFopErrorChk(void) {
+/*
+	기본적을 R/S/T 입력 엣지가 들어 오는지 체크 해야 한다.
+		일정 시간 동안 안들어 오는지 체크해야 한다.
+		따라서, 각 R/S/T에 대한 체크용 타이머가 있어야 한다.
+	두개 이상 안 들어오면 즉, 1개만 들어오면 에러이다.
+
+*/
+	uint16_t cnt;
+
+	cnt = 0;
+	if (RZeroXChekTimer > 100) {
+		cnt++;
+	}
+	if (SZeroXChekTimer > 100) {
+		cnt++;
+	}
+	if (TZeroXChekTimer > 100) {
+		cnt++;
+	}
+
+	if (cnt >= 2) {
+		return 1; // ERROR !
+	}
+	return 0;
+}
 
 
 uint8_t allStepRun_5step() {
 	uint8_t berror;
+
+	// FOP 에러는 모든 시스템의 기본 조건이므로
+	// 계속 검사하는 것으로 하자. !
+	if (isFopErrorChk()) return ERR_FOP;
 
 	switch (nRunStep) {
 		case 1: // SRP
@@ -1661,7 +1693,6 @@ bool isCoditionContorl() {
 }
 
 
-volatile bool a, b, c, d, e, f;
 void controlSrcAnd5Step_prcess() {
 	uint8_t errorCode;
 
@@ -1669,30 +1700,64 @@ void controlSrcAnd5Step_prcess() {
 
 	errorCode = allStepRun_5step(nRunStep);
 	switch (errorCode) {
-		case ERR_NONE:
-			break;
-		case ERR_UPR:
-			a = 1;
-			break;
+		case ERR_FOP:	// 0. 맨처음에 검사 해야 한다.
+			bSystemALLSTOPByError = 1;
+			pin_RUN_LED = LED_ON;
+			return;
 		case ERR_SRP:	// 1. 센서 역전
-			b = 1;
-		case ERR_SOP:	// 2. 단선
-			c = 1;
-		case ERR_AOP:	// 3.
-			d = 1;
-		case ERR_ARP:   // 4.
-			e = 1;
-		case ERR_OPR:   // 5.
-			f = 1;
-		case ERR_FOP: 	// 0. 맨처음에 검사 해야 한다.
 			bSystemALLSTOPByError = 1;
 			return;
+		case ERR_SOP:	// 2. 단선
+			bSystemALLSTOPByError = 1;
+			return;
+		case ERR_AOP:	// 3.
+			bSystemALLSTOPByError = 1;
+			return;
+		case ERR_ARP:	// 4.
+			bSystemALLSTOPByError = 1;
+			return;
+		case ERR_OPR:	// 5.
+			bSystemALLSTOPByError = 1;
+			return;
+
+		case ERR_UPR: // 경고
+			break;
+		case ERR_NONE:
+			break;
 		default:
 			break;
 	}
+
 }
 
+void mainStartInit(void) {
+	// 온도/판넬   통신 두절 체크 용 변수 초기화
+	not_rx_temp_chkTimer = 0;
+	b_temp_comm_not = 0;
+	not_rx_pannel_chkTimer = 0;
+	b_pannel_comm_not = 0;
+	bef_b_pannel_comm_not = 0;
+	b_pannel_comm_break_flag = 0;
 
+	// 초기화
+	gateRSTDo_time = MAX_GATE_zero_voltage;
+	bRzeroTimerStart = 0;
+	bSzeroTimerStart = 0;
+	bTzeroTimerStart = 0;
+	tiemrRzeroTimer = 0;
+	tiemrSzeroTimer = 0;
+	tiemrTzeroTimer = 0;
+
+	pwstartTiemr = 0;
+
+	pin_RUN_LED = LED_OFF; // 1 = off
+	powerOnReadyDelayTimer = 0;
+
+	// 초기화
+	RZeroXChekTimer = 0;
+	SZeroXChekTimer = 0;
+	TZeroXChekTimer = 0;
+}
 // -------------------------------------
 // - main loop ------------------------
 void main(void) {
@@ -1720,27 +1785,8 @@ void main(void) {
     setWatchDockEnable();
     setAdcStartOrStop(1);
 
-	// 온도/판넬   통신 두절 체크 용 변수 초기화
-	not_rx_temp_chkTimer = 0;
-	b_temp_comm_not = 0;
-	not_rx_pannel_chkTimer = 0;
-	b_pannel_comm_not = 0;
-	bef_b_pannel_comm_not = 0;
-	b_pannel_comm_break_flag = 0;
+	mainStartInit(); // 메인 시작하기 직전 초기화 !
 
-	// 초기화
-	gateRSTDo_time = MAX_GATE_zero_voltage;
-	bRzeroTimerStart = 0;
-	bSzeroTimerStart = 0;
-	bTzeroTimerStart = 0;
-	tiemrRzeroTimer = 0;
-	tiemrSzeroTimer = 0;
-	tiemrTzeroTimer = 0;
-
-	pwstartTiemr = 0;
-
-	pin_RUN_LED = LED_OFF; // 1 = off
-	powerOnReadyDelayTimer = 0;
     while (1) {
         unsigned int i;
         uint8_t ch;
@@ -1805,6 +1851,8 @@ void main(void) {
 			if (bSystemALLSTOPByError) {
 				pin_RY_RUN = RY_OFF;
 				pin_RY_ALARM = RY_ON;
+
+
 			}
 
 		} else {
@@ -1817,7 +1865,6 @@ void main(void) {
 			pin_RY_RUN = RY_OFF;
 			pin_RY_ALARM = RY_OFF;
 			tiemr_30UjiChkUpper_msec = 0;
-
 		}
     }
 }
@@ -1827,20 +1874,26 @@ void interrupt isr(void) {
 	uint8_t ch;
 
 	// ZERO RST 입력 인터럽트 (상승 엣지) 체크
+	// * R
 	if(INT0IF && INT0IE){
   		INT0IF = 0;
 		bRzeroTimerStart = 1; // 제로 타이머 시작을 위한 제로 RST 시작 지점
 		tiemrRzeroTimer = 0;
+		RZeroXChekTimer = 0;
 	}
+	// * S
 	if(INT1IF && INT1IE){
   		INT1IF = 0;
 		bSzeroTimerStart = 1;
 		tiemrSzeroTimer = 0;
+		SZeroXChekTimer = 0;
 	}
+	// * T
 	if(INT2IF && INT2IE){
   		INT2IF = 0;
 		bTzeroTimerStart = 1;
 		tiemrTzeroTimer = 0;
+		TZeroXChekTimer = 0;
 	}
 
 	// RST 게이트 ON 용 타이머1
@@ -1869,7 +1922,6 @@ void interrupt isr(void) {
 		if (pwstartTiemr < 0xffff) pwstartTiemr++;
         if (timer_msec >= 1000) {
             timer_msec = 0;
-			//pin_RUN_LED = ~pin_RUN_LED;
         }
 
         NoCanInt++;
@@ -1895,6 +1947,10 @@ void interrupt isr(void) {
 		if (bUPRstate) {
 			if (tiemr_30UjiChkUpper_msec < 0xffff) tiemr_30UjiChkUpper_msec++;
 		}
+
+		if (RZeroXChekTimer < 0xffff) RZeroXChekTimer++;
+		if (SZeroXChekTimer < 0xffff) SZeroXChekTimer++;
+		if (TZeroXChekTimer < 0xffff) TZeroXChekTimer++;
     }
 
 
