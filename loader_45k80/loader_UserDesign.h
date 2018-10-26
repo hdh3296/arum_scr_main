@@ -74,12 +74,10 @@ const uint8_t GroupLineMessage[][17] = {
     "AOP : TIME      ", //16
     "ARP : DUTY      ", //16
     "ARP : TIME      ", //16
+    "UPR : opr set   ", //16
+    "OPR : upr set   ", //16
 
 
-
-
-    "CH-4:ch correctT", //16
-    "CH-4:ch correctV", //16
     "CH-4:ch correctA", //16
 
     "CH-5:On Temp    ", //9  // group1

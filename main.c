@@ -35,6 +35,7 @@ volatile uint16_t db_ldrSetSRPMIN;
 volatile uint16_t db_ldrSetSOPMAX;
 volatile uint16_t db_ldrSetSOPMIN;
 
+bool bSystemALLSTOPByError = 0;
 
 
 uint8_t rx_db_enableSet[MAX_CH];
@@ -79,7 +80,7 @@ enum {
 };
 
 enum {
-	ERR_NONE,
+	ERR_NONE = 0,
 	ERR_SRP,	// 센서 역전
 	ERR_SOP,	// 단선
 	ERR_AOP,	//
@@ -1559,7 +1560,6 @@ uint8_t isOPRError(void) {
 
 
 uint8_t allStepRun_5step() {
-	uint8_t errcode;
 	uint8_t berror;
 
 	switch (nRunStep) {
@@ -1568,12 +1568,10 @@ uint8_t allStepRun_5step() {
 			if (berror == STEP_ERROR) {
 				return ERR_SRP; // 즉시, 반환
 			} else if (berror == STEP_CHKING) {
-				errcode = ERR_NONE;
-				break;
+				return ERR_NONE;
 			} else if (berror == STEP_DONE) {
-				errcode = ERR_NONE;
 				nRunStep = 2; // <<< next
-				break;
+				return ERR_NONE;
 			}
 			break;
 
@@ -1582,12 +1580,10 @@ uint8_t allStepRun_5step() {
 			if (berror == STEP_ERROR) {
 				return ERR_SOP; // 즉시, 반환
 			} else if (berror == STEP_CHKING) {
-				errcode = ERR_NONE;
-				break;
+				return ERR_NONE;
 			} else if (berror == STEP_DONE) {
-				errcode = ERR_NONE;
 				nRunStep = 3; // <<< next
-				break;
+				return ERR_NONE;
 			}
 			break;
 
@@ -1596,12 +1592,10 @@ uint8_t allStepRun_5step() {
 			if (berror == STEP_ERROR) {
 				return ERR_AOP; // 즉시, 반환
 			} else if (berror == STEP_CHKING) {
-				errcode = ERR_NONE;
-				break;
+				return ERR_NONE;
 			} else if (berror == STEP_DONE) {
-				errcode = ERR_NONE;
 				nRunStep = 4; // <<< next
-				break;
+				return ERR_NONE;
 			}
 			break;
 
@@ -1610,32 +1604,32 @@ uint8_t allStepRun_5step() {
 			if (berror == STEP_ERROR) {
 				return ERR_ARP; // 즉시, 반환
 			} else if (berror == STEP_CHKING) {
-				errcode = ERR_NONE;
-				break;
+				return ERR_NONE;
 			} else if (berror == STEP_DONE) {
-				errcode = ERR_NONE;
 				nRunStep = 5; // <<< next
-				break;
+				return ERR_NONE;
 			}
 			break;
 
 		case 5:
+			pin_RY_RUN = RY_ON;
 			controlSensorSuWi();
 
 			berror = isUPRWarning(); // 경고 수준
 			if (berror == STEP_ERROR) {
-				errcode = ERR_UPR;
+				return ERR_UPR;
 			}
 
 			berror = isOPRError();
 			if (berror == STEP_ERROR) {
-				errcode = ERR_OPR;
+				return ERR_OPR;
 			}
 			break;
 
 		default:
 			break;
 	}
+	return ERR_NONE;
 }
 
 
@@ -1667,11 +1661,44 @@ bool isCoditionContorl() {
 }
 
 
+volatile bool a, b, c, d, e, f;
+void controlSrcAnd5Step_prcess() {
+	uint8_t errorCode;
+
+	if (bSystemALLSTOPByError) return;
+
+	errorCode = allStepRun_5step(nRunStep);
+	switch (errorCode) {
+		case ERR_NONE:
+			break;
+		case ERR_UPR:
+			a = 1;
+			break;
+		case ERR_SRP:	// 1. 센서 역전
+			b = 1;
+		case ERR_SOP:	// 2. 단선
+			c = 1;
+		case ERR_AOP:	// 3.
+			d = 1;
+		case ERR_ARP:   // 4.
+			e = 1;
+		case ERR_OPR:   // 5.
+			f = 1;
+		case ERR_FOP: 	// 0. 맨처음에 검사 해야 한다.
+			bSystemALLSTOPByError = 1;
+			return;
+		default:
+			break;
+	}
+}
+
+
 // -------------------------------------
 // - main loop ------------------------
 void main(void) {
 	uint8_t ch;
 	uint8_t errorCode = ERR_NONE;
+
 
     di();
     initMCU();
@@ -1768,15 +1795,21 @@ void main(void) {
 		database_SRPSOPARLRM();
 
 
-		if (isJustNowPowerOn()) {
+		if (isJustNowPowerOn()) { // powerOff -> On 하는 찰나 !!!
 			powerOnReadyDelayTimer = 0;
 		}
 
 		if (isCoditionContorl()) {
 			// 전체 제어 순서
-			errorCode = allStepRun_5step(nRunStep);
+			controlSrcAnd5Step_prcess();
+			if (bSystemALLSTOPByError) {
+				pin_RY_RUN = RY_OFF;
+				pin_RY_ALARM = RY_ON;
+			}
+
 		} else {
 			// system off !!!
+			bSystemALLSTOPByError = 0;
 			nRunStep = 1;
 			chkTimer_commomError_msec = 0;
 			pin_RUN_LED = LED_OFF;
