@@ -1078,7 +1078,6 @@ bool getSensorTypeByCh(uint16_t i) {
 
 
 
-// #1022 그냥 현재 센서 입력 값 중에 가장 큰 값을 마이컴단 값으로 가져오면 된다.
 uint16_t getFinalOneTopMaxSensor_micom_mV(uint16_t now_main) {
 	uint16_t max = now_main;
 	uint16_t i;
@@ -1094,6 +1093,20 @@ uint16_t getFinalOneTopMaxSensor_micom_mV(uint16_t now_main) {
 	return max;
 }
 
+uint16_t getFinalOneLowMinSensor_micom_mV(uint16_t now_main) {
+	uint16_t min = now_main;
+	uint16_t i;
+	// 총 9개 센서 현재 입력값 중에 최소 값을 얻기 위해서
+	// 하지만 기본적으로 메인의 값을 기본 값으로 가져가므로
+	// zsu 값 8개에 대해서 만 루프 돌리면 된다.
+	for (i = 0; i < ZSU_CH_MAX; i++) {
+		// 가장 큰 값을 뽑아야 한다.
+		if (zsu_ch0_ch7_analog[i] < min) {
+			min = zsu_ch0_ch7_analog[i];
+		}
+	}
+	return min;
+}
 
 
 
@@ -1500,7 +1513,7 @@ uint8_t isARPError(void) {
 
 uint16_t tiemr_30UjiChkUpper_msec;
 bool bUPRstate;
-uint8_t isUPRError(void) {
+uint8_t isUPRWarning(void) {
 /* 5단계 UPR set
 	* 30초 유지 체크용 타이머 변수
 		+ 기준값이 되면 초기화
@@ -1526,23 +1539,38 @@ uint8_t isUPRError(void) {
 	return STEP_CHKING;
 }
 
+uint8_t isOPRError(void) {
+/* 5단계 OPR set
+	* 설정 셋팅 기준 값
+	* 현재 센서 전위 값 mV
+*/
+	uint16_t set = getGoalSensorSetVal_micom_mV(iF_OPR_set); // ★
+	uint16_t now = getFinalOneLowMinSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
+	// -------------------------------------------------------------------
+
+	if (now < set) {
+		pin_RUN_LED = LED_ON;
+		return STEP_ERROR;
+	}
+	return STEP_CHKING;
+}
 
 
 
 
 uint8_t allStepRun_5step() {
 	uint8_t errcode;
-	uint8_t ichk;
+	uint8_t berror;
 
 	switch (nRunStep) {
 		case 1: // SRP
-			ichk = isSRPError();
-			if (ichk == STEP_ERROR) {
+			berror = isSRPError();
+			if (berror == STEP_ERROR) {
 				return ERR_SRP; // 즉시, 반환
-			} else if (ichk == STEP_CHKING) {
+			} else if (berror == STEP_CHKING) {
 				errcode = ERR_NONE;
 				break;
-			} else if (ichk == STEP_DONE) {
+			} else if (berror == STEP_DONE) {
 				errcode = ERR_NONE;
 				nRunStep = 2; // <<< next
 				break;
@@ -1550,13 +1578,13 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 2: // SOP
-			ichk = isSOPError();
-			if (ichk == STEP_ERROR) {
+			berror = isSOPError();
+			if (berror == STEP_ERROR) {
 				return ERR_SOP; // 즉시, 반환
-			} else if (ichk == STEP_CHKING) {
+			} else if (berror == STEP_CHKING) {
 				errcode = ERR_NONE;
 				break;
-			} else if (ichk == STEP_DONE) {
+			} else if (berror == STEP_DONE) {
 				errcode = ERR_NONE;
 				nRunStep = 3; // <<< next
 				break;
@@ -1564,13 +1592,13 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 3:
-			ichk = isAOPError();
-			if (ichk == STEP_ERROR) {
+			berror = isAOPError();
+			if (berror == STEP_ERROR) {
 				return ERR_AOP; // 즉시, 반환
-			} else if (ichk == STEP_CHKING) {
+			} else if (berror == STEP_CHKING) {
 				errcode = ERR_NONE;
 				break;
-			} else if (ichk == STEP_DONE) {
+			} else if (berror == STEP_DONE) {
 				errcode = ERR_NONE;
 				nRunStep = 4; // <<< next
 				break;
@@ -1578,13 +1606,13 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 4:
-			ichk = isARPError();
-			if (ichk == STEP_ERROR) {
+			berror = isARPError();
+			if (berror == STEP_ERROR) {
 				return ERR_ARP; // 즉시, 반환
-			} else if (ichk == STEP_CHKING) {
+			} else if (berror == STEP_CHKING) {
 				errcode = ERR_NONE;
 				break;
-			} else if (ichk == STEP_DONE) {
+			} else if (berror == STEP_DONE) {
 				errcode = ERR_NONE;
 				nRunStep = 5; // <<< next
 				break;
@@ -1593,14 +1621,21 @@ uint8_t allStepRun_5step() {
 
 		case 5:
 			controlSensorSuWi();
-			ichk = isUPRError();
-			//chkOPR_alarm();
+
+			berror = isUPRWarning(); // 경고 수준
+			if (berror == STEP_ERROR) {
+				errcode = ERR_UPR;
+			}
+
+			berror = isOPRError();
+			if (berror == STEP_ERROR) {
+				errcode = ERR_OPR;
+			}
 			break;
+
 		default:
 			break;
 	}
-
-	return errcode;
 }
 
 
