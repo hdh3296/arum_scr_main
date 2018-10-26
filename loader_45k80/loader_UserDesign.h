@@ -4,7 +4,7 @@
 
 #include    "..\main.h"
 
-// #1026
+// #1020
 #define MAX_FLASH_BLOCK_NM 3  // (64 * 10 = 640 byte)	or ( (64/4) * 10 = 160 long)
 #define MAX_MENU 50
 
@@ -72,6 +72,8 @@ const uint8_t GroupLineMessage[][17] = {
     "SOP : TIME      ", //9  // group1
     "AOP : DUTY      ", //16
     "AOP : TIME      ", //16
+    "ARP : DUTY      ", //16
+    "ARP : TIME      ", //16
 
 
 
@@ -217,6 +219,9 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define F_AOP_DUTY     		IntzData042
 #define F_AOP_TIME     		IntzData043
+#define F_ARP_DUTY     		IntzData044
+#define F_ARP_TIME     		IntzData045
+
 
 // 128 πŸ¿Ã∆Æ
 ////////////////////////////////////////////////////////////////////////
@@ -288,6 +293,8 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define iF_AOP_duty 			iF_IntData(F_AOP_DUTY)
 #define iF_AOP_time 			iF_IntData(F_AOP_TIME)
+#define iF_ARP_duty 			iF_IntData(F_ARP_DUTY)
+#define iF_ARP_time 			iF_IntData(F_ARP_TIME)
 
 
 // ==============================================

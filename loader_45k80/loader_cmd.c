@@ -460,7 +460,7 @@ void getSignalUserNumXXX(uint32_t dest[], uint32_t src) {
 
 void Integer_Digit(void) {
 
-	if (isThisSelMenuNmIsSignDigit_1024()) { // #1025
+	if (isThisSelMenuNmIsSignDigit_1024()) {
 		// user 보여지는 값
 		// 					저장할 버퍼, 			입력 로더 변수
 		getSignalUserNumXXX(ThisSignalUserNumbuf, ThisDigitData);

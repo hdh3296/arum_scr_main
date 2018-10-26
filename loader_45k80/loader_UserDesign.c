@@ -38,7 +38,9 @@ Menu_Status MenuStatus[MAX_MENU];
 
 
 #define DFL_AOP_DUTY 20 // 7A
-#define DFL_AOP_TIME 10000 // 7A
+#define DFL_AOP_TIME 3000 // 7A
+#define DFL_ARP_DUTY 30 // 7A
+#define DFL_ARP_TIME 10000 // 7A
 
 // 보정
 #define DFL_CH0_CORRENT_T	20
@@ -210,7 +212,7 @@ uint16_t G2_Menu_Status_Set(void) {
 	/////////////////////////////////////////////////////////////////////
     //sub group7 - ch0 목표 센서(부식) 예시) 1000 mV ★
     /////////////////////////////////////////////////////////////////////
-    // ThisSelMenuNm => 4 #1025
+    // ThisSelMenuNm => 4
     bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
@@ -724,6 +726,30 @@ uint16_t G6_Menu_Status_Set(void) {
     sub_gr++;
 
 
+	/////////////////////////////////////////////////////////////////////
+    //ARP DUTY
+    /////////////////////////////////////////////////////////////////////
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 2;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 99;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_ARP_DUTY;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+    UserMenuSerialNm++;
+    sub_gr++;
+	/////////////////////////////////////////////////////////////////////
+    //ARP TIME
+    /////////////////////////////////////////////////////////////////////
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 50000;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_ARP_TIME;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+    UserMenuSerialNm++;
+    sub_gr++;
+
+
 	// end ----------------
     MenuStatus[UserMenuSerialNm].M_EditGroupNm = 0xff;
     return (0);
@@ -835,6 +861,8 @@ uint16_t DefaultValueSet(void) {
 
         iSR_IntData(F_AOP_DUTY) = DFL_AOP_DUTY;
         iSR_IntData(F_AOP_TIME) = DFL_AOP_TIME;
+        iSR_IntData(F_ARP_DUTY) = DFL_ARP_DUTY;
+        iSR_IntData(F_ARP_TIME) = DFL_ARP_TIME;
 
 
 		FlashBlockWr(1);
@@ -998,7 +1026,7 @@ void ldr_setSecondLine(uint8_t ch) {
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
 
 	// 전압
-    num = micom_getSensorNowSuwi(0); // <<< #1025
+    num = micom_getSensorNowJunwi_mV(0); // <<< #1025
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;

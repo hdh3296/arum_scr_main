@@ -67,7 +67,6 @@ void initPort(void) {
 
 	pin_AUTO_tris = 1;
 	pin_AUTO = 0;
-	// #1024 테스트 하자 !
 	pin_KEY_POWER_tris = 1;
 	pin_KEY_POWER = 0;
 	pin_KEY_ALARM_tris	= 1;

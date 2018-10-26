@@ -1306,14 +1306,13 @@ enum {
 	TYPE_CUCUSO4
 };
 
-uint16_t micom_getSensorNowSuwi(uint8_t ch) {
+uint16_t micom_getSensorNowJunwi_mV(uint8_t ch) {
 
-	return micom_sensor_0_8_mV[ch];
+	return micom_sensor_0_8_mV[ch]; // 총 0 ~ 8 : 9개 전체
 
 }
 
 
-// #1025
 uint16_t get_micom_SRP_max() {
 	return db_ldrSetSRPMAX;
 }
@@ -1336,14 +1335,14 @@ uint8_t isSRPError(void) {
 	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SRP Time : check time
 */
-    uint8_t ch = 0;
+    uint8_t ch = 0; // #1020
 	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
 	uint16_t micom_nowIn_sensorJunwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
 	//---------------------------------------------
 	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
-	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 마이컴단
+	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 
 	if (chkTimer_commomError_msec > setChkTime_SRP) {
 		chkTimer_commomError_msec = 0;
@@ -1375,14 +1374,14 @@ uint8_t isSOPError(void) {
 	* SOP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SOP Time : check time
 */
-    uint8_t ch = 0;
+    uint8_t ch = 0; // #1020
 	//----------------------------
 	uint16_t micom_nowIn_sensorJunwi[9]; // 현재 전위 값
 	//---------------------------------------------
 	uint16_t micom_SOP_max = get_micom_SOP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SOP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SOP = iF_SOP_time; // 설정값 메뉴
-	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowSuwi(ch); // 현재 수위 상태 (마이컴단)
+	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 전위 상태 (마이컴단)
 
 	if (chkTimer_commomError_msec > setChkTime_SOP) {
 		chkTimer_commomError_msec = 0;
@@ -1423,8 +1422,6 @@ uint8_t isAOPError(void) {
 
 		※ 정격 전압/전류    : 로더에 설정된 최대 한계 설정 값
 */
-    uint8_t ch = 0;
-	//----------------------------
 	uint16_t duty = iF_AOP_duty;		// 설정값 메뉴 (전체)
 	uint16_t time = iF_AOP_time; // 설정값 메뉴
 	// 정격 전압의 50%
@@ -1444,7 +1441,6 @@ uint8_t isAOPError(void) {
 	if (chkTimer_commomError_msec > time) {
 		chkTimer_commomError_msec = 0;
 		gateRSTDo_time = MAX_GATE_zero_voltage;
-		pin_RUN_LED = LED_OFF;
 		return STEP_DONE;
 	}
 
@@ -1453,7 +1449,6 @@ uint8_t isAOPError(void) {
 		// 전압은 10% 이하
 		if (nowAmp_mV < reted10_Amp_mV) {
 			// 에러 !
-			pin_RUN_LED = LED_ON;
 			return STEP_ERROR;
 		}
 	}
@@ -1461,6 +1456,49 @@ uint8_t isAOPError(void) {
 	return STEP_CHKING;
 }
 
+uint8_t isARPError(void) {
+/* 4단계 ARP
+	* AOP Duty
+	* AOP Time
+
+	SCR의 출력을 설정시간 만큼 한다.
+	* 이때, 센서 전위가 감소해야 정상
+	* 그렇지 않고 센서 전위가 올라가면 에러 !
+	* 처음 시작 지점의 센서 전위 값 대비 + (위로) 150mV 올라간 지점이 하나라도 발견되면 에러 !
+*/
+	uint16_t ch = 0; // #1020
+	uint16_t sensor_mV[9];
+	uint16_t duty = iF_ARP_duty;		// 설정값 메뉴 (전체)
+	uint16_t time = iF_ARP_time; // 설정값 메뉴
+
+	static uint16_t sensor_mV_start[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
+	// 현재 전위 마이컴단 mV 값
+	sensor_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
+	// -------------------------------------------------------------------
+	// scr 출력 !
+	gateRSTDo_time = getGateRstDoTimeByDuty(duty);
+
+	if (chkTimer_commomError_msec > time) {
+		chkTimer_commomError_msec = 0;
+		gateRSTDo_time = MAX_GATE_zero_voltage;
+		pin_RUN_LED = LED_OFF;
+		return STEP_DONE;
+	}
+
+	if (chkTimer_commomError_msec <= 1) {
+		sensor_mV_start[ch] = sensor_mV[ch];
+	} else {
+		// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
+		if (sensor_mV[ch] > (sensor_mV_start[ch] + 150)) {
+			pin_RUN_LED = LED_ON;
+			return STEP_ERROR;
+		}
+	}
+
+
+
+	return STEP_CHKING;
+}
 
 
 
@@ -1513,8 +1551,19 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 4:
-			//checkARP();
+			ichk = isARPError();
+			if (ichk == STEP_ERROR) {
+				return ERR_ARP; // 즉시, 반환
+			} else if (ichk == STEP_CHKING) {
+				errcode = ERR_NONE;
+				break;
+			} else if (ichk == STEP_DONE) {
+				errcode = ERR_NONE;
+				nRunStep = 5; // <<< next
+				break;
+			}
 			break;
+
 		case 5:
 			controlSensorSuWi();
 			break;
