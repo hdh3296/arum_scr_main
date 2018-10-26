@@ -1079,7 +1079,7 @@ bool getSensorTypeByCh(uint16_t i) {
 
 
 // #1022 그냥 현재 센서 입력 값 중에 가장 큰 값을 마이컴단 값으로 가져오면 된다.
-uint16_t getMicomFinalMaxSensor(uint16_t now_main) {
+uint16_t getFinalOneTopMaxSensor_micom_mV(uint16_t now_main) {
 	uint16_t max = now_main;
 	uint16_t i;
 	// 총 9개 센서 현재 입력값 중에 최대 값을 얻기 위해서
@@ -1150,7 +1150,7 @@ void compareGoalNowCurrent(void) {
 }
 
 
-uint16_t getMicomGoalSensorVal(uint16_t ldrValue) { // #1025
+uint16_t getGoalSensorSetVal_micom_mV(uint16_t ldrValue) { // #1025
 // src : 로더값 => 반환 dest : 마이컴단 값
 	uint32_t signalNumber[2];
 	uint16_t micomVal;
@@ -1181,8 +1181,8 @@ void compareGoalNowSensor(void) {
 	if (scr.bNowAdSensor_micom_updted) {
 		scr.bNowAdSensor_micom_updted = FALSE;
 									// 로더변수
-		goal = getMicomGoalSensorVal(iF_scr_goalSensor); // ★
-		now = getMicomFinalMaxSensor(scr.nowMainAdSensor_micom_mV);
+		goal = getGoalSensorSetVal_micom_mV(iF_scr_goalSensor); // ★
+		now = getFinalOneTopMaxSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
@@ -1467,13 +1467,13 @@ uint8_t isARPError(void) {
 	* 처음 시작 지점의 센서 전위 값 대비 + (위로) 150mV 올라간 지점이 하나라도 발견되면 에러 !
 */
 	uint16_t ch = 0; // #1020
-	uint16_t sensor_mV[9];
+	uint16_t now_mV[9];
 	uint16_t duty = iF_ARP_duty;		// 설정값 메뉴 (전체)
 	uint16_t time = iF_ARP_time; // 설정값 메뉴
 
-	static uint16_t sensor_mV_start[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
+	static uint16_t start_mV[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
 	// 현재 전위 마이컴단 mV 값
-	sensor_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
+	now_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 	// -------------------------------------------------------------------
 	// scr 출력 !
 	gateRSTDo_time = getGateRstDoTimeByDuty(duty);
@@ -1486,23 +1486,50 @@ uint8_t isARPError(void) {
 	}
 
 	if (chkTimer_commomError_msec <= 1) {
-		sensor_mV_start[ch] = sensor_mV[ch];
+		start_mV[ch] = now_mV[ch];
 	} else {
 		// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
-		if (sensor_mV[ch] > (sensor_mV_start[ch] + 150)) {
+		if (now_mV[ch] > (start_mV[ch] + 150)) {
 			pin_RUN_LED = LED_ON;
 			return STEP_ERROR;
 		}
 	}
 
+	return STEP_CHKING;
+}
 
+uint16_t tiemr_30UjiChkUpper_msec;
+bool bUPRstate;
+uint8_t isUPRError(void) {
+/* 5단계 UPR set
+	* 30초 유지 체크용 타이머 변수
+		+ 기준값이 되면 초기화
+	* 현재 센서 전위 값 mV
+	* 설정 목표 전위 값
+*/
+	uint16_t set = getGoalSensorSetVal_micom_mV(iF_UPR_set); // ★
+	uint16_t now = getFinalOneTopMaxSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
+	// -------------------------------------------------------------------
+
+	if (now > set) {
+		bUPRstate = 1;
+	} else {
+		bUPRstate = 0;
+		tiemr_30UjiChkUpper_msec = 0;
+	}
+
+	if (tiemr_30UjiChkUpper_msec > 30000) {
+		pin_RUN_LED = LED_ON;
+		return STEP_ERROR;
+	}
 
 	return STEP_CHKING;
 }
 
 
 
-// #1025
+
+
 uint8_t allStepRun_5step() {
 	uint8_t errcode;
 	uint8_t ichk;
@@ -1566,6 +1593,8 @@ uint8_t allStepRun_5step() {
 
 		case 5:
 			controlSensorSuWi();
+			ichk = isUPRError();
+			//chkOPR_alarm();
 			break;
 		default:
 			break;
@@ -1580,10 +1609,10 @@ uint8_t allStepRun_5step() {
 // #1025 coding 영역
 
 void database_SRPSOPARLRM() {
-	uint16_t micom_SRP_max = getMicomGoalSensorVal(iF_SRP_max);
-	uint16_t micom_SRP_min = getMicomGoalSensorVal(iF_SRP_min);		// 설정값 메뉴 (전체)
-	uint16_t micom_SOP_max = getMicomGoalSensorVal(iF_SOP_max);
-	uint16_t micom_SOP_min = getMicomGoalSensorVal(iF_SOP_min);		// 설정값 메뉴 (전체)
+	uint16_t micom_SRP_max = getGoalSensorSetVal_micom_mV(iF_SRP_max);
+	uint16_t micom_SRP_min = getGoalSensorSetVal_micom_mV(iF_SRP_min);		// 설정값 메뉴 (전체)
+	uint16_t micom_SOP_max = getGoalSensorSetVal_micom_mV(iF_SOP_max);
+	uint16_t micom_SOP_min = getGoalSensorSetVal_micom_mV(iF_SOP_min);		// 설정값 메뉴 (전체)
 
 	// 1. 유저값 +1000 (-1000)
 	// 2. 로더변수 11000 (1000 -1000 = 9000)
@@ -1719,6 +1748,7 @@ void main(void) {
 			gateRSTDo_time = MAX_GATE_zero_voltage; // off
 			pin_RY_RUN = RY_OFF;
 			pin_RY_ALARM = RY_OFF;
+			tiemr_30UjiChkUpper_msec = 0;
 
 		}
     }
@@ -1793,6 +1823,10 @@ void interrupt isr(void) {
 
 		if (chkTimer_commomError_msec < 0xffff) chkTimer_commomError_msec++;
 		if (powerOnReadyDelayTimer < 0xffff) powerOnReadyDelayTimer++;
+
+		if (bUPRstate) {
+			if (tiemr_30UjiChkUpper_msec < 0xffff) tiemr_30UjiChkUpper_msec++;
+		}
     }
 
 

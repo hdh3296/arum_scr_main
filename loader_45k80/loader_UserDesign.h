@@ -222,6 +222,10 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_ARP_DUTY     		IntzData044
 #define F_ARP_TIME     		IntzData045
 
+#define F_UPR_SET       	IntzData046
+#define F_OPR_SET     		IntzData047
+
+
 
 // 128 πŸ¿Ã∆Æ
 ////////////////////////////////////////////////////////////////////////
@@ -296,6 +300,8 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_ARP_duty 			iF_IntData(F_ARP_DUTY)
 #define iF_ARP_time 			iF_IntData(F_ARP_TIME)
 
+#define iF_UPR_set 					iF_IntData(F_UPR_SET)
+#define iF_OPR_set 					iF_IntData(F_OPR_SET)
 
 // ==============================================
 ////////////////////////////////////////////////////////

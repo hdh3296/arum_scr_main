@@ -34,13 +34,19 @@ Menu_Status MenuStatus[MAX_MENU];
 
 #define DFL_SOP_MAX 10200 // V
 #define DFL_SOP_MIN 9800 // 7A
-#define DFL_SOP_TIME 2000 // V
+#define DFL_SOP_TIME 1000 // V
 
 
 #define DFL_AOP_DUTY 20 // 7A
 #define DFL_AOP_TIME 3000 // 7A
 #define DFL_ARP_DUTY 30 // 7A
-#define DFL_ARP_TIME 10000 // 7A
+#define DFL_ARP_TIME 1000 // 7A
+
+#define DFL_UPR_SET 11000 // V
+#define DFL_OPR_SET 9000 // 7A
+
+
+
 
 // º¸Á¤
 #define DFL_CH0_CORRENT_T	20
@@ -750,6 +756,34 @@ uint16_t G6_Menu_Status_Set(void) {
     sub_gr++;
 
 
+	/////////////////////////////////////////////////////////////////////
+    //UPR set
+    /////////////////////////////////////////////////////////////////////
+    // ThisSelMenuNm => ??
+    bThisMenuSaver[UserMenuSerialNm] = 1;
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // +1999
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; // -1999
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_UPR_SET;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+    UserMenuSerialNm++;
+    sub_gr++;
+	/////////////////////////////////////////////////////////////////////
+    //OPR set
+    /////////////////////////////////////////////////////////////////////
+    // ThisSelMenuNm => ??
+    bThisMenuSaver[UserMenuSerialNm] = 1;
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11999; // +1999
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  8001; // -1999
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_OPR_SET;
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+    UserMenuSerialNm++;
+    sub_gr++;
+
+
 	// end ----------------
     MenuStatus[UserMenuSerialNm].M_EditGroupNm = 0xff;
     return (0);
@@ -863,6 +897,9 @@ uint16_t DefaultValueSet(void) {
         iSR_IntData(F_AOP_TIME) = DFL_AOP_TIME;
         iSR_IntData(F_ARP_DUTY) = DFL_ARP_DUTY;
         iSR_IntData(F_ARP_TIME) = DFL_ARP_TIME;
+
+        iSR_IntData(F_UPR_SET) = DFL_UPR_SET;
+        iSR_IntData(F_OPR_SET) = DFL_OPR_SET;
 
 
 		FlashBlockWr(1);
