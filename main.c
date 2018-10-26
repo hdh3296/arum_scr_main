@@ -1450,14 +1450,12 @@ uint8_t isAOPError(void) {
 
 	// 전압값은 정격 50% 이상
 	if (nowVoltage_mV > rated50_Voltage_mV) {
-		// 에러 !
-		return STEP_ERROR;
-	}
-	// 전압은 10% 이하
-	if (nowAmp_mV < reted10_Amp_mV) {
-		// 에러 !
-		pin_RUN_LED = LED_ON;
-		return STEP_ERROR;
+		// 전압은 10% 이하
+		if (nowAmp_mV < reted10_Amp_mV) {
+			// 에러 !
+			pin_RUN_LED = LED_ON;
+			return STEP_ERROR;
+		}
 	}
 
 	return STEP_CHKING;
