@@ -1330,13 +1330,13 @@ uint16_t DefaultDisplay(void) {
 
     switch (k) {
         case 0:
-            dsplayManyStateInfo_allCH__copy();
+			Default_Cur_State_Display();
             break;
         case 1:
-			dsplayManyStateInfo_pwm();
+			dsplayManyStateInfo_allCH__copy();
             break;
         default:
-            Default_Cur_State_Display();
+			dsplayManyStateInfo_pwm();
             break;
     }
 
