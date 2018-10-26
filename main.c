@@ -9,7 +9,7 @@
 #include    "pwm.h"
 #include    "can\my_can.h"
 
-#define MAX_GATE_min_voltage	240 // 토크 0 따라서, 전압 0
+#define MAX_GATE_zero_voltage	240 // 토크 0 따라서, 전압 0
 #define MIN_GATE_max_voltage	60
 
 enum {
@@ -1133,7 +1133,7 @@ void compareGoalNowVoltage(void) {
 	if (scr.bNowAdVoltage_micom_updted) {
 		scr.bNowAdVoltage_micom_updted = FALSE;
 
-		if (gateRSTDo_time < MAX_GATE_min_voltage) {
+		if (gateRSTDo_time < MAX_GATE_zero_voltage) {
 			gateRSTDo_time += 1;
 		}
 	}
@@ -1143,7 +1143,7 @@ void compareGoalNowCurrent(void) {
 	if (scr.bNowAdCurrent_micom_updted) {
 		scr.bNowAdCurrent_micom_updted = FALSE;
 
-		if (gateRSTDo_time < MAX_GATE_min_voltage) {
+		if (gateRSTDo_time < MAX_GATE_zero_voltage) {
 			gateRSTDo_time += 1;
 		}
 	}
@@ -1187,7 +1187,7 @@ void compareGoalNowSensor(void) {
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
 		if (now < (goal-0)) {
-			if (gateRSTDo_time < MAX_GATE_min_voltage) {
+			if (gateRSTDo_time < MAX_GATE_zero_voltage) {
 				gateRSTDo_time += 1;
 			}
 		} else if (now > (goal+0)) {
@@ -1400,6 +1400,12 @@ uint8_t isSOPError(void) {
 	return STEP_CHKING;
 }
 
+uint16_t getGateRstDoTimeByDuty(uint16_t duty) {
+	uint16_t basu, i;
+    basu =	(MAX_GATE_zero_voltage - MIN_GATE_max_voltage) * 10 / 99;
+	i = (duty * basu / 10);
+	return MAX_GATE_zero_voltage - i;
+}
 
 
 uint8_t isAOPError(void) {
@@ -1420,7 +1426,7 @@ uint8_t isAOPError(void) {
     uint8_t ch = 0;
 	//----------------------------
 	uint16_t duty = iF_AOP_duty;		// 설정값 메뉴 (전체)
-	uint16_t time = iF_SOP_time; // 설정값 메뉴
+	uint16_t time = iF_AOP_time; // 설정값 메뉴
 	// 정격 전압의 50%
 	uint16_t rated50_Voltage_mV = (get_MaxVoltage_micom_mV()) / 2; // micom단 mV단으로 변경해야 한다. <<
 	// 정격 전류의 10%
@@ -1430,21 +1436,27 @@ uint8_t isAOPError(void) {
 	// 현재 전류 값
 	uint16_t nowAmp_mV = scr.nowAdAmp_micom_mV; // AN2, micom 현재 전류
 
+	// duty 출력
+	// duty // 0 ~ 99 %
+	gateRSTDo_time = getGateRstDoTimeByDuty(duty);
+
+
 	if (chkTimer_commomError_msec > time) {
 		chkTimer_commomError_msec = 0;
+		gateRSTDo_time = MAX_GATE_zero_voltage;
+		pin_RUN_LED = LED_OFF;
 		return STEP_DONE;
 	}
 
 	// 전압값은 정격 50% 이상
 	if (nowVoltage_mV > rated50_Voltage_mV) {
 		// 에러 !
-		pin_RUN_LED = LED_ON;
 		return STEP_ERROR;
 	}
 	// 전압은 10% 이하
 	if (nowAmp_mV < reted10_Amp_mV) {
 		// 에러 !
-		//pin_RUN_LED = LED_ON;
+		pin_RUN_LED = LED_ON;
 		return STEP_ERROR;
 	}
 
@@ -1516,12 +1528,6 @@ uint8_t allStepRun_5step() {
 }
 
 
-void initSystem(void) {
-
-	gateRSTDo_time = MAX_GATE_min_voltage;
-	pin_RY_RUN = RY_OFF;
-	pin_RY_ALARM = RY_OFF;
-}
 
 
 // #1025 coding 영역
@@ -1585,7 +1591,7 @@ void main(void) {
 	b_pannel_comm_break_flag = 0;
 
 	// 초기화
-	gateRSTDo_time = MAX_GATE_min_voltage;
+	gateRSTDo_time = MAX_GATE_zero_voltage;
 	bRzeroTimerStart = 0;
 	bSzeroTimerStart = 0;
 	bTzeroTimerStart = 0;
@@ -1659,10 +1665,14 @@ void main(void) {
 			// 전체 제어 순서
 			errorCode = allStepRun_5step(nRunStep);
 		} else {
-			initSystem();
+			// system off !!!
 			nRunStep = 1;
 			chkTimer_commomError_msec = 0;
 			pin_RUN_LED = LED_OFF;
+			gateRSTDo_time = MAX_GATE_zero_voltage; // off
+			pin_RY_RUN = RY_OFF;
+			pin_RY_ALARM = RY_OFF;
+
 		}
     }
 }
