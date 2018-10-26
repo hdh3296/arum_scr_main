@@ -27,20 +27,21 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_REVERSE_7 0
 #define DFL_REVERSE_8 0
 
+// 1st
 #define DFL_CH0_TEMP_LOW 27	 //11234	  //2800
 #define DFL_SRP_MAX 10100 // 7A
 #define DFL_SRP_MIN 10101 // V
-#define DFL_SRP_TIME 1000 // time
-
+#define DFL_SRP_TIME 2000 // time
+// 2st
 #define DFL_SOP_MAX 10200 // V
 #define DFL_SOP_MIN 9800 // 7A
-#define DFL_SOP_TIME 1000 // V
-
-
+#define DFL_SOP_TIME 2000 // V
+// 3st
 #define DFL_AOP_DUTY 20 // 7A
-#define DFL_AOP_TIME 3000 // 7A
+#define DFL_AOP_TIME 5000 // 7A
+// 4st
 #define DFL_ARP_DUTY 30 // 7A
-#define DFL_ARP_TIME 1000 // 7A
+#define DFL_ARP_TIME 5000 // 7A
 
 #define DFL_UPR_SET 11000 // V
 #define DFL_OPR_SET 9000 // 7A
