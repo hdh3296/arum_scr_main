@@ -1438,7 +1438,7 @@ uint8_t isAOPError(void) {
 
 	// duty Ãâ·Â
 	// duty // 0 ~ 99 %
-	gateRSTDo_time = getGateRstDoTimeByDuty(duty);
+	gateRSTDo_time = getGateRstDoTimeByDuty(30);
 
 
 	if (chkTimer_commomError_msec > time) {

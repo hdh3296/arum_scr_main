@@ -37,7 +37,7 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_SOP_TIME 2000 // V
 
 
-#define DFL_AOP_DUTY 10 // 7A
+#define DFL_AOP_DUTY 20 // 7A
 #define DFL_AOP_TIME 10000 // 7A
 
 // º¸Á¤
