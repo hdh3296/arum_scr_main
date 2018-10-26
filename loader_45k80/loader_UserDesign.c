@@ -14,7 +14,7 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_SETUP 0x55						//default val
 #define DFL_VERSION 0						//version
 #define DFL_SCR_GOAL_VOLTAGE 500 // 50.0V
-#define DFL_SCR_GOAL_CURRENT 100 // 10.0A
+#define DFL_SCR_GOAL_CURRENT 50 // 10.0A
 #define DFL_SCR_GOAL_SENSOR  10250 // 1000mV 전위
 // 센서 정/역 디폴트
 #define DFL_REVERSE_0 0 // 0 : zinc
