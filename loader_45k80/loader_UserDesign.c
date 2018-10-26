@@ -4,7 +4,7 @@
 #include "..\ad_conversion.h"
 #include "..\main.h"
 
-uint8_t UserSystemStatus = 0;
+uint8_t UserSystemStatus;
 uint8_t UserRam_8[VARIABLE_8_END];
 uint16_t UserRam_16[VARIABLE_16_END];
 uint32_t UserRam_32[VARIABLE_32_END];
@@ -1318,7 +1318,7 @@ uint16_t DefaultDisplay(void) {
         }
     }
 
-    if (UserSystemStatus == 0) {
+    if (UserSystemStatus == M_NONE) { // #1027 ??
         for (i = 0; i < 16; i++) {
             new485Ladder[i + 2] = DefaultMsg[1][i];
         }

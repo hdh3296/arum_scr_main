@@ -13,13 +13,44 @@ extern uint16_t DefaultDisplay(void);
 
 /////////////////////////////////////////////////////////////////////
 ////////////////////user message  set//////////////////////////////
-const uint8_t StatusMessage[][17] = {
-    "Wait_Ready      ", //000
-    "System Home.... ", //000
-    "Basket1 Home    ", //000
-    "Basket  Ready   ", //000
+enum {
+	M_NONE = 0,
+	M_ERR_FOP, // RST 상
+	M_ERR_SRP, // 1step : 센서 역전
+	M_ERR_SOP, // 2step : 단선
+	M_ERR_AOP, // 3step
+	M_ERR_ARP, // 4step
+	M_ERR_UPR,
+	M_ERR_OPR,
+	M_08,
+	M_09,
+	M_POWER_OFF,
+	M_RUNNING,
+	M_1ST_SRP_CHK,
+	M_2ST_SOP_CHK,
+	M_3ST_AOP_CHK,
+	M_4ST_ARP_CHK,
 };
 
+const uint8_t StatusMessage[][17] = {
+	"00.---------    ", // 0
+    "01.ERR_FOP !    ", // 1
+    "02.1st.ERR_SRP !", // 2
+    "03.2st.ERR_SOP !", // 3
+    "04.3st.ERR_AOP !", // 4
+    "05.4st.ERR_ARP !", // 5
+    "06.ERR_UPR !    ", // 6
+    "07.ERR_OPR !    ", // 7
+    "08.             ", // 8
+    "09.             ", // 9
+    "10.Power Off    ", // 10
+    "11.running      ", // 11
+    "1st.SRP Chking  ", // 12
+    "2st.SOP Chking  ", // 13
+    "3st.AOP Chking  ", // 14
+    "4st.ARP Chking  ", // 15
+};
+// home, ready, system running
 
 const uint8_t GroupLineMessage[][17] = {
     "USER:Display Sel", //1

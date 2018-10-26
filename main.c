@@ -81,13 +81,13 @@ enum {
 
 enum {
 	ERR_NONE = 0,
-	ERR_SRP,	// 센서 역전
-	ERR_SOP,	// 단선
-	ERR_AOP,	//
-	ERR_ARP,
+	ERR_FOP, // RST 상
+	ERR_SRP, // 1step : 센서 역전
+	ERR_SOP, // 2step : 단선
+	ERR_AOP, // 3step
+	ERR_ARP, // 4step
 	ERR_UPR,
 	ERR_OPR,
-	ERR_FOP // RST 상
 };
 
 
@@ -1596,6 +1596,7 @@ uint8_t allStepRun_5step() {
 
 	switch (nRunStep) {
 		case 1: // SRP
+			UserSystemStatus = M_1ST_SRP_CHK;
 			berror = isSRPError();
 			if (berror == STEP_ERROR) {
 				return ERR_SRP; // 즉시, 반환
@@ -1608,6 +1609,7 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 2: // SOP
+			UserSystemStatus = M_2ST_SOP_CHK;
 			berror = isSOPError();
 			if (berror == STEP_ERROR) {
 				return ERR_SOP; // 즉시, 반환
@@ -1620,6 +1622,7 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 3:
+			UserSystemStatus = M_3ST_AOP_CHK;
 			berror = isAOPError();
 			if (berror == STEP_ERROR) {
 				return ERR_AOP; // 즉시, 반환
@@ -1632,6 +1635,7 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 4:
+			UserSystemStatus = M_4ST_ARP_CHK;
 			berror = isARPError();
 			if (berror == STEP_ERROR) {
 				return ERR_ARP; // 즉시, 반환
@@ -1644,6 +1648,7 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 5:
+			UserSystemStatus = M_RUNNING;
 			pin_RY_RUN = RY_ON;
 			controlSensorSuWi();
 
@@ -1698,32 +1703,39 @@ void controlSrcAnd5Step_prcess() {
 
 	if (bSystemALLSTOPByError) return;
 
+
 	errorCode = allStepRun_5step(nRunStep);
 	switch (errorCode) {
-		case ERR_FOP:	// 0. 맨처음에 검사 해야 한다.
+		case ERR_FOP:	// RST
 			bSystemALLSTOPByError = 1;
-			pin_RUN_LED = LED_ON;
+			UserSystemStatus = M_ERR_FOP;
 			return;
 		case ERR_SRP:	// 1. 센서 역전
 			bSystemALLSTOPByError = 1;
+			UserSystemStatus = M_ERR_SRP;
 			return;
 		case ERR_SOP:	// 2. 단선
 			bSystemALLSTOPByError = 1;
+			UserSystemStatus = M_ERR_SOP;
 			return;
 		case ERR_AOP:	// 3.
 			bSystemALLSTOPByError = 1;
+			UserSystemStatus = M_ERR_AOP;
 			return;
-		case ERR_ARP:	// 4.
+		case ERR_ARP:	// 4. 센서 전위가 반대로 상승 시 !
 			bSystemALLSTOPByError = 1;
+			UserSystemStatus = M_ERR_ARP;
+			pin_RUN_LED = LED_ON;
 			return;
-		case ERR_OPR:	// 5.
+		case ERR_UPR: 	// 경고
+			UserSystemStatus = M_ERR_UPR;
+			break;
+		case ERR_OPR:
 			bSystemALLSTOPByError = 1;
+			UserSystemStatus = M_ERR_OPR;
 			return;
 
-		case ERR_UPR: // 경고
-			break;
 		case ERR_NONE:
-			break;
 		default:
 			break;
 	}
@@ -1757,6 +1769,8 @@ void mainStartInit(void) {
 	RZeroXChekTimer = 0;
 	SZeroXChekTimer = 0;
 	TZeroXChekTimer = 0;
+
+	UserSystemStatus = M_NONE;
 }
 // -------------------------------------
 // - main loop ------------------------
@@ -1851,8 +1865,7 @@ void main(void) {
 			if (bSystemALLSTOPByError) {
 				pin_RY_RUN = RY_OFF;
 				pin_RY_ALARM = RY_ON;
-
-
+				gateRSTDo_time = MAX_GATE_zero_voltage; // off
 			}
 
 		} else {
@@ -1865,6 +1878,7 @@ void main(void) {
 			pin_RY_RUN = RY_OFF;
 			pin_RY_ALARM = RY_OFF;
 			tiemr_30UjiChkUpper_msec = 0;
+			UserSystemStatus = M_POWER_OFF;
 		}
     }
 }
