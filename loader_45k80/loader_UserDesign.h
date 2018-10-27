@@ -6,7 +6,7 @@
 
 // #1020
 #define MAX_FLASH_BLOCK_NM 3  // (64 * 10 = 640 byte)	or ( (64/4) * 10 = 160 long)
-#define MAX_MENU 50
+#define MAX_MENU 57
 
 
 extern uint16_t DefaultDisplay(void);
@@ -105,23 +105,16 @@ const uint8_t GroupLineMessage[][17] = {
     "AOP : TIME      ", //16
     "ARP : DUTY      ", //16
     "ARP : TIME      ", //16
-    "UPR : opr set   ", //16
-    "OPR : upr set   ", //16
+    "UPR : opr Limit ", //16
+    "OPR : upr Limit ", //16
 
-
-    "CH-4:ch correctA", //16
-
-    "CH-5:On Temp    ", //9  // group1
-    "CH-5:Off Temp   ", //10
-    "CH-5:Set Volt(V)", //14
-    "CH-5:Set Amp(A) ", //15
-    "CH-5:ch On/Off  ", //16
-    "CH-5:ch Use/Not ", //16
-    "CH-5:ch correctT", //16
-    "CH-5:ch correctV", //16
-    "CH-5:ch correctA", //16
-
-
+    "FOP : ON / OFF  ",
+    "1SRP: ON / OFF  ",
+    "2SOP: ON / OFF  ",
+    "3AOP: ON / OFF  ",
+    "4ARP: ON / OFF  ",
+    "UPR : ON / OFF  ",
+    "OPR : ON / OFF  ",
 };
 
 
@@ -141,10 +134,17 @@ const uint8_t ch_use_sel_list[][17] = {
     "Not use         ", //0
     "Use             ", //1
 };
+
 const uint8_t ch_reverse_sel_list[][17] = {
     "Zinc            ", //0
     "CUCU/SO4        ", //1
 };
+
+const uint8_t ldr_errorTestSetText[][17] = {
+    "ON              ", //0
+    "OFF             ", //1
+};
+
 
 
 const uint8_t currentTypeList[][17] = {
@@ -179,6 +179,9 @@ const uint8_t FlashMsgSel[][17] = {
 
 /////////////////////////////////////////////////////////////////////
 ////////////////////memory address set//////////////////////////////
+
+// ByteData001 ~ 064 (64바트 = 1블럭) 까지
+
 #define F_VERSION			ByteData001						//1
 #define F_DEFAULT_DSP       ByteData002						//1
 #define F_FLASH_COPY        ByteData003					//1
@@ -194,7 +197,14 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_CH5_USE	    	ByteData011
 #define F_CH6_USE	    	ByteData012
 #define F_CH7_USE   	 	ByteData013
-// #부식방지 : 센서 정/역
+
+// none ㅜㅜ
+#define F_CH3_ENABLE    	ByteData014
+#define F_CH4_ENABLE    	ByteData015
+
+// 전류 타입 11가지 선택
+#define F_A_TYPE_NUM      	ByteData016
+// #부식방지 : 센서 Zinc / CUCUSO4
 #define F_REVERSE_0     	ByteData017
 #define F_REVERSE_1     	ByteData018
 #define F_REVERSE_2     	ByteData019
@@ -205,15 +215,17 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_REVERSE_7     	ByteData024
 #define F_REVERSE_8     	ByteData025
 
+#define F_FOP_EN_DIS    	ByteData041
+#define F_1SRP_EN_DIS    	ByteData042
+#define F_2SOP_EN_DIS    	ByteData043
+#define F_3AOP_EN_DIS    	ByteData044
+#define F_4ARP_EN_DIS    	ByteData045
+#define F_UPR_EN_DIS    	ByteData046
+#define F_OPR_EN_DIS    	ByteData047
 
 
-#define F_CH3_ENABLE    	ByteData014
-#define F_CH4_ENABLE    	ByteData015
 
-#define F_A_TYPE_NUM      	ByteData016
-
-
-// 보정 기능 추가
+// 보정 기능 추가 (추후 보정 설정 기능 할 때) #1020
 #define F_SCR_CORRECT_V     	ByteData026
 #define F_SCR_CORRECT_A     	ByteData027
 #define F_SCR_CORRECT_S_MAIN    ByteData028
@@ -226,14 +238,18 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_SCR_CORRECT_S6    	ByteData035
 #define F_SCR_CORRECT_S7    	ByteData036
 
-
 #define F_CH3_CORRECT_A     ByteData037
-
 #define F_CH4_CORRECT_T     ByteData038
 #define F_CH4_CORRECT_V     ByteData039
 #define F_CH4_CORRECT_A     ByteData040
 
-// 64 바이트
+
+
+
+
+
+// ByteData065 ~  (2번째 블럭 부터) : 인테져
+// 64 바이트 부터 integer 값을 사용하였다.
 // ※ 두번째 블락 (인테져 타입은 두번째 블럭에서 처리 하고자 한다.)
 #define F_SCR_GOAL_VOLTAGE     		IntzData033
 #define F_SCR_GOAL_CURRENT     		IntzData034
@@ -276,7 +292,6 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define cF_ch3_enable 		cF_ByteData(F_CH3_ENABLE)
 #define cF_ch4_enable 		cF_ByteData(F_CH4_ENABLE) // ※ iF -> cF
-
 #define cF_A_type_num   	cF_ByteData(F_A_TYPE_NUM)
 
 // 센서 zinc, cocuso4 type 설정 값
@@ -290,7 +305,13 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_sensorType_7 			cF_ByteData(F_REVERSE_7)
 #define cF_sensorType_8 			cF_ByteData(F_REVERSE_8)
 
-
+#define cF_FOP_en_dis	 			cF_ByteData(F_FOP_EN_DIS)
+#define cF_1SRP_en_dis	 			cF_ByteData(F_1SRP_EN_DIS)
+#define cF_2SOP_en_dis	 			cF_ByteData(F_2SOP_EN_DIS)
+#define cF_3AOP_en_dis	 			cF_ByteData(F_3AOP_EN_DIS)
+#define cF_4ARP_en_dis	 			cF_ByteData(F_4ARP_EN_DIS)
+#define cF_UPR_en_dis	 			cF_ByteData(F_UPR_EN_DIS)
+#define cF_OPR_en_dis	 			cF_ByteData(F_OPR_EN_DIS)
 
 // 보정
 #define cF_ch0_correctT 			cF_ByteData(F_SCR_CORRECT_S_MAIN)
@@ -313,6 +334,7 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_ch4_correctV 			cF_ByteData(F_CH4_CORRECT_V)
 #define cF_ch4_correctA 			cF_ByteData(F_CH4_CORRECT_A)
 
+// integer ---------------------------------------------------------
 // ------------------------------------------------------------------
 #define iF_scr_goalVoltage 			iF_IntData(F_SCR_GOAL_VOLTAGE)
 #define iF_scr_goalAmp 				iF_IntData(F_SCR_GOAL_CURRENT)
