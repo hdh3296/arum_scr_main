@@ -6,7 +6,7 @@
 
 // #1020
 #define MAX_FLASH_BLOCK_NM 3  // (64 * 10 = 640 byte)	or ( (64/4) * 10 = 160 long)
-#define MAX_MENU 57
+#define MAX_MENU 57 // 57°³°¡ amx ³×
 
 
 extern uint16_t DefaultDisplay(void);

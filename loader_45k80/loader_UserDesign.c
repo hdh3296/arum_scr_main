@@ -797,7 +797,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	// FOP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_FOP_EN_DIS; // 데이어/플래쉬
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_FOP_EN_DIS;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -807,7 +807,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	// 1SRP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_1SRP_EN_DIS; // 데이어/플래쉬
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_1SRP_EN_DIS;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -817,7 +817,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	// 2SOP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_2SOP_EN_DIS; // 데이어/플래쉬
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_2SOP_EN_DIS;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -827,7 +827,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	// 3AOP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_3AOP_EN_DIS; // 데이어/플래쉬
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_3AOP_EN_DIS;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -837,7 +837,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	// 4ARP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_4ARP_EN_DIS; // 데이어/플래쉬
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_4ARP_EN_DIS;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -847,7 +847,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	// UPR
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_UPR_EN_DIS; // 데이어/플래쉬
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_UPR_EN_DIS;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -857,7 +857,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	// OPR
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_OPR_EN_DIS; // 데이어/플래쉬
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_OPR_EN_DIS;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;

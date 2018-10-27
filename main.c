@@ -25,6 +25,10 @@ uint16_t get_MaxAmp_micom_mV(void){
 	return iF_scr_goalAmp * 4;
 }
 
+enum {
+	ET_ENABLE = 0,
+	ET_DISABLE = 1,
+} ErrorTestEnableDisable;
 
 
 #define MAX_CH 5
@@ -1569,6 +1573,8 @@ uint8_t isFopErrorChk(void) {
 */
 	uint16_t cnt;
 
+	if (cF_FOP_en_dis == ET_DISABLE) return 0;
+
 	cnt = 0;
 	if (RZeroXChekTimer > 100) {
 		cnt++;
@@ -1867,7 +1873,6 @@ void main(void) {
 				pin_RY_ALARM = RY_ON;
 				gateRSTDo_time = MAX_GATE_zero_voltage; // off
 			}
-
 		} else {
 			// system off !!!
 			bSystemALLSTOPByError = 0;
