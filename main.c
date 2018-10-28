@@ -1365,7 +1365,11 @@ uint8_t isSRPError(void) {
 	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
+	if (cF_1SRP_en_dis == ET_DISABLE) return STEP_DONE;
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
+	//---------------------------------------------
+
+	UserSystemStatus = M_1ST_SRP_CHK;
 
 	if (chkTimer_commomError_msec > setChkTime_SRP) {
 		chkTimer_commomError_msec = 0;
@@ -1404,7 +1408,11 @@ uint8_t isSOPError(void) {
 	uint16_t micom_SOP_max = get_micom_SOP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SOP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SOP = iF_SOP_time; // 설정값 메뉴
+	if (cF_2SOP_en_dis == ET_DISABLE) return STEP_DONE;
 	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 전위 상태 (마이컴단)
+	// ------------------------------------------------------
+
+	UserSystemStatus = M_2ST_SOP_CHK;
 
 	if (chkTimer_commomError_msec > setChkTime_SOP) {
 		chkTimer_commomError_msec = 0;
@@ -1455,7 +1463,10 @@ uint8_t isAOPError(void) {
 	uint16_t nowVoltage_mV = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
 	// 현재 전류 값
 	uint16_t nowAmp_mV = scr.nowAdAmp_micom_mV; // AN2, micom 현재 전류
+	if (cF_3AOP_en_dis == ET_DISABLE) return STEP_DONE;
+	// ------------------------------------------------------
 
+	UserSystemStatus = M_3ST_AOP_CHK;
 	// duty 출력
 	// duty // 0 ~ 99 %
 	gateRSTDo_time = getGateRstDoTimeByDuty(duty);
@@ -1496,8 +1507,11 @@ uint8_t isARPError(void) {
 
 	static uint16_t start_mV[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
 	// 현재 전위 마이컴단 mV 값
+	if (cF_4ARP_en_dis == ET_DISABLE) return STEP_DONE;
 	now_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 	// -------------------------------------------------------------------
+
+	UserSystemStatus = M_4ST_ARP_CHK;
 	// scr 출력 !
 	gateRSTDo_time = getGateRstDoTimeByDuty(duty);
 
@@ -1531,6 +1545,7 @@ uint8_t isUPRWarning(void) {
 */
 	uint16_t set = getGoalSensorSetVal_micom_mV(iF_UPR_set); // ★
 	uint16_t now = getFinalOneTopMaxSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
+	if (cF_UPR_en_dis == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
 
 	if (now > set) {
@@ -1554,6 +1569,7 @@ uint8_t isOPRError(void) {
 */
 	uint16_t set = getGoalSensorSetVal_micom_mV(iF_OPR_set); // ★
 	uint16_t now = getFinalOneLowMinSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
+	if (cF_OPR_en_dis == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
 
 	if (now < set) {
@@ -1594,7 +1610,7 @@ uint8_t isFopErrorChk(void) {
 
 
 uint8_t allStepRun_5step() {
-	uint8_t berror;
+	uint8_t bState;
 
 	// FOP 에러는 모든 시스템의 기본 조건이므로
 	// 계속 검사하는 것으로 하자. !
@@ -1602,52 +1618,48 @@ uint8_t allStepRun_5step() {
 
 	switch (nRunStep) {
 		case 1: // SRP
-			UserSystemStatus = M_1ST_SRP_CHK;
-			berror = isSRPError();
-			if (berror == STEP_ERROR) {
+			bState = isSRPError();
+			if (bState == STEP_ERROR) {
 				return ERR_SRP; // 즉시, 반환
-			} else if (berror == STEP_CHKING) {
+			} else if (bState == STEP_CHKING) {
 				return ERR_NONE;
-			} else if (berror == STEP_DONE) {
+			} else if (bState == STEP_DONE) {
 				nRunStep = 2; // <<< next
 				return ERR_NONE;
 			}
 			break;
 
 		case 2: // SOP
-			UserSystemStatus = M_2ST_SOP_CHK;
-			berror = isSOPError();
-			if (berror == STEP_ERROR) {
+			bState = isSOPError();
+			if (bState == STEP_ERROR) {
 				return ERR_SOP; // 즉시, 반환
-			} else if (berror == STEP_CHKING) {
+			} else if (bState == STEP_CHKING) {
 				return ERR_NONE;
-			} else if (berror == STEP_DONE) {
+			} else if (bState == STEP_DONE) {
 				nRunStep = 3; // <<< next
 				return ERR_NONE;
 			}
 			break;
 
 		case 3:
-			UserSystemStatus = M_3ST_AOP_CHK;
-			berror = isAOPError();
-			if (berror == STEP_ERROR) {
+			bState = isAOPError();
+			if (bState == STEP_ERROR) {
 				return ERR_AOP; // 즉시, 반환
-			} else if (berror == STEP_CHKING) {
+			} else if (bState == STEP_CHKING) {
 				return ERR_NONE;
-			} else if (berror == STEP_DONE) {
+			} else if (bState == STEP_DONE) {
 				nRunStep = 4; // <<< next
 				return ERR_NONE;
 			}
 			break;
 
 		case 4:
-			UserSystemStatus = M_4ST_ARP_CHK;
-			berror = isARPError();
-			if (berror == STEP_ERROR) {
+			bState = isARPError();
+			if (bState == STEP_ERROR) {
 				return ERR_ARP; // 즉시, 반환
-			} else if (berror == STEP_CHKING) {
+			} else if (bState == STEP_CHKING) {
 				return ERR_NONE;
-			} else if (berror == STEP_DONE) {
+			} else if (bState == STEP_DONE) {
 				nRunStep = 5; // <<< next
 				return ERR_NONE;
 			}
@@ -1658,13 +1670,13 @@ uint8_t allStepRun_5step() {
 			pin_RY_RUN = RY_ON;
 			controlSensorSuWi();
 
-			berror = isUPRWarning(); // 경고 수준
-			if (berror == STEP_ERROR) {
+			bState = isUPRWarning(); // 경고 수준
+			if (bState == STEP_ERROR) {
 				return ERR_UPR;
 			}
 
-			berror = isOPRError();
-			if (berror == STEP_ERROR) {
+			bState = isOPRError();
+			if (bState == STEP_ERROR) {
 				return ERR_OPR;
 			}
 			break;
