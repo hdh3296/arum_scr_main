@@ -1532,7 +1532,7 @@ uint8_t isARPError(void) {
 		// scr 출력 !
 		gateRSTDo_time = getGateRstDoTimeByDuty(duty);
 
-		if (chkTimer_commomError_msec <= 1) {
+		if (chkTimer_commomError_msec <= 2) {
 			start_mV[ch] = now_mV[ch];
 		} else {
 			// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
