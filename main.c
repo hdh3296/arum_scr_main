@@ -12,9 +12,9 @@
 #define MAX_GATE_zero_voltage	240 // 토크 0 따라서, 전압 0
 #define MIN_GATE_max_voltage	60
 
-uint16_t micom_sensor_0_8_mV[9];
+uint16_t db_corrected_final_sensor_0_8_micomMV[9];
 
-
+extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
 extern void micom_saveTotal9SensorNowIn_mV(void);
 
 enum {
@@ -963,14 +963,40 @@ uint16_t SZeroXChekTimer;
 uint16_t TZeroXChekTimer;
 
 
+uint16_t getCorrectedLdrSet(uint8_t ch) {
+
+	switch (ch) {
+		case 0:
+			return iF_correct_ch0_mV;
+		case 1:
+			return iF_correct_ch1_mV;
+		case 2:
+			return iF_correct_ch2_mV;
+		case 3:
+			return iF_correct_ch3_mV;
+		case 4:
+			return iF_correct_ch4_mV;
+		case 5:
+			return iF_correct_ch5_mV;
+		case 6:
+			return iF_correct_ch6_mV;
+		case 7:
+			return iF_correct_ch7_mV;
+		case 8:
+			return iF_correct_ch8_mV;
+	}
+	return 0;
+}
 
 
 void micom_saveTotal9SensorNowIn_mV(void) {
 	uint8_t ch;
 	for (ch = 0; ch < 8; ch++) {
-		micom_sensor_0_8_mV[ch] = zsu_ch0_ch7_analog[ch];
+		db_corrected_final_sensor_0_8_micomMV[ch] =
+			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch], getCorrectedLdrSet(ch));
 	}
-	micom_sensor_0_8_mV[ch] = scr.nowMainAdSensor_micom_mV;
+	db_corrected_final_sensor_0_8_micomMV[ch] =
+		getCorrectedNowIn_micomMV(scr.nowMainAdSensor_micom_mV, getCorrectedLdrSet(ch));
 }
 
 
@@ -1102,8 +1128,8 @@ uint16_t getFinalOneTopMaxSensor_micom_mV(void) {
 	max = 0;
 	for (ch = 0; ch < 9; ch++) {
 		if (!isSensorUseNo(ch)) continue;
-		if (micom_sensor_0_8_mV[ch] > max) {
-			max = micom_sensor_0_8_mV[ch];
+		if (db_corrected_final_sensor_0_8_micomMV[ch] > max) {
+			max = db_corrected_final_sensor_0_8_micomMV[ch];
 		}
 	}
 	return max;
@@ -1122,8 +1148,8 @@ uint16_t getFinalOneLowMinSensor_micom_mV(void) {
 	min = 0xffff;
 	for (ch = 0; ch < 9; ch++) {
 		if (!isSensorUseNo(ch)) continue;
-		if (micom_sensor_0_8_mV[ch] < min) {
-			min = micom_sensor_0_8_mV[ch];
+		if (db_corrected_final_sensor_0_8_micomMV[ch] < min) {
+			min = db_corrected_final_sensor_0_8_micomMV[ch];
 		}
 	}
 	return min;
@@ -1146,11 +1172,10 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 }
 
 
-uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV) {
+uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV) {
 	uint32_t signalNumber[2];
 	uint16_t result;
-	uint16_t ldrCorrect = iF_correct_V_mV;
-	getSignNumberByLdrDigit(signalNumber, ldrCorrect);
+	getSignNumberByLdrDigit(signalNumber, correct_mV);
 
 	switch (signalNumber[0]) {
 		case SIGN_PLUS: // +
@@ -1170,11 +1195,9 @@ uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV) {
 	return 5000;
 }
 
-
-
 bool isOverVoltage_micomMV(void) {
 	uint16_t limit = getLimitVoltage_micomMV(); // micom 목표 전압 100v -> 4000mV
-	uint16_t now = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV); // AN3, micom 현재 전압
+	uint16_t now = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV, iF_correct_V_mV); // AN3, micom 현재 전압
 
     if (now > limit) {
         return 1;
@@ -1182,7 +1205,7 @@ bool isOverVoltage_micomMV(void) {
 }
 bool isOverCurrent(void) {
 	uint16_t max = micom_getMaxAmp_mV(); // micom 목표 전류 (50A : 2500mV 기준)
-	uint16_t now = scr.nowAdAmp_micom_mV; // AN3, micom 현재 전류
+	uint16_t now = getCorrectedNowIn_micomMV(scr.nowAdAmp_micom_mV, iF_correct_A_mV); // AN3, micom 현재 전류
 
     if (now > max) {
         return 1;
@@ -1367,13 +1390,6 @@ enum {
 	TYPE_CUCUSO4
 };
 
-uint16_t micom_getSensorNowJunwi_mV(uint8_t ch) {
-
-	return micom_sensor_0_8_mV[ch]; // 총 0 ~ 8 : 9개 전체
-
-}
-
-
 uint16_t get_micom_SRP_max() {
 	return db_ldrSetSRPMAX;
 }
@@ -1413,7 +1429,7 @@ uint8_t isSRPError(void) {
 
 	for (ch = 0; ch < 9; ch++) {
 		if (!isSensorUseNo(ch)) continue;
-		micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
+		micom_nowIn_sensorJunwi[ch] = db_corrected_final_sensor_0_8_micomMV[ch]; // 현재 수위 상태 마이컴단
 
 		switch (getSensorTypeByCh(ch)) {
 			case TYPE_ZINC:
@@ -1455,7 +1471,7 @@ uint8_t isSOPError(void) {
 
 	for (ch = 0; ch < 9; ch++) {
 		if (!isSensorUseNo(ch)) continue;
-		micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 전위 상태 (마이컴단)
+		micom_nowIn_sensorJunwi[ch] = db_corrected_final_sensor_0_8_micomMV[ch]; // 현재 전위 상태 (마이컴단)
 
 		// 채널 0번에 대해서 (서브보드의 첫번째) #1025
 		// 2300 <  현재 전위 < 2700 이하 => 센서 단선
@@ -1557,7 +1573,7 @@ uint8_t isARPError(void) {
 
 	for (ch = 0; ch < 9; ch++) {
 		if (!isSensorUseNo(ch)) continue;
-		now_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
+		now_mV[ch] = db_corrected_final_sensor_0_8_micomMV[ch]; // 현재 수위 상태 마이컴단
 		// scr 출력 !
 		gateRSTDo_time = getGateRstDoTimeByDuty(duty);
 
