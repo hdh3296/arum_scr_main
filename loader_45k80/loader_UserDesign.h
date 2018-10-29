@@ -61,15 +61,15 @@ const uint8_t GroupLineMessage[][17] = {
     "goal:Set Sensor ", //16
     "scr :correct V  ", //16
     "scr :correct A  ", //16
-    "scr :correct S0 ", //16
-    "scr :correct S1 ", //9  // group1
-    "scr :correct S2 ", //10
-    "scr :correct S3 ", //14
-    "scr :correct S4 ", //15
-    "scr :correct S5 ", //16
-    "scr :correct S6 ", //16
-    "scr :correct S7 ", //16
-    "scr :correct S-M", //16
+    "scr :correct ch0", //16
+    "scr :correct ch1", //9  // group1
+    "scr :correct ch2", //10
+    "scr :correct ch3", //14
+    "scr :correct ch4", //15
+    "scr :correct ch5", //16
+    "scr :correct ch6", //16
+    "scr :correct ch7", //16
+    "scr :correct ch8", //16
 
     "zsu :ch0 e/d    ", //16
     "zsu :ch1 e/d    ", //16
@@ -227,18 +227,6 @@ const uint8_t FlashMsgSel[][17] = {
 
 
 
-// 보정 기능 추가 (추후 보정 설정 기능 할 때) #1020
-#define F_SCR_CORRECT_V     	ByteData026
-#define F_SCR_CORRECT_A     	ByteData027
-#define F_SCR_CORRECT_ch0    	ByteData029
-#define F_SCR_CORRECT_ch1    	ByteData030
-#define F_SCR_CORRECT_ch2    	ByteData031
-#define F_SCR_CORRECT_ch3    	ByteData032
-#define F_SCR_CORRECT_ch4    	ByteData033
-#define F_SCR_CORRECT_ch5    	ByteData034
-#define F_SCR_CORRECT_ch6    	ByteData035
-#define F_SCR_CORRECT_ch7    	ByteData036
-#define F_SCR_CORRECT_ch8    	ByteData028 // main sensor
 
 #define F_CH3_CORRECT_A     ByteData037
 #define F_CH4_CORRECT_T     ByteData038
@@ -273,6 +261,18 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_OPR_SET     		IntzData047
 
 
+// 보정 기능 추가 (추후 보정 설정 기능 할 때) #1020
+#define F_SCR_CORRECT_V     	IntzData048
+#define F_SCR_CORRECT_A     	IntzData049
+#define F_SCR_CORRECT_ch0    	IntzData050
+#define F_SCR_CORRECT_ch1    	IntzData051
+#define F_SCR_CORRECT_ch2    	IntzData052
+#define F_SCR_CORRECT_ch3    	IntzData053
+#define F_SCR_CORRECT_ch4    	IntzData054
+#define F_SCR_CORRECT_ch5    	IntzData055
+#define F_SCR_CORRECT_ch6    	IntzData056
+#define F_SCR_CORRECT_ch7    	IntzData057
+#define F_SCR_CORRECT_ch8    	IntzData058 // main sensor
 
 // 128 바이트
 ////////////////////////////////////////////////////////////////////////
@@ -315,19 +315,6 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_UPR_en	 			cF_ByteData(F_UPR_EN)
 #define cF_OPR_en	 			cF_ByteData(F_OPR_EN)
 
-// 보정
-#define cF_correct_V 			cF_ByteData(F_SCR_CORRECT_V)
-#define cF_correct_A 			cF_ByteData(F_SCR_CORRECT_A)
-#define cF_correct_ch0 			cF_ByteData(F_SCR_CORRECT_ch0)
-#define cF_correct_ch1 			cF_ByteData(F_SCR_CORRECT_ch1)
-#define cF_correct_ch2 			cF_ByteData(F_SCR_CORRECT_ch2)
-#define cF_correct_ch3 			cF_ByteData(F_SCR_CORRECT_ch3)
-#define cF_correct_ch4 			cF_ByteData(F_SCR_CORRECT_ch4)
-#define cF_correct_ch5 			cF_ByteData(F_SCR_CORRECT_ch5)
-#define cF_correct_ch6 			cF_ByteData(F_SCR_CORRECT_ch6)
-#define cF_correct_ch7 			cF_ByteData(F_SCR_CORRECT_ch7)
-#define cF_correct_ch8 			cF_ByteData(F_SCR_CORRECT_ch8)
-
 
 
 #define cF_ch3_correctA 			cF_ByteData(F_CH3_CORRECT_A)
@@ -354,6 +341,19 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define iF_UPR_set 					iF_IntData(F_UPR_SET)
 #define iF_OPR_set 					iF_IntData(F_OPR_SET)
+
+// 보정
+#define iF_correct_V 			cF_ByteData(F_SCR_CORRECT_V)
+#define iF_correct_A 			cF_ByteData(F_SCR_CORRECT_A)
+#define iF_correct_ch0 			cF_ByteData(F_SCR_CORRECT_ch0)
+#define iF_correct_ch1 			cF_ByteData(F_SCR_CORRECT_ch1)
+#define iF_correct_ch2 			cF_ByteData(F_SCR_CORRECT_ch2)
+#define iF_correct_ch3 			cF_ByteData(F_SCR_CORRECT_ch3)
+#define iF_correct_ch4 			cF_ByteData(F_SCR_CORRECT_ch4)
+#define iF_correct_ch5 			cF_ByteData(F_SCR_CORRECT_ch5)
+#define iF_correct_ch6 			cF_ByteData(F_SCR_CORRECT_ch6)
+#define iF_correct_ch7 			cF_ByteData(F_SCR_CORRECT_ch7)
+#define iF_correct_ch8 			cF_ByteData(F_SCR_CORRECT_ch8)
 
 // ==============================================
 ////////////////////////////////////////////////////////

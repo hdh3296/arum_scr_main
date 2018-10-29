@@ -61,7 +61,7 @@ uint16_t maxAmpMenuNum;
 
 
 // 보정
-#define DFL_SCR_CORRECT_V	1
+#define DFL_SCR_CORRECT_V	10001
 #define DFL_SCR_CORRECT_A	1
 #define DFL_SCR_CORRECT_ch0	1
 #define DFL_SCR_CORRECT_ch1	1
@@ -261,13 +261,13 @@ uint16_t G3_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     //scr : 전압  보정
     /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
+    bThisMenuSaver[UserMenuSerialNm] = 1;
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 6;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 10010; // +1999
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  9900; // -1999
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_V;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
+    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
     /////////////////////////////////////////////////////////////////////
@@ -960,17 +960,6 @@ uint16_t DefaultValueSet(void) {
 		cSR_ByteData(F_CH4_ENABLE) = 1;
         cSR_ByteData(F_CH4_USE) = 1;
 		// 보정
-        cSR_ByteData(F_SCR_CORRECT_V) = DFL_SCR_CORRECT_V;
-        cSR_ByteData(F_SCR_CORRECT_A) = DFL_SCR_CORRECT_A;
-        cSR_ByteData(F_SCR_CORRECT_ch0) = DFL_SCR_CORRECT_ch0;
-        cSR_ByteData(F_SCR_CORRECT_ch1) = DFL_SCR_CORRECT_ch1;
-        cSR_ByteData(F_SCR_CORRECT_ch2) = DFL_SCR_CORRECT_ch2;
-        cSR_ByteData(F_SCR_CORRECT_ch3) = DFL_SCR_CORRECT_ch3;
-        cSR_ByteData(F_SCR_CORRECT_ch4) = DFL_SCR_CORRECT_ch4;
-        cSR_ByteData(F_SCR_CORRECT_ch5) = DFL_SCR_CORRECT_ch5;
-        cSR_ByteData(F_SCR_CORRECT_ch6) = DFL_SCR_CORRECT_ch6;
-        cSR_ByteData(F_SCR_CORRECT_ch7) = DFL_SCR_CORRECT_ch7;
-        cSR_ByteData(F_SCR_CORRECT_ch8) = DFL_SCR_CORRECT_ch8;
 
         cSR_ByteData(F_CH3_CORRECT_A) = DFL_CH3_CORRENT_A;
         cSR_ByteData(F_CH4_CORRECT_T) = DFL_CH4_CORRENT_T;
@@ -1000,6 +989,17 @@ uint16_t DefaultValueSet(void) {
         iSR_IntData(F_UPR_SET) = DFL_UPR_SET;
         iSR_IntData(F_OPR_SET) = DFL_OPR_SET;
 
+		iSR_IntData(F_SCR_CORRECT_V) = DFL_SCR_CORRECT_V;
+		iSR_IntData(F_SCR_CORRECT_A) = DFL_SCR_CORRECT_A;
+		iSR_IntData(F_SCR_CORRECT_ch0) = DFL_SCR_CORRECT_ch0;
+		iSR_IntData(F_SCR_CORRECT_ch1) = DFL_SCR_CORRECT_ch1;
+		iSR_IntData(F_SCR_CORRECT_ch2) = DFL_SCR_CORRECT_ch2;
+		iSR_IntData(F_SCR_CORRECT_ch3) = DFL_SCR_CORRECT_ch3;
+		iSR_IntData(F_SCR_CORRECT_ch4) = DFL_SCR_CORRECT_ch4;
+		iSR_IntData(F_SCR_CORRECT_ch5) = DFL_SCR_CORRECT_ch5;
+		iSR_IntData(F_SCR_CORRECT_ch6) = DFL_SCR_CORRECT_ch6;
+		iSR_IntData(F_SCR_CORRECT_ch7) = DFL_SCR_CORRECT_ch7;
+		iSR_IntData(F_SCR_CORRECT_ch8) = DFL_SCR_CORRECT_ch8;
 
 		FlashBlockWr(1);
     }
