@@ -812,15 +812,20 @@ bool getUseFromLdr(uint8_t ch) {
             return cF_ch3_use;
         case 4:
             return cF_ch4_use;
+        case 5:
+            return cF_ch5_use;
+        case 6:
+            return cF_ch6_use;
+        case 7:
+            return cF_ch7_use;
+        case 8:
+            return cF_ch8_use;
     }
     return 0;
 }
 
 
-void heater_setUseNouse(uint8_t ch) {
 
-    heater[ch].db_bChUse = getUseFromLdr(ch);
-}
 
 
 void setWatchDockEnable(void) {

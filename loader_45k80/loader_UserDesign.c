@@ -503,6 +503,16 @@ uint16_t G4_Menu_Status_Set(void) {
 	UserMenuSerialNm++;
 	sub_gr++;
 
+	/////////////////////////////////////////////////////////////////////
+	//메인 센서 ch8
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH8_USE;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
 
     return (0);
 }
@@ -947,7 +957,7 @@ uint16_t DefaultValueSet(void) {
 		cSR_ByteData(F_CH7_USE) = 1;
         cSR_ByteData(F_CH2_USE) = 1;
 		// ch3
-		cSR_ByteData(F_CH3_ENABLE) = 1;
+		cSR_ByteData(F_CH8_USE) = 1;
         cSR_ByteData(F_CH3_USE) = 1;
 		// ch4
 		cSR_ByteData(F_CH4_ENABLE) = 1;

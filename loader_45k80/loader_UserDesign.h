@@ -198,9 +198,9 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_CH5_USE	    	ByteData011
 #define F_CH6_USE	    	ByteData012
 #define F_CH7_USE   	 	ByteData013
+#define F_CH8_USE    		ByteData014
 
 // none ㅜㅜ
-#define F_CH3_ENABLE    	ByteData014
 #define F_CH4_ENABLE    	ByteData015
 
 // 전류 타입 11가지 선택
@@ -290,8 +290,8 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_ch5_use	 		cF_ByteData(F_CH5_USE) //
 #define cF_ch6_use 			cF_ByteData(F_CH6_USE)
 #define cF_ch7_use 			cF_ByteData(F_CH7_USE)
+#define cF_ch8_use 			cF_ByteData(F_CH8_USE)
 
-#define cF_ch3_enable 		cF_ByteData(F_CH3_ENABLE)
 #define cF_ch4_enable 		cF_ByteData(F_CH4_ENABLE) // ※ iF -> cF
 #define cF_amp_type   		cF_ByteData(F_AMP_TYPE)
 
