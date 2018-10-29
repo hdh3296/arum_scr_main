@@ -1820,6 +1820,58 @@ void mainStartInit(void) {
 
 	UserSystemStatus = M_NONE;
 }
+
+uint16_t getMaxByAmpType(uint8_t type) {
+	uint16_t max;
+	switch (type) {
+		case 0:
+			max = 5;
+			return max * 10;
+		case 1:
+			max = 10;
+			return max * 10;
+		case 2:
+			max = 15;
+			return max * 10;
+		case 3:
+			max = 30;
+			return max * 10;
+		case 4:
+			max = 50;
+			return max * 10;
+		case 5:
+			max = 75;
+			return max * 10;
+		case 6:
+			max = 100;
+			return max * 10;
+		case 7:
+			max = 150;
+			return max * 10;
+		case 8:
+			max = 200;
+			return max * 10;
+		case 9:
+			max = 250;
+			return max * 10;
+		case 10:
+			max = 300;
+			return max * 10;
+	}
+	return 0;
+}
+
+
+void ldr_maxValue_maxAmp() {
+	uint16_t max, mn;
+	mn = maxAmpMenuNum;
+	max = MenuStatus[mn].M_EditDigitMaxValue = getMaxByAmpType(cF_amp_type);
+
+    if (max >= 1000) MenuStatus[mn].M_EditShiftCnt = 5;
+    else if (max >= 100) MenuStatus[mn].M_EditShiftCnt = 4;
+    else MenuStatus[mn].M_EditShiftCnt = 3;
+}
+
 // -------------------------------------
 // - main loop ------------------------
 void main(void) {
@@ -1927,6 +1979,8 @@ void main(void) {
 			tiemr_30UjiChkUpper_msec = 0;
 			UserSystemStatus = M_POWER_OFF;
 		}
+
+		ldr_maxValue_maxAmp();
     }
 }
 

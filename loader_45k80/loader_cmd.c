@@ -474,6 +474,7 @@ void Integer_Digit(void) {
         ThisDigitData = CurMenuStatus.M_EditDigitMinValue;
     }
 
+
 	// 여기에서 ThisDigitData 값을 로더에 표시해준다.
     if (CurMenuStatus.M_EditDigitMaxValue < 10) {
         CurMenuStatus.M_EditDigitShiftCnt = 1;

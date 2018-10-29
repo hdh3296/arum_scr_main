@@ -9,6 +9,8 @@ uint8_t UserRam_8[VARIABLE_8_END];
 uint16_t UserRam_16[VARIABLE_16_END];
 uint32_t UserRam_32[VARIABLE_32_END];
 Menu_Status MenuStatus[MAX_MENU];
+uint16_t maxAmpMenuNum;
+
 
 /////////////////////////////////////////////////////
 #define DFL_SETUP 0x55						//default val
@@ -217,6 +219,7 @@ uint16_t G2_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     // 목표 한계 전류 (정격 전류)
     /////////////////////////////////////////////////////////////////////
+    maxAmpMenuNum = UserMenuSerialNm;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 3000; // 3000 => 300A

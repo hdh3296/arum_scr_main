@@ -385,6 +385,6 @@ extern uint16_t getCorrectedCurrent_mV(uint8_t ch);
 
 extern uint16_t getCorrentSetT(uint8_t ch);
 extern bool positiveCorrT(uint8_t ch);
-
+extern uint16_t maxAmpMenuNum;
 #endif
 
