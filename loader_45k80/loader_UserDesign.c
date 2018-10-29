@@ -36,7 +36,7 @@ Menu_Status MenuStatus[MAX_MENU];
 #define DFL_OPR_EN_DIS  0
 
 // 1st
-#define DFL_CH0_TEMP_LOW 27	 //11234	  //2800
+#define DFL_AMP_TYPE 0	 // 0 = 5A (테스트 용)
 #define DFL_SRP_MAX 10100 // 7A
 #define DFL_SRP_MIN 10101 // V
 #define DFL_SRP_TIME 2000 // time
@@ -218,8 +218,8 @@ uint16_t G2_Menu_Status_Set(void) {
     // 목표 한계 전류 (정격 전류)
     /////////////////////////////////////////////////////////////////////
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250; // 25.0A
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 3000; // 3000 => 300A
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_CURRENT;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -630,13 +630,13 @@ uint16_t G6_Menu_Status_Set(void) {
     main_gr = MAIN_GROUP06;
     sub_gr = 0;
 	/////////////////////////////////////////////////////////////////////
-	// 총 10가지 전류 타입 선택 (5A ~ 300A)
+	// 총 11가지 전류 타입 선택 (5A ~ 300A)
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_A_TYPE_NUM;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_AMP_TYPE;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) currentTypeList;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ampTypeList;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11;
 	UserMenuSerialNm++;
 	sub_gr++;
 
@@ -934,7 +934,7 @@ uint16_t DefaultValueSet(void) {
 		cSR_ByteData(F_OPR_EN_DIS)  = DFL_OPR_EN_DIS;
 
 		// ch0
-        cSR_ByteData(F_A_TYPE_NUM) = DFL_CH0_TEMP_LOW;
+        cSR_ByteData(F_AMP_TYPE) = DFL_AMP_TYPE;
         cSR_ByteData(F_CH5_USE) = 1;
         cSR_ByteData(F_CH0_USE) = 1;
 		// ch1

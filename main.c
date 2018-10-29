@@ -17,12 +17,42 @@ enum {
 	LED_OFF = 1
 };
 // MAX Voltage : 최대 한계 전압 (정격 전압)
-uint16_t get_MaxVoltage_micom_mV(void){
+uint16_t micom_getMaxVoltage_mV(void){
 	return iF_scr_goalVoltage * 4;
 }
 // MAX Amp : 최대 한계 전류 (정격 전류)
-uint16_t get_MaxAmp_micom_mV(void){
-	return iF_scr_goalAmp * 4;
+uint16_t micom_getMaxAmp_mV(void){
+/*
+	user ldr set 전류 최대 한계 값을 => micom 단 mV 전류 값으로 변환하여 반환 !
+*/
+	uint8_t ampTypeSet = cF_amp_type;
+	uint16_t user_ampMaxSet = iF_scr_goalAmp; // 5A : 50 * 100 = 5000
+	switch (ampTypeSet) {
+		case 0: // 5A : 2.5배
+			return (user_ampMaxSet * 40);
+		case 1: // 10A : 5배
+			return (user_ampMaxSet * 20);
+		case 2: // 15A : 7.5배
+			return (user_ampMaxSet * 40) / 3;
+		case 3: // 30A : 15배
+			return (user_ampMaxSet * 20) / 3;
+		case 4: // 50A : 25배
+			return (user_ampMaxSet * 4);
+		case 5: // 75A : 37.5배
+			return (user_ampMaxSet * 8) / 3;
+		case 6: // 100A : 50배
+			return (user_ampMaxSet * 2);
+		case 7: // 150A : 75배
+			return (user_ampMaxSet * 4) / 3;
+		case 8: // 200A : 100배
+			return (user_ampMaxSet * 1);
+		case 9: // 250A : 125배
+			return (user_ampMaxSet * 4) / 5;
+		case 10: // 300A : 150배
+			return (user_ampMaxSet * 2) / 3;
+
+	}
+    return 0;
 }
 
 enum {
@@ -1135,7 +1165,7 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 
 
 bool isOverVoltage(void) {
-	uint16_t max = get_MaxVoltage_micom_mV(); // micom 목표 전압 100v -> 4000mV
+	uint16_t max = micom_getMaxVoltage_mV(); // micom 목표 전압 100v -> 4000mV
 	uint16_t now = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
 
     if (now > max) {
@@ -1143,7 +1173,7 @@ bool isOverVoltage(void) {
     }   return 0;
 }
 bool isOverCurrent(void) {
-	uint16_t max = get_MaxAmp_micom_mV(); // micom 목표 전류 (50A : 2500mV 기준)
+	uint16_t max = micom_getMaxAmp_mV(); // micom 목표 전류 (50A : 2500mV 기준)
 	uint16_t now = scr.nowAdAmp_micom_mV; // AN3, micom 현재 전류
 
     if (now > max) {
@@ -1456,9 +1486,9 @@ uint8_t isAOPError(void) {
 	uint16_t duty = iF_AOP_duty;		// 설정값 메뉴 (전체)
 	uint16_t time = iF_AOP_time; // 설정값 메뉴
 	// 정격 전압의 50%
-	uint16_t rated50_Voltage_mV = (get_MaxVoltage_micom_mV()) / 2; // micom단 mV단으로 변경해야 한다. <<
+	uint16_t rated50_Voltage_mV = (micom_getMaxVoltage_mV()) / 2; // micom단 mV단으로 변경해야 한다. <<
 	// 정격 전류의 10%
-	uint16_t reted10_Amp_mV = (get_MaxAmp_micom_mV() / 10); // micom단 mV단으로 변경해야 한다.
+	uint16_t reted10_Amp_mV = (micom_getMaxAmp_mV() / 10); // micom단 mV단으로 변경해야 한다.
 	// 현재 전압 값
 	uint16_t nowVoltage_mV = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
 	// 현재 전류 값

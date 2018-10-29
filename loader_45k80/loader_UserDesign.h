@@ -147,17 +147,18 @@ const uint8_t ldr_errorTestSetText[][17] = {
 
 
 
-const uint8_t currentTypeList[][17] = {
-    "A_type1         ", //0
-    "A_type2         ", //1
-    "A_type3         ", //1
-    "A_type4         ", //1
-    "A_type5         ", //1
-    "A_type6         ", //1
-    "A_type7         ", //1
-    "A_type8         ", //1
-    "A_type9         ", //1
-    "A_type10        ", //1
+const uint8_t ampTypeList[][17] = {
+    "5A              ", //0
+    "10A             ", //1
+    "15A             ", //2
+    "30A             ", //3
+    "50A             ", //4
+    "75A             ", //5
+    "100A            ", //6
+    "150A            ", //7
+    "200A            ", //8
+    "250A            ", //9
+    "300A            ", //10
 };
 
 
@@ -203,7 +204,7 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_CH4_ENABLE    	ByteData015
 
 // 전류 타입 11가지 선택
-#define F_A_TYPE_NUM      	ByteData016
+#define F_AMP_TYPE      	ByteData016
 // #부식방지 : 센서 Zinc / CUCUSO4
 #define F_REVERSE_0     	ByteData017
 #define F_REVERSE_1     	ByteData018
@@ -292,7 +293,7 @@ const uint8_t FlashMsgSel[][17] = {
 
 #define cF_ch3_enable 		cF_ByteData(F_CH3_ENABLE)
 #define cF_ch4_enable 		cF_ByteData(F_CH4_ENABLE) // ※ iF -> cF
-#define cF_A_type_num   	cF_ByteData(F_A_TYPE_NUM)
+#define cF_amp_type   		cF_ByteData(F_AMP_TYPE)
 
 // 센서 zinc, cocuso4 type 설정 값
 #define cF_sensorType_0      		cF_ByteData(F_REVERSE_0)
