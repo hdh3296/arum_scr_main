@@ -13,6 +13,7 @@ uint16_t maxAmpMenuNum;
 
 
 /////////////////////////////////////////////////////
+// 설정 디포트 초기값
 #define DFL_SETUP 0x55						//default val
 #define DFL_VERSION 0						//version
 #define DFL_SCR_GOAL_VOLTAGE 500 // 50.0V
@@ -29,13 +30,13 @@ uint16_t maxAmpMenuNum;
 #define DFL_REVERSE_7 0
 #define DFL_REVERSE_8 0
 
-#define DFL_FOP_EN_DIS	0
-#define DFL_1SRP_EN_DIS 0
-#define DFL_2SOP_EN_DIS 0
-#define DFL_3AOP_EN_DIS 0
-#define DFL_4ARP_EN_DIS 0
-#define DFL_UPR_EN_DIS  0
-#define DFL_OPR_EN_DIS  0
+#define DFL_FOP_EN	1
+#define DFL_1SRP_EN 0
+#define DFL_2SOP_EN 0
+#define DFL_3AOP_EN 0
+#define DFL_4ARP_EN 1
+#define DFL_UPR_EN  1
+#define DFL_OPR_EN  1
 
 // 1st
 #define DFL_AMP_TYPE 0	 // 0 = 5A (테스트 용)
@@ -820,7 +821,7 @@ uint16_t G7_Menu_Status_Set(void) {
 	// FOP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_FOP_EN_DIS;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_FOP_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -830,7 +831,7 @@ uint16_t G7_Menu_Status_Set(void) {
 	// 1SRP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_1SRP_EN_DIS;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_1SRP_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -840,7 +841,7 @@ uint16_t G7_Menu_Status_Set(void) {
 	// 2SOP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_2SOP_EN_DIS;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_2SOP_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -850,7 +851,7 @@ uint16_t G7_Menu_Status_Set(void) {
 	// 3AOP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_3AOP_EN_DIS;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_3AOP_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -860,7 +861,7 @@ uint16_t G7_Menu_Status_Set(void) {
 	// 4ARP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_4ARP_EN_DIS;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_4ARP_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -870,7 +871,7 @@ uint16_t G7_Menu_Status_Set(void) {
 	// UPR
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_UPR_EN_DIS;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_UPR_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -880,7 +881,7 @@ uint16_t G7_Menu_Status_Set(void) {
 	// OPR
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_OPR_EN_DIS;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_OPR_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -937,13 +938,13 @@ uint16_t DefaultValueSet(void) {
         cSR_ByteData(F_REVERSE_7) = DFL_REVERSE_7;
         cSR_ByteData(F_REVERSE_8) = DFL_REVERSE_8;
 
-        cSR_ByteData(F_FOP_EN_DIS)  = DFL_FOP_EN_DIS;
-        cSR_ByteData(F_1SRP_EN_DIS) = DFL_1SRP_EN_DIS;
-		cSR_ByteData(F_2SOP_EN_DIS) = DFL_2SOP_EN_DIS;
-		cSR_ByteData(F_3AOP_EN_DIS) = DFL_3AOP_EN_DIS;
-		cSR_ByteData(F_4ARP_EN_DIS) = DFL_4ARP_EN_DIS;
-		cSR_ByteData(F_UPR_EN_DIS)  = DFL_UPR_EN_DIS;
-		cSR_ByteData(F_OPR_EN_DIS)  = DFL_OPR_EN_DIS;
+        cSR_ByteData(F_FOP_EN)  = DFL_FOP_EN;
+        cSR_ByteData(F_1SRP_EN) = DFL_1SRP_EN;
+		cSR_ByteData(F_2SOP_EN) = DFL_2SOP_EN;
+		cSR_ByteData(F_3AOP_EN) = DFL_3AOP_EN;
+		cSR_ByteData(F_4ARP_EN) = DFL_4ARP_EN;
+		cSR_ByteData(F_UPR_EN)  = DFL_UPR_EN;
+		cSR_ByteData(F_OPR_EN)  = DFL_OPR_EN;
 
 		// ch0
         cSR_ByteData(F_AMP_TYPE) = DFL_AMP_TYPE;
@@ -1163,7 +1164,7 @@ void ldr_setSecondLine(uint8_t ch) {
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
 
 	// 전압
-    num = micom_getSensorNowJunwi_mV(0); // <<< #1025
+    num = getFinalOneTopMaxSensor_micom_mV(); // <<< #1025
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;

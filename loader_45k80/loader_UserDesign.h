@@ -142,8 +142,8 @@ const uint8_t ch_reverse_sel_list[][17] = {
 };
 
 const uint8_t ldr_errorTestSetText[][17] = {
-    "ON              ", //0
-    "OFF             ", //1
+    "OFF             ",
+    "ON              ",
 };
 
 
@@ -217,13 +217,13 @@ const uint8_t FlashMsgSel[][17] = {
 #define F_REVERSE_7     	ByteData024
 #define F_REVERSE_8     	ByteData025
 
-#define F_FOP_EN_DIS    	ByteData041
-#define F_1SRP_EN_DIS    	ByteData042
-#define F_2SOP_EN_DIS    	ByteData043
-#define F_3AOP_EN_DIS    	ByteData044
-#define F_4ARP_EN_DIS    	ByteData045
-#define F_UPR_EN_DIS    	ByteData046
-#define F_OPR_EN_DIS    	ByteData047
+#define F_FOP_EN    	ByteData041
+#define F_1SRP_EN    	ByteData042
+#define F_2SOP_EN    	ByteData043
+#define F_3AOP_EN    	ByteData044
+#define F_4ARP_EN    	ByteData045
+#define F_UPR_EN    	ByteData046
+#define F_OPR_EN    	ByteData047
 
 
 
@@ -307,13 +307,13 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_sensorType_7 			cF_ByteData(F_REVERSE_7)
 #define cF_sensorType_8 			cF_ByteData(F_REVERSE_8)
 
-#define cF_FOP_en_dis	 			cF_ByteData(F_FOP_EN_DIS)
-#define cF_1SRP_en_dis	 			cF_ByteData(F_1SRP_EN_DIS)
-#define cF_2SOP_en_dis	 			cF_ByteData(F_2SOP_EN_DIS)
-#define cF_3AOP_en_dis	 			cF_ByteData(F_3AOP_EN_DIS)
-#define cF_4ARP_en_dis	 			cF_ByteData(F_4ARP_EN_DIS)
-#define cF_UPR_en_dis	 			cF_ByteData(F_UPR_EN_DIS)
-#define cF_OPR_en_dis	 			cF_ByteData(F_OPR_EN_DIS)
+#define cF_FOP_en	 			cF_ByteData(F_FOP_EN)
+#define cF_1SRP_en	 			cF_ByteData(F_1SRP_EN)
+#define cF_2SOP_en	 			cF_ByteData(F_2SOP_EN)
+#define cF_3AOP_en	 			cF_ByteData(F_3AOP_EN)
+#define cF_4ARP_en	 			cF_ByteData(F_4ARP_EN)
+#define cF_UPR_en	 			cF_ByteData(F_UPR_EN)
+#define cF_OPR_en	 			cF_ByteData(F_OPR_EN)
 
 // º¸Á¤
 #define cF_ch0_correctT 			cF_ByteData(F_SCR_CORRECT_S_MAIN)

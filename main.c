@@ -60,8 +60,8 @@ uint16_t micom_getMaxAmp_mV(void){
 }
 
 enum {
-	ET_ENABLE = 0,
-	ET_DISABLE = 1,
+	ET_DISABLE = 0,
+	ET_ENABLE = 1,
 } ErrorTestEnableDisable;
 
 
@@ -546,6 +546,7 @@ void scr_micom_setNowInVoltage_mV(uint8_t ch) {
 				// AN0 센서
 				scr.nowMainAdSensor_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
 				scr.bNowAdSensor_micom_updted = TRUE;
+				micom_saveTotal8sensorNowValue();
 				break;
 			case 1:
 				// AN1 수동 볼륨 값
@@ -1366,7 +1367,7 @@ uint8_t isSRPError(void) {
 	uint16_t micom_SRP_max = get_micom_SRP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
-	if (cF_1SRP_en_dis == ET_DISABLE) return STEP_DONE;
+	if (cF_1SRP_en == ET_DISABLE) return STEP_DONE;
 	//---------------------------------------------
 	UserSystemStatus = M_1ST_SRP_CHK;
 
@@ -1409,7 +1410,7 @@ uint8_t isSOPError(void) {
 	uint16_t micom_SOP_max = get_micom_SOP_max();		// 설정값 메뉴 (전체)
 	uint16_t micom_SOP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SOP = iF_SOP_time; // 설정값 메뉴
-	if (cF_2SOP_en_dis == ET_DISABLE) return STEP_DONE;
+	if (cF_2SOP_en == ET_DISABLE) return STEP_DONE;
 	// ------------------------------------------------------
 	UserSystemStatus = M_2ST_SOP_CHK;
 	if (chkTimer_commomError_msec > setChkTime_SOP) {
@@ -1465,7 +1466,7 @@ uint8_t isAOPError(void) {
 	uint16_t nowVoltage_mV = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
 	// 현재 전류 값
 	uint16_t nowAmp_mV = scr.nowAdAmp_micom_mV; // AN2, micom 현재 전류
-	if (cF_3AOP_en_dis == ET_DISABLE) return STEP_DONE;
+	if (cF_3AOP_en == ET_DISABLE) return STEP_DONE;
 	// ------------------------------------------------------
 
 	UserSystemStatus = M_3ST_AOP_CHK;
@@ -1508,7 +1509,7 @@ uint8_t isARPError(void) {
 
 	static uint16_t start_mV[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
 	// 현재 전위 마이컴단 mV 값
-	if (cF_4ARP_en_dis == ET_DISABLE) return STEP_DONE;
+	if (cF_4ARP_en == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
 	UserSystemStatus = M_4ST_ARP_CHK;
 
@@ -1549,7 +1550,7 @@ uint8_t isUPRWarning(void) {
 */
 	uint16_t set = getGoalSensorSetVal_micom_mV(iF_UPR_set); // ★
 	uint16_t now_max = getFinalOneTopMaxSensor_micom_mV();
-	if (cF_UPR_en_dis == ET_DISABLE) return STEP_DONE;
+	if (cF_UPR_en == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
 
 	if (now_max > set) {
@@ -1573,7 +1574,7 @@ uint8_t isOPRError(void) {
 */
 	uint16_t set = getGoalSensorSetVal_micom_mV(iF_OPR_set); // ★
 	uint16_t now = getFinalOneLowMinSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
-	if (cF_OPR_en_dis == ET_DISABLE) return STEP_DONE;
+	if (cF_OPR_en == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
 
 	if (now < set) {
@@ -1593,7 +1594,7 @@ uint8_t isFopErrorChk(void) {
 */
 	uint16_t cnt;
 
-	if (cF_FOP_en_dis == ET_DISABLE) return 0;
+	if (cF_FOP_en == ET_DISABLE) return 0;
 
 	cnt = 0;
 	if (RZeroXChekTimer > 100) {
@@ -1936,7 +1937,7 @@ void main(void) {
 		}
 
 
-		micom_saveTotal8sensorNowValue();
+
 		if (isCoditionContorl()) {
 			// 전체 제어 순서
 			controlSrcAnd5Step_prcess();

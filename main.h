@@ -149,6 +149,7 @@ extern uint16_t rxGoodSucessTimer;
 extern uint8_t bufZSU_use_not[];
 
 extern uint16_t micom_getSensorNowJunwi_mV(uint8_t);
+extern uint16_t getFinalOneTopMaxSensor_micom_mV(void);
 
 #endif
 
