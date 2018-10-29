@@ -1105,19 +1105,24 @@ uint16_t getFinalOneTopMaxSensor_micom_mV(void) {
 	return max;
 }
 
-uint16_t getFinalOneLowMinSensor_micom_mV(uint16_t now_main) {
-	uint16_t min = now_main;
+
+
+
+
+
+
+uint16_t getFinalOneLowMinSensor_micom_mV(void) {
+	uint16_t min;
 	uint16_t i;
-	// 총 9개 센서 현재 입력값 중에 최소 값을 얻기 위해서
-	// 하지만 기본적으로 메인의 값을 기본 값으로 가져가므로
-	// zsu 값 8개에 대해서 만 루프 돌리면 된다.
-	for (i = 0; i < ZSU_CH_MAX; i++) {
-		// 가장 큰 값을 뽑아야 한다.
-		if (zsu_ch0_ch7_analog[i] < min) {
-			min = zsu_ch0_ch7_analog[i];
+
+	min = 0xffff;
+	for (i = 0; i < 9; i++) {
+		if (micom_sensor_0_8_mV[i] < min) {
+			min = micom_sensor_0_8_mV[i];
 		}
 	}
 	return min;
+
 }
 
 
@@ -1573,7 +1578,7 @@ uint8_t isOPRError(void) {
 	* 현재 센서 전위 값 mV
 */
 	uint16_t set = getGoalSensorSetVal_micom_mV(iF_OPR_set); // ★
-	uint16_t now = getFinalOneLowMinSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
+	uint16_t now = getFinalOneLowMinSensor_micom_mV();
 	if (cF_OPR_en == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
 

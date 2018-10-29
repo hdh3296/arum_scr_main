@@ -1159,11 +1159,11 @@ void ldr_setFirstLine(uint8_t ch) {
 	new485Ladder[FIRSTLINE_BASE + 15] = ' ';
 }
 
+// 현재 상태 센서 값 표시
 void ldr_setSecondLine(uint8_t ch) {
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
 
-	// 전압
     num = getFinalOneTopMaxSensor_micom_mV(); // <<< #1025
     ascii_1000   = num / 1000;
     num = num % 1000;
@@ -1185,23 +1185,26 @@ void ldr_setSecondLine(uint8_t ch) {
     new485Ladder[SECONDLINE_BASE + 4] = '/';
 
 
-	// 전류
-    num = heater[ch].userNowInAmp_100mA;
+    num = getFinalOneLowMinSensor_micom_mV();
+    ascii_1000   = num / 1000;
+    num = num % 1000;
     ascii_100   = num / 100;
     num = num % 100;
     ascii_10    =   num / 10;
     num = num % 10;
     ascii_1     = num;
 
+	ascii_1000 = getAscii(ascii_1000);
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
 
-	new485Ladder[SECONDLINE_BASE + 5] = ascii_100;
-	new485Ladder[SECONDLINE_BASE + 6] = ascii_10;
-	new485Ladder[SECONDLINE_BASE + 7] = '.';
+
+	new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
 	new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
-	new485Ladder[SECONDLINE_BASE + 9] = 'A';
+	new485Ladder[SECONDLINE_BASE + 9] = '/';
 	new485Ladder[SECONDLINE_BASE + 10] = '/';
 
 
