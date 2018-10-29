@@ -171,7 +171,7 @@ uint16_t G1_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     UserMenuSerialNm = 0;
     main_gr = MAIN_GROUP01;
-    sub_gr = 0;
+    sub_gr = SUB_GROUP01;
     /////////////////////////////////////////////////////////////////////
     //0 : 현재 상태 값 보기 설정
     /////////////////////////////////////////////////////////////////////
@@ -205,7 +205,7 @@ uint16_t G2_Menu_Status_Set(void) {
     // main group2
     /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP02;
-    sub_gr = 0;
+    sub_gr = SUB_GROUP01;
     /////////////////////////////////////////////////////////////////////
     // 목표 한계 전압 (정격 전압)
     /////////////////////////////////////////////////////////////////////
@@ -258,7 +258,7 @@ uint16_t G3_Menu_Status_Set(void) {
     // main group3
     /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP03;
-    sub_gr = 0;
+    sub_gr = SUB_GROUP01;
 
     /////////////////////////////////////////////////////////////////////
     //scr : 전압  보정
@@ -413,7 +413,7 @@ uint16_t G4_Menu_Status_Set(void) {
     // main group1
     /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP04;
-    sub_gr = 0;
+    sub_gr = SUB_GROUP01;
 
 	/////////////////////////////////////////////////////////////////////
 	//서브 보드 - ch0 use/nouse
@@ -526,7 +526,7 @@ uint16_t G5_Menu_Status_Set(void) {
     // main group1
     /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP05;
-    sub_gr = 0;
+    sub_gr = SUB_GROUP01;
 
 	/////////////////////////////////////////////////////////////////////
 	// 0 채널
@@ -637,11 +637,8 @@ uint16_t G5_Menu_Status_Set(void) {
 uint16_t G6_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
-    //////////////////////////////////////////////////////////////////////
-    // main group1
-    /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP06;
-    sub_gr = 0;
+    sub_gr = SUB_GROUP01;
 	/////////////////////////////////////////////////////////////////////
 	// 총 11가지 전류 타입 선택 (5A ~ 300A)
 	/////////////////////////////////////////////////////////////////////
@@ -805,6 +802,19 @@ uint16_t G6_Menu_Status_Set(void) {
     UserMenuSerialNm++;
     sub_gr++;
 
+    return (0);
+}
+
+
+
+
+uint16_t G7_Menu_Status_Set(void) {
+    uint16_t main_gr, sub_gr;
+
+    main_gr = MAIN_GROUP07;
+    sub_gr = SUB_GROUP01;
+
+/////////////////
 // ---- FOP ~ OPR 총 7개 각 알람 ON/OFF 설정(세팅)
 	/////////////////////////////////////////////////////////////////////
 	// FOP
@@ -878,18 +888,7 @@ uint16_t G6_Menu_Status_Set(void) {
 	sub_gr++;
 
 	// end ----------------
-    MenuStatus[UserMenuSerialNm].M_EditGroupNm = 0xff;
-    return (0);
-}
-
-
-
-
-uint16_t G7_Menu_Status_Set(void) {
-    uint16_t main_gr, sub_gr;
-
-    main_gr = MAIN_GROUP07;
-    sub_gr = SUB_GROUP01;
+	MenuStatus[UserMenuSerialNm].M_EditGroupNm = 0xff;
     return (0);
 }
 

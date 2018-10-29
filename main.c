@@ -13,8 +13,6 @@
 #define MIN_GATE_max_voltage	60
 
 uint16_t micom_sensor_0_8_mV[9];
-uint16_t f_micom_sensor_0_8_mV[9] = {0xffff,};
-uint8_t f_ch;
 
 
 
@@ -961,61 +959,6 @@ uint16_t SZeroXChekTimer;
 uint16_t TZeroXChekTimer;
 
 
-void getUseSensor(uint8_t ch) {
-	if (isSensorUseNo(ch)) {
-		switch (ch) {
-			case 0:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 1:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 2:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 3:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 4:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 5:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 6:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 7:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-			case 8:
-				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
-				f_ch++;
-				return;
-		}
-	}
-	return;
-}
-
-uint8_t get_f_ch() {
-	uint8_t ch, i;
-	i = 0;
-	for (ch = 0; ch < 9; ch++) {
-		if (isSensorUseNo(ch)) {
-			i++;
-		}
-	}
-	return i;
-}
-
 
 
 void micom_saveTotal8sensorNowValue(void) {
@@ -1024,13 +967,6 @@ void micom_saveTotal8sensorNowValue(void) {
 		micom_sensor_0_8_mV[ch] = zsu_ch0_ch7_analog[ch];
 	}
 	micom_sensor_0_8_mV[ch] = scr.nowMainAdSensor_micom_mV;
-
-	// use 설정 된 sensor 값만 저장 !
-//	f_ch = 0;
-//	for (ch = 0; ch < 9; ch++) f_micom_sensor_0_8_mV[ch] = 0xffff;
-//	for (ch = 0; ch < 9; ch++) {
-//		getUseSensor(ch);
-//	}
 }
 
 
@@ -1425,7 +1361,7 @@ uint8_t isSRPError(void) {
 	* SRP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SRP Time : check time
 */
-    uint8_t ch = 0; // #1020
+    uint8_t ch; // #1020
 	uint8_t senseorType[9]; // sensor 별로 total 9개  // zinc / cucs
 	uint16_t micom_nowIn_sensorJunwi[9]; // sensor 별로 total 9 개  // 현재 수위 입력 값 (사용자 읽기용)
 	//---------------------------------------------
@@ -1442,7 +1378,7 @@ uint8_t isSRPError(void) {
 	}
 
 	for (ch = 0; ch < 9; ch++) {
-		if (isSensorUseNo(ch)) continue;
+		if (!isSensorUseNo(ch)) continue;
 		micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 
 		switch (getSensorTypeByCh(ch)) {
@@ -1469,7 +1405,7 @@ uint8_t isSOPError(void) {
 	* SOP LOW : - 방향에 대한 것이므로 Zinc일때 이 값을 보고 판단한다.
 	* SOP Time : check time
 */
-    uint8_t ch = 0; // #1020
+    uint8_t ch; // #1020
 	//----------------------------
 	uint16_t micom_nowIn_sensorJunwi[9]; // 현재 전위 값
 	//---------------------------------------------
@@ -1485,7 +1421,7 @@ uint8_t isSOPError(void) {
 	}
 
 	for (ch = 0; ch < 9; ch++) {
-		if (isSensorUseNo(ch)) continue;
+		if (!isSensorUseNo(ch)) continue;
 		micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 전위 상태 (마이컴단)
 
 		// 채널 0번에 대해서 (서브보드의 첫번째) #1025
@@ -1570,7 +1506,7 @@ uint8_t isARPError(void) {
 	* 그렇지 않고 센서 전위가 올라가면 에러 !
 	* 처음 시작 지점의 센서 전위 값 대비 + (위로) 150mV 올라간 지점이 하나라도 발견되면 에러 !
 */
-	uint16_t ch = 0; // #1020
+	uint16_t ch; // #1020
 	uint16_t now_mV[9];
 	uint16_t duty = iF_ARP_duty;		// 설정값 메뉴 (전체)
 	uint16_t time = iF_ARP_time; // 설정값 메뉴
@@ -1589,7 +1525,7 @@ uint8_t isARPError(void) {
 	}
 
 	for (ch = 0; ch < 9; ch++) {
-		if (isSensorUseNo(ch)) continue;
+		if (!isSensorUseNo(ch)) continue;
 		now_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 		// scr 출력 !
 		gateRSTDo_time = getGateRstDoTimeByDuty(duty);
@@ -1599,6 +1535,7 @@ uint8_t isARPError(void) {
 		} else {
 			// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
 			if (now_mV[ch] > (start_mV[ch] + 150)) {
+				pin_RUN_LED = LED_ON;
 				return STEP_ERROR;
 			}
 		}
@@ -1816,7 +1753,6 @@ void controlSrcAnd5Step_prcess() {
 		case ERR_ARP:	// 4. 센서 전위가 반대로 상승 시 !
 			bSystemALLSTOPByError = 1;
 			UserSystemStatus = M_ERR_ARP;
-			pin_RUN_LED = LED_ON;
 			return;
 		case ERR_UPR: 	// 경고
 			UserSystemStatus = M_ERR_UPR;
