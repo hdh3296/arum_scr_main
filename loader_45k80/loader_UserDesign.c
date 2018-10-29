@@ -233,8 +233,8 @@ uint16_t G2_Menu_Status_Set(void) {
     bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 12500; // #1030
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  6000;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 12500; // +2500
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  7500; // -2500
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_GOAL_SENSOR;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
