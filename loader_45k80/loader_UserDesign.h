@@ -59,17 +59,17 @@ const uint8_t GroupLineMessage[][17] = {
     "goal:Set Volt(V)", //14
     "goal:Set Amp(A) ", //15
     "goal:Set Sensor ", //16
-    "scr :correct V  ", //16
-    "scr :correct A  ", //16
-    "scr :correct ch0", //16
-    "scr :correct ch1", //9  // group1
-    "scr :correct ch2", //10
-    "scr :correct ch3", //14
-    "scr :correct ch4", //15
-    "scr :correct ch5", //16
-    "scr :correct ch6", //16
-    "scr :correct ch7", //16
-    "scr :correct ch8", //16
+    "correct: Voltage", //16
+    "correct: Amp    ", //16
+    "correct: CH0    ", //16
+    "correct: CH1    ", //9  // group1
+    "correct: CH2    ", //10
+    "correct: CH3    ", //14
+    "correct: CH4    ", //15
+    "correct: CH5    ", //16
+    "correct: CH6    ", //16
+    "correct: CH7    ", //16
+    "correct: CH8    ", //16
 
     "zsu :ch0 e/d    ", //16
     "zsu :ch1 e/d    ", //16
