@@ -167,8 +167,8 @@ const uint8_t DefaultMsgSel[][17] = {
 /*
     로더 초기화면에 표시할 메뉴 선택
 */
-    "display CH      ", //0
-    "display pwm     ", //1
+    "display state   ", //0
+    "display data    ", //1
 };
 
 

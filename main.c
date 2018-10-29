@@ -1094,12 +1094,13 @@ bool getSensorTypeByCh(uint16_t i) {
 
 uint16_t getFinalOneTopMaxSensor_micom_mV(void) {
 	uint16_t max;
-	uint16_t i;
+	uint8_t ch;
 
 	max = 0;
-	for (i = 0; i < 9; i++) {
-		if (micom_sensor_0_8_mV[i] > max) {
-			max = micom_sensor_0_8_mV[i];
+	for (ch = 0; ch < 9; ch++) {
+		if (!isSensorUseNo(ch)) continue;
+		if (micom_sensor_0_8_mV[ch] > max) {
+			max = micom_sensor_0_8_mV[ch];
 		}
 	}
 	return max;
@@ -1113,12 +1114,13 @@ uint16_t getFinalOneTopMaxSensor_micom_mV(void) {
 
 uint16_t getFinalOneLowMinSensor_micom_mV(void) {
 	uint16_t min;
-	uint16_t i;
+	uint8_t ch;
 
 	min = 0xffff;
-	for (i = 0; i < 9; i++) {
-		if (micom_sensor_0_8_mV[i] < min) {
-			min = micom_sensor_0_8_mV[i];
+	for (ch = 0; ch < 9; ch++) {
+		if (!isSensorUseNo(ch)) continue;
+		if (micom_sensor_0_8_mV[ch] < min) {
+			min = micom_sensor_0_8_mV[ch];
 		}
 	}
 	return min;
