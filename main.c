@@ -1684,15 +1684,16 @@ uint8_t allStepRun_5step() {
 			pin_RY_RUN = RY_ON;
 			controlSensorSuWi();
 
+			bState = isOPRError();
+			if (bState == STEP_ERROR) {
+				return ERR_OPR;
+			}
+
 			bState = isUPRWarning(); // 경고 수준
 			if (bState == STEP_ERROR) {
 				return ERR_UPR;
 			}
 
-			bState = isOPRError();
-			if (bState == STEP_ERROR) {
-				return ERR_OPR;
-			}
 			break;
 
 		default:
@@ -1735,38 +1736,44 @@ void controlSrcAnd5Step_prcess() {
 
 	if (bSystemALLSTOPByError) return;
 
-
 	errorCode = allStepRun_5step(nRunStep);
 	switch (errorCode) {
 		case ERR_FOP:	// RST
+			pin_RY_ALARM = RY_ON;
 			bSystemALLSTOPByError = 1;
 			UserSystemStatus = M_ERR_FOP;
 			return;
 		case ERR_SRP:	// 1. 센서 역전
+			pin_RY_ALARM = RY_ON;
 			bSystemALLSTOPByError = 1;
 			UserSystemStatus = M_ERR_SRP;
 			return;
 		case ERR_SOP:	// 2. 단선
+			pin_RY_ALARM = RY_ON;
 			bSystemALLSTOPByError = 1;
 			UserSystemStatus = M_ERR_SOP;
 			return;
 		case ERR_AOP:	// 3.
+			pin_RY_ALARM = RY_ON;
 			bSystemALLSTOPByError = 1;
 			UserSystemStatus = M_ERR_AOP;
 			return;
 		case ERR_ARP:	// 4. 센서 전위가 반대로 상승 시 !
+			pin_RY_ALARM = RY_ON;
 			bSystemALLSTOPByError = 1;
 			UserSystemStatus = M_ERR_ARP;
 			return;
 		case ERR_UPR: 	// 경고
+			pin_RY_ALARM = RY_ON;
 			UserSystemStatus = M_ERR_UPR;
 			break;
 		case ERR_OPR:
+			pin_RY_ALARM = RY_ON;
 			bSystemALLSTOPByError = 1;
 			UserSystemStatus = M_ERR_OPR;
 			return;
-
 		case ERR_NONE:
+			pin_RY_ALARM = RY_OFF;
 		default:
 			break;
 	}
@@ -1948,7 +1955,6 @@ void main(void) {
 			controlSrcAnd5Step_prcess();
 			if (bSystemALLSTOPByError) {
 				pin_RY_RUN = RY_OFF;
-				pin_RY_ALARM = RY_ON;
 				gateRSTDo_time = MAX_GATE_zero_voltage; // off
 			}
 		} else {
