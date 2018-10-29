@@ -10,7 +10,6 @@
 #define L_SHIFT(x) (x << 4)
 uint8_t uartTxBuffer[COM1_MAX_TX_BUF];
 uint8_t rxGoodBuffer[RX_BUF_MAX];
-uint8_t _uartRxBuffer[RX_BUF_MAX]; // 임시 버퍼, rx good 이전
 uint8_t totalTxCnt = 0;
 uint8_t txBuffer_pt = 0;
 uint8_t uart_status;
@@ -145,62 +144,6 @@ void USART2_RXC(void) {
             rxCnt = 0;
         }
 
-        _uartRxBuffer[rxCnt] = buf;
-
-        switch (uart_status) {
-            case STX_CHK:
-                if ((buf == ACK) || (buf == ENQ)) {
-                    uart_status = ETX_CHK;
-                    _uartRxBuffer[0] = buf;
-                    rxCnt = 0;
-                    Chksum1 = buf;
-                }
-                break;
-
-            case ETX_CHK:
-                Chksum1 = Chksum1 + buf;
-
-                if ((buf == ETX) || (buf == EOT)) {
-                    _uartRxBuffer[rxCnt] = 0x0;
-                    uart_status = BCC1_CHK;
-                }
-                break;
-
-            case BCC1_CHK:
-                buf = ASCTOHEX(buf);
-                _uartRxBuffer[rxCnt] = 0x0;
-                temp = (Chksum1 & 0xf0) >> 4;
-
-                if (temp == buf) {
-                    uart_status = BCC2_CHK;
-                } else {
-                    uart_status = STX_CHK;
-                }
-                break;
-
-            case BCC2_CHK:
-                buf = ASCTOHEX(buf);
-                temp = (Chksum1 & 0x0f);
-                _uartRxBuffer[rxCnt] = 0x0;
-                _uartRxBuffer[RX_BUF_MAX - 1] = 0x0;
-
-                if (temp == buf) {
-                    uart_status = RX_GOOD;
-                } else {
-                    uart_status = STX_CHK;
-                }
-                break;
-
-            case RX_ERROR:
-                uart_status = STX_CHK;
-                rxCnt = 0;
-                break;
-
-            default:
-                uart_status = STX_CHK;
-                rxCnt = 0;
-                break;
-        }
     }
 }
 

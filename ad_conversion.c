@@ -13,15 +13,11 @@ unsigned int SumCnt = 0;
 uint16_t adc_updated_analog_mV[ADC_CH_MAX] = {
     0,
 };
-
-
 unsigned char adc_bUpdated[ADC_CH_MAX] = {
     0,
 };
 
 
-unsigned int ccr_in_current_mV = 0;
-unsigned int V_IN_mV = 0;
 unsigned int bef_ad_channel = 0;
 
 

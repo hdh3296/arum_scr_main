@@ -12,6 +12,12 @@
 #define MAX_GATE_zero_voltage	240 // 토크 0 따라서, 전압 0
 #define MIN_GATE_max_voltage	60
 
+uint16_t micom_sensor_0_8_mV[9];
+uint16_t f_micom_sensor_0_8_mV[9];
+uint8_t f_ch;
+
+
+
 enum {
 	LED_ON	= 0,
 	LED_OFF = 1
@@ -125,13 +131,6 @@ enum {
 };
 
 
-typedef struct {
-    unsigned heater_onoff : 1;
-    unsigned heaterled_onoff : 1;
-    unsigned errorled_onoff : 1;
-    unsigned b_turned_on_power : 1;
-} HgcPt1000;
-HgcPt1000 pt1000[4];
 
 enum {
 	NONE = 0,
@@ -159,32 +158,57 @@ enum {
 
 
 
-bool bDoAdcSpeed[MAX_CH];
 
 
+// -------------------------------------------
+// --- sensor use/nouse ---------------------------
+bool getSensorUseNo(uint8_t ch) {
+
+    switch (ch) {
+        case 0:
+            return cF_ch0_use;
+        case 1:
+            return cF_ch1_use;
+        case 2:
+            return cF_ch2_use;
+        case 3:
+            return cF_ch3_use;
+        case 4:
+            return cF_ch4_use;
+        case 5:
+            return cF_ch5_use;
+        case 6:
+            return cF_ch6_use;
+        case 7:
+            return cF_ch7_use;
+        case 8:
+            return cF_ch8_use;
+    }
+    return 0;
+}
 
 
 void initPwm(void) {
 
-    InitPwmx(1);
-    InitPwmx(2);
-    InitPwmx(3);
-    InitPwmx(4);
-    InitPwmx(5);
+//    InitPwmx(1);
+//    InitPwmx(2);
+//    InitPwmx(3);
+//    InitPwmx(4);
+//    InitPwmx(5);
 }
 
 void offPwmAll(void) {
-    DutyCyclex[0]	= 0;
-    DutyCyclex[1]	= 0;
-    DutyCyclex[2]	= 0;
-    DutyCyclex[3]	= 0;
-    DutyCyclex[4]	= 0;
-
-    OutPWMx(1);
-    OutPWMx(2);
-    OutPWMx(3);
-    OutPWMx(4);
-    OutPWMx(5);
+//    DutyCyclex[0]	= 0;
+//    DutyCyclex[1]	= 0;
+//    DutyCyclex[2]	= 0;
+//    DutyCyclex[3]	= 0;
+//    DutyCyclex[4]	= 0;
+//
+//    OutPWMx(1);
+//    OutPWMx(2);
+//    OutPWMx(3);
+//    OutPWMx(4);
+//    OutPWMx(5);
 }
 
 
@@ -453,11 +477,7 @@ void udtLdrProtocol(uint8_t buf[]) {
 
 uint8_t  rxWhatProtocol() {
 
-    // uart rx good !
-    if (uart_RxGoodSucess()) {
-        updateRxGoodBuffer(_uartRxBuffer);
-        return getRxProtocolWhat(_uartRxBuffer);
-    }
+
 
     // can rx chk, when rx good !
     if (can_rxGoodSucess()) {
@@ -578,32 +598,6 @@ bool get_bDoAdcSpeed(uint8_t ch, uint16_t now, uint16_t goal, uint16_t gijun) {
 
 
 #define DUTI_MAX 0x3ff // 1023
-uint16_t increaseDuty(uint16_t duty, uint8_t ch) {
-    if (duty < DUTI_MAX) {
-		if (bDoAdcSpeed[ch]) {
-			duty += 5;
-		} else {
-	        duty++;
-		}
-    }
-    // 예외 사항
-    if (duty > DUTI_MAX)	duty = DUTI_MAX;
-
-    return duty;
-}
-uint16_t decreaseDuty(uint16_t duty, uint8_t ch) {
-    if (duty > 0) {
-		if (bDoAdcSpeed[ch]) {
-			duty -= 5;
-		} else {
-	        duty--;
-		}
-    }
-    // 예외 사항
-    if (duty > DUTI_MAX)	duty = 0;
-
-    return duty;
-}
 
 
 
@@ -797,32 +791,7 @@ void heater_setChEnableDisable(uint8_t ch) {
 
 }
 
-// -------------------------------------------
-// ---  use/nouse ---------------------------
-bool getUseFromLdr(uint8_t ch) {
 
-    switch (ch) {
-        case 0:
-            return cF_ch0_use;
-        case 1:
-            return cF_ch1_use;
-        case 2:
-            return cF_ch2_use;
-        case 3:
-            return cF_ch3_use;
-        case 4:
-            return cF_ch4_use;
-        case 5:
-            return cF_ch5_use;
-        case 6:
-            return cF_ch6_use;
-        case 7:
-            return cF_ch7_use;
-        case 8:
-            return cF_ch8_use;
-    }
-    return 0;
-}
 
 
 
@@ -992,13 +961,26 @@ uint16_t SZeroXChekTimer;
 uint16_t TZeroXChekTimer;
 
 
-uint16_t micom_sensor_0_8_mV[9];
+uint16_t getUseSensor(uint8_t ch) {
+
+//	if (getSensorUseNo(ch)) {
+//		switch (ch) {
+//			case 0:
+//				return micom_sensor_0_8_mV[ch];
+//		}
+//	}
+	return 0;
+}
 void micom_saveTotal8sensorNowValue(void) {
 	uint8_t ch;
-	for (ch = 0; ch < 8; ch++) {
+	for (ch=0; ch<8; ch++) {
 		micom_sensor_0_8_mV[ch] = zsu_ch0_ch7_analog[ch];
 	}
 	micom_sensor_0_8_mV[ch] = scr.nowMainAdSensor_micom_mV;
+
+	for (ch=0; ch<9; ch++) {
+		f_micom_sensor_0_8_mV[8] = 1;
+	}
 }
 
 
