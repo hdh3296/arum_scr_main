@@ -1014,11 +1014,10 @@ void getFinalUserNumWhenUpKey(uint32_t dest[], uint32_t src, uint8_t p) {
 			// 반대 sign으로 변경
 			if (dest[0] == SIGN_PLUS) {
 				dest[0] = SIGN_MINUS;
-				if (dest[1] == 0) {
 					dest[1] = 1;
-				}
 			} else {
 				dest[0] = SIGN_PLUS;
+				dest[1] = 0;
 			}
 			break;
 	}
