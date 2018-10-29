@@ -61,7 +61,6 @@ const uint8_t GroupLineMessage[][17] = {
     "goal:Set Sensor ", //16
     "scr :correct V  ", //16
     "scr :correct A  ", //16
-    "scr :correct S-M", //16
     "scr :correct S0 ", //16
     "scr :correct S1 ", //9  // group1
     "scr :correct S2 ", //10
@@ -70,6 +69,7 @@ const uint8_t GroupLineMessage[][17] = {
     "scr :correct S5 ", //16
     "scr :correct S6 ", //16
     "scr :correct S7 ", //16
+    "scr :correct S-M", //16
 
     "zsu :ch0 e/d    ", //16
     "zsu :ch1 e/d    ", //16
@@ -230,15 +230,15 @@ const uint8_t FlashMsgSel[][17] = {
 // 보정 기능 추가 (추후 보정 설정 기능 할 때) #1020
 #define F_SCR_CORRECT_V     	ByteData026
 #define F_SCR_CORRECT_A     	ByteData027
-#define F_SCR_CORRECT_S_MAIN    ByteData028
-#define F_SCR_CORRECT_S0    	ByteData029
-#define F_SCR_CORRECT_S1    	ByteData030
-#define F_SCR_CORRECT_S2    	ByteData031
-#define F_SCR_CORRECT_S3    	ByteData032
-#define F_SCR_CORRECT_S4    	ByteData033
-#define F_SCR_CORRECT_S5    	ByteData034
-#define F_SCR_CORRECT_S6    	ByteData035
-#define F_SCR_CORRECT_S7    	ByteData036
+#define F_SCR_CORRECT_ch0    	ByteData029
+#define F_SCR_CORRECT_ch1    	ByteData030
+#define F_SCR_CORRECT_ch2    	ByteData031
+#define F_SCR_CORRECT_ch3    	ByteData032
+#define F_SCR_CORRECT_ch4    	ByteData033
+#define F_SCR_CORRECT_ch5    	ByteData034
+#define F_SCR_CORRECT_ch6    	ByteData035
+#define F_SCR_CORRECT_ch7    	ByteData036
+#define F_SCR_CORRECT_ch8    	ByteData028 // main sensor
 
 #define F_CH3_CORRECT_A     ByteData037
 #define F_CH4_CORRECT_T     ByteData038
@@ -316,22 +316,21 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_OPR_en	 			cF_ByteData(F_OPR_EN)
 
 // 보정
-#define cF_ch0_correctT 			cF_ByteData(F_SCR_CORRECT_S_MAIN)
-#define cF_ch0_correctV 			cF_ByteData(F_SCR_CORRECT_V)
-#define cF_ch0_correctA 			cF_ByteData(F_SCR_CORRECT_A)
+#define cF_correct_V 			cF_ByteData(F_SCR_CORRECT_V)
+#define cF_correct_A 			cF_ByteData(F_SCR_CORRECT_A)
+#define cF_correct_ch0 			cF_ByteData(F_SCR_CORRECT_ch0)
+#define cF_correct_ch1 			cF_ByteData(F_SCR_CORRECT_ch1)
+#define cF_correct_ch2 			cF_ByteData(F_SCR_CORRECT_ch2)
+#define cF_correct_ch3 			cF_ByteData(F_SCR_CORRECT_ch3)
+#define cF_correct_ch4 			cF_ByteData(F_SCR_CORRECT_ch4)
+#define cF_correct_ch5 			cF_ByteData(F_SCR_CORRECT_ch5)
+#define cF_correct_ch6 			cF_ByteData(F_SCR_CORRECT_ch6)
+#define cF_correct_ch7 			cF_ByteData(F_SCR_CORRECT_ch7)
+#define cF_correct_ch8 			cF_ByteData(F_SCR_CORRECT_ch8)
 
-#define cF_ch1_correctT 			cF_ByteData(F_SCR_CORRECT_S0)
-#define cF_ch1_correctV 			cF_ByteData(F_SCR_CORRECT_S1)
-#define cF_ch1_correctA 			cF_ByteData(F_SCR_CORRECT_S2)
 
-#define cF_ch2_correctT 			cF_ByteData(F_SCR_CORRECT_S3)
-#define cF_ch2_correctV 			cF_ByteData(F_SCR_CORRECT_S4)
-#define cF_ch2_correctA 			cF_ByteData(F_SCR_CORRECT_S5)
 
-#define cF_ch3_correctT 			cF_ByteData(F_SCR_CORRECT_S6)
-#define cF_ch3_correctV 			cF_ByteData(F_SCR_CORRECT_S7)
 #define cF_ch3_correctA 			cF_ByteData(F_CH3_CORRECT_A)
-
 #define cF_ch4_correctT 			cF_ByteData(F_CH4_CORRECT_T)
 #define cF_ch4_correctV 			cF_ByteData(F_CH4_CORRECT_V)
 #define cF_ch4_correctA 			cF_ByteData(F_CH4_CORRECT_A)

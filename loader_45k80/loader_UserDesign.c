@@ -61,22 +61,20 @@ uint16_t maxAmpMenuNum;
 
 
 // 보정
-#define DFL_CH0_CORRENT_T	20
-#define DFL_CH0_CORRENT_V	200
-#define DFL_CH0_CORRENT_A	200
+#define DFL_SCR_CORRECT_V	1
+#define DFL_SCR_CORRECT_A	1
+#define DFL_SCR_CORRECT_ch0	1
+#define DFL_SCR_CORRECT_ch1	1
+#define DFL_SCR_CORRECT_ch2	1
+#define DFL_SCR_CORRECT_ch3	1
+#define DFL_SCR_CORRECT_ch4	1
+#define DFL_SCR_CORRECT_ch5	1
+#define DFL_SCR_CORRECT_ch6	1
+#define DFL_SCR_CORRECT_ch7	1
+#define DFL_SCR_CORRECT_ch8	1
 
-#define DFL_CH1_CORRENT_T	20
-#define DFL_CH1_CORRENT_V	200
-#define DFL_CH1_CORRENT_A	200
 
-#define DFL_CH2_CORRENT_T	20
-#define DFL_CH2_CORRENT_V	200
-#define DFL_CH2_CORRENT_A	200
-
-#define DFL_CH3_CORRENT_T	20
-#define DFL_CH3_CORRENT_V	200
 #define DFL_CH3_CORRENT_A	200
-
 #define DFL_CH4_CORRENT_T	20
 #define DFL_CH4_CORRENT_V	200
 #define DFL_CH4_CORRENT_A	200
@@ -250,8 +248,7 @@ uint16_t G2_Menu_Status_Set(void) {
     return (0);
 }
 
-// 보정 그룹 : 메인의 현재 입력 전압/전류/센서 값 보정 기능
-// ZSU 센서별 보정 기능도 있어야지 - 이것은 별도의 그룹에 다가 추가 하자.
+// 보정 설정
 uint16_t G3_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
@@ -285,18 +282,6 @@ uint16_t G3_Menu_Status_Set(void) {
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
-	/////////////////////////////////////////////////////////////////////
-    //scr : 센서  보정 - 0 (메인)
-    /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S_MAIN;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
-            GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
 
 	/////////////////////////////////////////////////////////////////////
     //scr : 센서  보정 채널0
@@ -305,7 +290,7 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch0;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -318,7 +303,7 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch1;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -331,7 +316,7 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch2;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -344,7 +329,7 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch3;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -357,7 +342,7 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch4;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -370,7 +355,7 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch5;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -383,7 +368,7 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch6;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -396,12 +381,24 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_S0;
+    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch7;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
             GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
 
+	/////////////////////////////////////////////////////////////////////
+	//scr : 센서	보정 - ch8 (메인)
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 3;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 210;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch8;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *)
+			GroupLineMessage[UserMenuSerialNm];
+	UserMenuSerialNm++;
+	sub_gr++;
 
     return (0);
 }
@@ -963,17 +960,18 @@ uint16_t DefaultValueSet(void) {
 		cSR_ByteData(F_CH4_ENABLE) = 1;
         cSR_ByteData(F_CH4_USE) = 1;
 		// 보정
-        cSR_ByteData(F_SCR_CORRECT_S_MAIN) = DFL_CH0_CORRENT_T;
-        cSR_ByteData(F_SCR_CORRECT_V) = DFL_CH0_CORRENT_V;
-        cSR_ByteData(F_SCR_CORRECT_A) = DFL_CH0_CORRENT_A;
-        cSR_ByteData(F_SCR_CORRECT_S0) = DFL_CH1_CORRENT_T;
-        cSR_ByteData(F_SCR_CORRECT_S1) = DFL_CH1_CORRENT_V;
-        cSR_ByteData(F_SCR_CORRECT_S2) = DFL_CH1_CORRENT_A;
-        cSR_ByteData(F_SCR_CORRECT_S3) = DFL_CH2_CORRENT_T;
-        cSR_ByteData(F_SCR_CORRECT_S4) = DFL_CH2_CORRENT_V;
-        cSR_ByteData(F_SCR_CORRECT_S5) = DFL_CH2_CORRENT_A;
-        cSR_ByteData(F_SCR_CORRECT_S6) = DFL_CH3_CORRENT_T;
-        cSR_ByteData(F_SCR_CORRECT_S7) = DFL_CH3_CORRENT_V;
+        cSR_ByteData(F_SCR_CORRECT_V) = DFL_SCR_CORRECT_V;
+        cSR_ByteData(F_SCR_CORRECT_A) = DFL_SCR_CORRECT_A;
+        cSR_ByteData(F_SCR_CORRECT_ch0) = DFL_SCR_CORRECT_ch0;
+        cSR_ByteData(F_SCR_CORRECT_ch1) = DFL_SCR_CORRECT_ch1;
+        cSR_ByteData(F_SCR_CORRECT_ch2) = DFL_SCR_CORRECT_ch2;
+        cSR_ByteData(F_SCR_CORRECT_ch3) = DFL_SCR_CORRECT_ch3;
+        cSR_ByteData(F_SCR_CORRECT_ch4) = DFL_SCR_CORRECT_ch4;
+        cSR_ByteData(F_SCR_CORRECT_ch5) = DFL_SCR_CORRECT_ch5;
+        cSR_ByteData(F_SCR_CORRECT_ch6) = DFL_SCR_CORRECT_ch6;
+        cSR_ByteData(F_SCR_CORRECT_ch7) = DFL_SCR_CORRECT_ch7;
+        cSR_ByteData(F_SCR_CORRECT_ch8) = DFL_SCR_CORRECT_ch8;
+
         cSR_ByteData(F_CH3_CORRECT_A) = DFL_CH3_CORRENT_A;
         cSR_ByteData(F_CH4_CORRECT_T) = DFL_CH4_CORRENT_T;
         cSR_ByteData(F_CH4_CORRECT_V) = DFL_CH4_CORRENT_V;
