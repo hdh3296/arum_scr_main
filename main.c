@@ -1091,16 +1091,14 @@ bool getSensorTypeByCh(uint16_t i) {
 
 
 
-uint16_t getFinalOneTopMaxSensor_micom_mV(uint16_t now_main) {
-	uint16_t max = now_main;
+uint16_t getFinalOneTopMaxSensor_micom_mV(void) {
+	uint16_t max;
 	uint16_t i;
-	// 총 9개 센서 현재 입력값 중에 최대 값을 얻기 위해서
-	// 하지만 기본적으로 메인의 값을 기본 값으로 가져가므로
-	// zsu 값 8개에 대해서 만 루프 돌리면 된다.
-	for (i = 0; i < ZSU_CH_MAX; i++) {
-		// 가장 큰 값을 뽑아야 한다.
-		if (zsu_ch0_ch7_analog[i] > max) {
-			max = zsu_ch0_ch7_analog[i];
+
+	max = 0;
+	for (i = 0; i < 9; i++) {
+		if (micom_sensor_0_8_mV[i] > max) {
+			max = micom_sensor_0_8_mV[i];
 		}
 	}
 	return max;
@@ -1201,22 +1199,22 @@ void compareGoalNowSensor(void) {
 	// 마이컴 단에서는 그냥 2500mv 라는 기준치 없다.
 	uint16_t goal; // micom단, 목표 센서 mV
 		// 로더에 설정된 목표 값은 +/- 값 이므로, 마이컴 단 값으로 변환 시켜줘야 한다.
-	uint16_t now; // AN3, micom 현재 전압
+	uint16_t now_max; // AN3, micom 현재 전압
 	// 목표 값과 현재 입력 전압값을 가져왔으니 둘을 비교해서
 	// RSTGATE ON 지점의 도수를 증가하거나 감소한다. (제어하기 !)
 	if (scr.bNowAdSensor_micom_updted) {
 		scr.bNowAdSensor_micom_updted = FALSE;
 									// 로더변수
 		goal = getGoalSensorSetVal_micom_mV(iF_scr_goalSensor); // ★
-		now = getFinalOneTopMaxSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
+		now_max = getFinalOneTopMaxSensor_micom_mV();
 
 		// #1017 에어컨 온도 제어 처럼 위 아래로 +50/-50 을 두었다.
 		// 이것을 추후 어떻게 할지 테스트 장비 오면 수정하자.
-		if (now < (goal-0)) {
+		if (now_max < (goal-0)) {
 			if (gateRSTDo_time < MAX_GATE_zero_voltage) {
 				gateRSTDo_time += 1;
 			}
-		} else if (now > (goal+0)) {
+		} else if (now_max > (goal+0)) {
 			// 전류를 많이 보내 줘야 한다.
 			if (gateRSTDo_time > MIN_GATE_max_voltage) {
 				gateRSTDo_time -= 1;
@@ -1373,7 +1371,6 @@ uint8_t isSRPError(void) {
 	UserSystemStatus = M_1ST_SRP_CHK;
 
 	if (chkTimer_commomError_msec > setChkTime_SRP) {
-		chkTimer_commomError_msec = 0;
 		return STEP_DONE;
 	}
 
@@ -1416,7 +1413,6 @@ uint8_t isSOPError(void) {
 	// ------------------------------------------------------
 	UserSystemStatus = M_2ST_SOP_CHK;
 	if (chkTimer_commomError_msec > setChkTime_SOP) {
-		chkTimer_commomError_msec = 0;
 		return STEP_DONE;
 	}
 
@@ -1479,7 +1475,6 @@ uint8_t isAOPError(void) {
 
 
 	if (chkTimer_commomError_msec > time) {
-		chkTimer_commomError_msec = 0;
 		gateRSTDo_time = MAX_GATE_zero_voltage;
 		return STEP_DONE;
 	}
@@ -1518,7 +1513,6 @@ uint8_t isARPError(void) {
 	UserSystemStatus = M_4ST_ARP_CHK;
 
 	if (chkTimer_commomError_msec > time) {
-		chkTimer_commomError_msec = 0;
 		gateRSTDo_time = MAX_GATE_zero_voltage;
 		pin_RUN_LED = LED_OFF;
 		return STEP_DONE;
@@ -1554,11 +1548,11 @@ uint8_t isUPRWarning(void) {
 	* 설정 목표 전위 값
 */
 	uint16_t set = getGoalSensorSetVal_micom_mV(iF_UPR_set); // ★
-	uint16_t now = getFinalOneTopMaxSensor_micom_mV(scr.nowMainAdSensor_micom_mV);
+	uint16_t now_max = getFinalOneTopMaxSensor_micom_mV();
 	if (cF_UPR_en_dis == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
 
-	if (now > set) {
+	if (now_max > set) {
 		bUPRstate = 1;
 	} else {
 		bUPRstate = 0;
@@ -1635,6 +1629,7 @@ uint8_t allStepRun_5step() {
 				return ERR_NONE;
 			} else if (bState == STEP_DONE) {
 				nRunStep = 2; // <<< next
+				chkTimer_commomError_msec = 0;
 				return ERR_NONE;
 			}
 			break;
@@ -1647,6 +1642,7 @@ uint8_t allStepRun_5step() {
 				return ERR_NONE;
 			} else if (bState == STEP_DONE) {
 				nRunStep = 3; // <<< next
+				chkTimer_commomError_msec = 0;
 				return ERR_NONE;
 			}
 			break;
@@ -1659,6 +1655,7 @@ uint8_t allStepRun_5step() {
 				return ERR_NONE;
 			} else if (bState == STEP_DONE) {
 				nRunStep = 4; // <<< next
+				chkTimer_commomError_msec = 0;
 				return ERR_NONE;
 			}
 			break;
@@ -1671,6 +1668,7 @@ uint8_t allStepRun_5step() {
 				return ERR_NONE;
 			} else if (bState == STEP_DONE) {
 				nRunStep = 5; // <<< next
+				chkTimer_commomError_msec = 0;
 				return ERR_NONE;
 			}
 			break;
