@@ -13,7 +13,7 @@
 #define MIN_GATE_max_voltage	60
 
 uint16_t micom_sensor_0_8_mV[9];
-uint16_t f_micom_sensor_0_8_mV[9];
+uint16_t f_micom_sensor_0_8_mV[9] = {0xffff,};
 uint8_t f_ch;
 
 
@@ -162,7 +162,7 @@ enum {
 
 // -------------------------------------------
 // --- sensor use/nouse ---------------------------
-bool getSensorUseNo(uint8_t ch) {
+bool isSensorUseNo(uint8_t ch) {
 
     switch (ch) {
         case 0:
@@ -961,26 +961,76 @@ uint16_t SZeroXChekTimer;
 uint16_t TZeroXChekTimer;
 
 
-uint16_t getUseSensor(uint8_t ch) {
-
-//	if (getSensorUseNo(ch)) {
-//		switch (ch) {
-//			case 0:
-//				return micom_sensor_0_8_mV[ch];
-//		}
-//	}
-	return 0;
+void getUseSensor(uint8_t ch) {
+	if (isSensorUseNo(ch)) {
+		switch (ch) {
+			case 0:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 1:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 2:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 3:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 4:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 5:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 6:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 7:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+			case 8:
+				f_micom_sensor_0_8_mV[f_ch] = micom_sensor_0_8_mV[ch];
+				f_ch++;
+				return;
+		}
+	}
+	return;
 }
+
+uint8_t get_f_ch() {
+	uint8_t ch, i;
+	i = 0;
+	for (ch = 0; ch < 9; ch++) {
+		if (isSensorUseNo(ch)) {
+			i++;
+		}
+	}
+	return i;
+}
+
+
+
 void micom_saveTotal8sensorNowValue(void) {
 	uint8_t ch;
-	for (ch=0; ch<8; ch++) {
+	for (ch = 0; ch < 8; ch++) {
 		micom_sensor_0_8_mV[ch] = zsu_ch0_ch7_analog[ch];
 	}
 	micom_sensor_0_8_mV[ch] = scr.nowMainAdSensor_micom_mV;
 
-	for (ch=0; ch<9; ch++) {
-		f_micom_sensor_0_8_mV[8] = 1;
-	}
+	// use 설정 된 sensor 값만 저장 !
+//	f_ch = 0;
+//	for (ch = 0; ch < 9; ch++) f_micom_sensor_0_8_mV[ch] = 0xffff;
+//	for (ch = 0; ch < 9; ch++) {
+//		getUseSensor(ch);
+//	}
 }
 
 
@@ -1383,9 +1433,7 @@ uint8_t isSRPError(void) {
 	uint16_t micom_SRP_min = get_micom_SRP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SRP = iF_SRP_time; // 설정값 메뉴
 	if (cF_1SRP_en_dis == ET_DISABLE) return STEP_DONE;
-	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 	//---------------------------------------------
-
 	UserSystemStatus = M_1ST_SRP_CHK;
 
 	if (chkTimer_commomError_msec > setChkTime_SRP) {
@@ -1393,19 +1441,22 @@ uint8_t isSRPError(void) {
 		return STEP_DONE;
 	}
 
+	for (ch = 0; ch < 9; ch++) {
+		if (isSensorUseNo(ch)) continue;
+		micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 
-	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
-	switch (getSensorTypeByCh(ch)) {
-		case TYPE_ZINC:
-			if (micom_nowIn_sensorJunwi[ch] < micom_SRP_min) {
-				return STEP_ERROR;
-			}
-			break;
-		case TYPE_CUCUSO4:
-			if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
-				return STEP_ERROR;
-			}
-			break;
+		switch (getSensorTypeByCh(ch)) {
+			case TYPE_ZINC:
+				if (micom_nowIn_sensorJunwi[ch] < micom_SRP_min) {
+					return STEP_ERROR;
+				}
+				break;
+			case TYPE_CUCUSO4:
+				if (micom_nowIn_sensorJunwi[ch] > micom_SRP_max) {
+					return STEP_ERROR;
+				}
+				break;
+		}
 	}
 
 	return STEP_CHKING;
@@ -1426,22 +1477,24 @@ uint8_t isSOPError(void) {
 	uint16_t micom_SOP_min = get_micom_SOP_min(); 		// 설정값 메뉴 (전체)
 	uint16_t setChkTime_SOP = iF_SOP_time; // 설정값 메뉴
 	if (cF_2SOP_en_dis == ET_DISABLE) return STEP_DONE;
-	micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 전위 상태 (마이컴단)
 	// ------------------------------------------------------
-
 	UserSystemStatus = M_2ST_SOP_CHK;
-
 	if (chkTimer_commomError_msec > setChkTime_SOP) {
 		chkTimer_commomError_msec = 0;
 		return STEP_DONE;
 	}
 
-	// 채널 0번에 대해서 (서브보드의 첫번째) #1025
-	// 2300 <  현재 전위 < 2700 이하
-	if ( (micom_nowIn_sensorJunwi[ch] < micom_SOP_max)
-		&& (micom_nowIn_sensorJunwi[ch] > micom_SOP_min) ){
-		// 단선 에러 !
-		return STEP_ERROR;
+	for (ch = 0; ch < 9; ch++) {
+		if (isSensorUseNo(ch)) continue;
+		micom_nowIn_sensorJunwi[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 전위 상태 (마이컴단)
+
+		// 채널 0번에 대해서 (서브보드의 첫번째) #1025
+		// 2300 <  현재 전위 < 2700 이하 => 센서 단선
+		if ( (micom_nowIn_sensorJunwi[ch] < micom_SOP_max)
+			&& (micom_nowIn_sensorJunwi[ch] > micom_SOP_min) ){
+			// 단선 에러 !
+			return STEP_ERROR;
+		}
 	}
 
 	return STEP_CHKING;
@@ -1525,12 +1578,8 @@ uint8_t isARPError(void) {
 	static uint16_t start_mV[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
 	// 현재 전위 마이컴단 mV 값
 	if (cF_4ARP_en_dis == ET_DISABLE) return STEP_DONE;
-	now_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
 	// -------------------------------------------------------------------
-
 	UserSystemStatus = M_4ST_ARP_CHK;
-	// scr 출력 !
-	gateRSTDo_time = getGateRstDoTimeByDuty(duty);
 
 	if (chkTimer_commomError_msec > time) {
 		chkTimer_commomError_msec = 0;
@@ -1539,12 +1588,19 @@ uint8_t isARPError(void) {
 		return STEP_DONE;
 	}
 
-	if (chkTimer_commomError_msec <= 1) {
-		start_mV[ch] = now_mV[ch];
-	} else {
-		// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
-		if (now_mV[ch] > (start_mV[ch] + 150)) {
-			return STEP_ERROR;
+	for (ch = 0; ch < 9; ch++) {
+		if (isSensorUseNo(ch)) continue;
+		now_mV[ch] = micom_getSensorNowJunwi_mV(ch); // 현재 수위 상태 마이컴단
+		// scr 출력 !
+		gateRSTDo_time = getGateRstDoTimeByDuty(duty);
+
+		if (chkTimer_commomError_msec <= 1) {
+			start_mV[ch] = now_mV[ch];
+		} else {
+			// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
+			if (now_mV[ch] > (start_mV[ch] + 150)) {
+				return STEP_ERROR;
+			}
 		}
 	}
 
@@ -1935,8 +1991,7 @@ void main(void) {
 		bufZSU_use_not[6] = cF_ch6_use;
 		bufZSU_use_not[7] = cF_ch7_use;
 
-		// #1024 4단계 테스트 알람 기능 구현하기
-		micom_saveTotal8sensorNowValue();
+
 
 		// #1025 SRP MAX값을 마이컴단 값으로 변환하여 저장하기 (데이터베이스화)
 		database_SRPSOPARLRM();
@@ -1946,6 +2001,8 @@ void main(void) {
 			powerOnReadyDelayTimer = 0;
 		}
 
+
+		micom_saveTotal8sensorNowValue();
 		if (isCoditionContorl()) {
 			// 전체 제어 순서
 			controlSrcAnd5Step_prcess();

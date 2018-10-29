@@ -79,6 +79,7 @@ const uint8_t GroupLineMessage[][17] = {
     "zsu :ch5 e/d    ", //15
     "zsu :ch6 e/d    ", //16
     "zsu :ch7 e/d    ", //16
+    "Main:ch8 e/d    ", //16
 	// 센서 정/역
 	// 정방향 센서 : 징크 Zinc
 	//				- 양전하   수위 검출 용도
