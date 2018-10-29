@@ -166,7 +166,7 @@ extern Menu_Status CurMenuStatus;
 #define VOLTAGE_ZERO 100 // +/- 10 => 0~19
 #define CURRENT_ZERO 100 // +/- 10 => 0~19
 
-extern void getSignalUserNumXXX(uint32_t signalNum[], uint32_t digit);
+extern void getSignNumberByLdrDigit(uint32_t signalNum[], uint32_t digit);
 
 #endif
 

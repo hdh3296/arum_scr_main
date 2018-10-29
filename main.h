@@ -42,8 +42,8 @@ enum {
 
 
 enum {
-	SIGN_MINUS,
-	SIGN_PLUS
+	SIGN_MINUS = 0,
+	SIGN_PLUS = 1
 };
 
 enum {
@@ -119,7 +119,7 @@ typedef struct {
 
 
 	// #부식방지
-	uint16_t nowAdVoltage_micom_mV;
+	uint16_t nowVoltage_micom_mV;
 	uint16_t nowAdAmp_micom_mV;
 	uint16_t nowMainAdSensor_micom_mV;
 	uint16_t nowAdVolume_micom_mV;

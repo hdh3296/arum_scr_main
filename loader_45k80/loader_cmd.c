@@ -444,7 +444,7 @@ void Integer_Digit_1023T(uint32_t userNum) {
 }
 
 
-void getSignalUserNumXXX(uint32_t dest[], uint32_t src) {
+void getSignNumberByLdrDigit(uint32_t dest[], uint32_t src) {
 	// 로더 변수 값을 가지고 해당 버퍼에 +/- 기호 값을 담아 저장한다.
 	// 예시) src = 9000 이라면, => -1000
 	if (src >= 10000) {
@@ -463,7 +463,7 @@ void Integer_Digit(void) {
 	if (isThisSelMenuNmIsSignDigit_1024()) {
 		// user 보여지는 값
 		// 					저장할 버퍼, 			입력 로더 변수
-		getSignalUserNumXXX(ThisSignalUserNumbuf, ThisDigitData);
+		getSignNumberByLdrDigit(ThisSignalUserNumbuf, ThisDigitData);
 		Integer_Digit_1023T(ThisSignalUserNumbuf[1]);
 		return;
 	}

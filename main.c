@@ -15,14 +15,17 @@
 uint16_t micom_sensor_0_8_mV[9];
 
 
+extern void micom_saveTotal9SensorNowIn_mV(void);
 
 enum {
 	LED_ON	= 0,
 	LED_OFF = 1
 };
+
+
 // MAX Voltage : 최대 한계 전압 (정격 전압)
-uint16_t micom_getMaxVoltage_mV(void){
-	return iF_scr_goalVoltage * 4;
+uint16_t getLimitVoltage_micomMV(void){
+	return (iF_scr_goalVoltage * 4);
 }
 // MAX Amp : 최대 한계 전류 (정격 전류)
 uint16_t micom_getMaxAmp_mV(void){
@@ -546,7 +549,7 @@ void scr_micom_setNowInVoltage_mV(uint8_t ch) {
 				// AN0 센서
 				scr.nowMainAdSensor_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
 				scr.bNowAdSensor_micom_updted = TRUE;
-				micom_saveTotal8sensorNowValue();
+				micom_saveTotal9SensorNowIn_mV();
 				break;
 			case 1:
 				// AN1 수동 볼륨 값
@@ -560,7 +563,7 @@ void scr_micom_setNowInVoltage_mV(uint8_t ch) {
 				break;
 			case 3:
 				// AN3 전압
-				scr.nowAdVoltage_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
+				scr.nowVoltage_micom_mV = adc_updated_analog_mV[ch]; // 현재 아날로그 값
 				scr.bNowAdVoltage_micom_updted = TRUE;
 				break;
 			default:
@@ -962,7 +965,7 @@ uint16_t TZeroXChekTimer;
 
 
 
-void micom_saveTotal8sensorNowValue(void) {
+void micom_saveTotal9SensorNowIn_mV(void) {
 	uint8_t ch;
 	for (ch = 0; ch < 8; ch++) {
 		micom_sensor_0_8_mV[ch] = zsu_ch0_ch7_analog[ch];
@@ -1143,11 +1146,37 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 }
 
 
-bool isOverVoltage(void) {
-	uint16_t max = micom_getMaxVoltage_mV(); // micom 목표 전압 100v -> 4000mV
-	uint16_t now = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
+uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV) {
+	uint32_t signalNumber[2];
+	uint16_t result;
+	uint16_t ldrCorrect = iF_correct_V_mV;
+	getSignNumberByLdrDigit(signalNumber, ldrCorrect);
 
-    if (now > max) {
+	switch (signalNumber[0]) {
+		case SIGN_PLUS: // +
+			// 예시) +1 이면,
+			// 		현재 입력 값에다가 + 1를 하면 되지
+			result = nowIn_mV + signalNumber[1];
+			if (result > 5000) result = 5000;
+			return result;
+		case SIGN_MINUS:
+			if (signalNumber[1] <= nowIn_mV) {
+				result = nowIn_mV - signalNumber[1];
+			} else {
+				result = 0;
+			}
+			return result;
+	}
+	return 5000;
+}
+
+
+
+bool isOverVoltage_micomMV(void) {
+	uint16_t limit = getLimitVoltage_micomMV(); // micom 목표 전압 100v -> 4000mV
+	uint16_t now = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV); // AN3, micom 현재 전압
+
+    if (now > limit) {
         return 1;
     }   return 0;
 }
@@ -1187,7 +1216,7 @@ uint16_t getGoalSensorSetVal_micom_mV(uint16_t ldrValue) { // #1025
 	uint32_t signalNumber[2];
 	uint16_t micomVal;
 						// +/- 값
-	getSignalUserNumXXX(signalNumber, (uint32_t)ldrValue);
+	getSignNumberByLdrDigit(signalNumber, (uint32_t)ldrValue);
 
 	switch (signalNumber[0]) {
 		case SIGN_PLUS:
@@ -1233,7 +1262,7 @@ void compareGoalNowSensor(void) {
 
 void controlGateTotal(void) {
 // 전압, 전류, 센서 제어
-	if (isOverVoltage()) {
+	if (isOverVoltage_micomMV()) {
 		compareGoalNowVoltage();
 		return;
 	} else if (isOverCurrent()) {
@@ -1466,11 +1495,11 @@ uint8_t isAOPError(void) {
 	uint16_t duty = iF_AOP_duty;		// 설정값 메뉴 (전체)
 	uint16_t time = iF_AOP_time; // 설정값 메뉴
 	// 정격 전압의 50%
-	uint16_t rated50_Voltage_mV = (micom_getMaxVoltage_mV()) / 2; // micom단 mV단으로 변경해야 한다. <<
+	uint16_t rated50_Voltage_mV = (getLimitVoltage_micomMV()) / 2; // micom단 mV단으로 변경해야 한다. <<
 	// 정격 전류의 10%
 	uint16_t reted10_Amp_mV = (micom_getMaxAmp_mV() / 10); // micom단 mV단으로 변경해야 한다.
 	// 현재 전압 값
-	uint16_t nowVoltage_mV = scr.nowAdVoltage_micom_mV; // AN3, micom 현재 전압
+	uint16_t nowVoltage_mV = scr.nowVoltage_micom_mV; // AN3, micom 현재 전압
 	// 현재 전류 값
 	uint16_t nowAmp_mV = scr.nowAdAmp_micom_mV; // AN2, micom 현재 전류
 	if (cF_3AOP_en == ET_DISABLE) return STEP_DONE;

@@ -343,17 +343,17 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_OPR_set 					iF_IntData(F_OPR_SET)
 
 // º¸Á¤
-#define iF_correct_V 			cF_ByteData(F_SCR_CORRECT_V)
-#define iF_correct_A 			cF_ByteData(F_SCR_CORRECT_A)
-#define iF_correct_ch0 			cF_ByteData(F_SCR_CORRECT_ch0)
-#define iF_correct_ch1 			cF_ByteData(F_SCR_CORRECT_ch1)
-#define iF_correct_ch2 			cF_ByteData(F_SCR_CORRECT_ch2)
-#define iF_correct_ch3 			cF_ByteData(F_SCR_CORRECT_ch3)
-#define iF_correct_ch4 			cF_ByteData(F_SCR_CORRECT_ch4)
-#define iF_correct_ch5 			cF_ByteData(F_SCR_CORRECT_ch5)
-#define iF_correct_ch6 			cF_ByteData(F_SCR_CORRECT_ch6)
-#define iF_correct_ch7 			cF_ByteData(F_SCR_CORRECT_ch7)
-#define iF_correct_ch8 			cF_ByteData(F_SCR_CORRECT_ch8)
+#define iF_correct_V_mV 			iF_IntData(F_SCR_CORRECT_V)
+#define iF_correct_A_mV 			iF_IntData(F_SCR_CORRECT_A)
+#define iF_correct_ch0_mV 			iF_IntData(F_SCR_CORRECT_ch0)
+#define iF_correct_ch1_mV 			iF_IntData(F_SCR_CORRECT_ch1)
+#define iF_correct_ch2_mV 			iF_IntData(F_SCR_CORRECT_ch2)
+#define iF_correct_ch3_mV 			iF_IntData(F_SCR_CORRECT_ch3)
+#define iF_correct_ch4_mV 			iF_IntData(F_SCR_CORRECT_ch4)
+#define iF_correct_ch5_mV 			iF_IntData(F_SCR_CORRECT_ch5)
+#define iF_correct_ch6_mV 			iF_IntData(F_SCR_CORRECT_ch6)
+#define iF_correct_ch7_mV 			iF_IntData(F_SCR_CORRECT_ch7)
+#define iF_correct_ch8_mV 			iF_IntData(F_SCR_CORRECT_ch8)
 
 // ==============================================
 ////////////////////////////////////////////////////////

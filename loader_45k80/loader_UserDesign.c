@@ -34,9 +34,9 @@ uint16_t maxAmpMenuNum;
 #define DFL_1SRP_EN 0
 #define DFL_2SOP_EN 0
 #define DFL_3AOP_EN 0
-#define DFL_4ARP_EN 1
+#define DFL_4ARP_EN 0
 #define DFL_UPR_EN  1
-#define DFL_OPR_EN  1
+#define DFL_OPR_EN  0
 
 // 1st
 #define DFL_AMP_TYPE 0	 // 0 = 5A (테스트 용)
@@ -262,10 +262,10 @@ uint16_t G3_Menu_Status_Set(void) {
     //scr : 전압  보정
     /////////////////////////////////////////////////////////////////////
     bThisMenuSaver[UserMenuSerialNm] = 1;
-    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 6;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 10010; // +1999
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  9900; // -1999
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 10100; // +100
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  9900; // -100
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_V;
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
@@ -273,7 +273,7 @@ uint16_t G3_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     //scr : 전류  보정
     /////////////////////////////////////////////////////////////////////
-    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
+    ByteType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 4; // ※ 소수점 포함해서 계산해야 한다.
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 250;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue = 100;
