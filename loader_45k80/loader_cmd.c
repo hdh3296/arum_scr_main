@@ -981,6 +981,17 @@ uint32_t getSignalNumMinusMax(uint32_t min) {
 	return (10000 - min);
 }
 
+void changeSignNumByPlusMinus(uint32_t signnum[]) {
+	// 반대 sign으로 변경
+	if (signnum[0] == SIGN_PLUS) {
+		signnum[0] = SIGN_MINUS;
+		signnum[1] = 1;
+	} else {
+		signnum[0] = SIGN_PLUS;
+		signnum[1] = 0;
+	}
+}
+
 void getFinalUserNumWhenUpKey(uint32_t dest[], uint32_t src, uint8_t p) {
 // up 키늘 눌렀을 때 처리 할 내용들을 담은 함수이다.
 // 즉, up 키를 누르면 dest 값을 얻데이트 한다.(더하기)
@@ -1011,14 +1022,7 @@ void getFinalUserNumWhenUpKey(uint32_t dest[], uint32_t src, uint8_t p) {
 			}
 			break;
 		case 5:
-			// 반대 sign으로 변경
-			if (dest[0] == SIGN_PLUS) {
-				dest[0] = SIGN_MINUS;
-				dest[1] = 1;
-			} else {
-				dest[0] = SIGN_PLUS;
-				dest[1] = 0;
-			}
+			changeSignNumByPlusMinus(dest);
 			break;
 	}
 }
@@ -1051,15 +1055,7 @@ void getFinalUserNumWhenDnKey(uint32_t dest[], uint32_t src, uint8_t p) {
 			}
 			break;
 		case 5:
-			// 반대 sign으로 변경
-			if (dest[0] == SIGN_PLUS) {
-				dest[0] = SIGN_MINUS;
-				if (dest[1] == 0) {
-					dest[1] = 1;
-				}
-			} else {
-				dest[0] = SIGN_PLUS;
-			}
+			changeSignNumByPlusMinus(dest);
 			break;
 	}
 }
