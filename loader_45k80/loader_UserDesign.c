@@ -1227,21 +1227,26 @@ void loadTxLdrBuf_ldrdata_V(void) {
     for (i = 0; i < 16; i++) {
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
-    new485Ladder[FIRSTLINE_BASE + 0] = 'S';
+    new485Ladder[FIRSTLINE_BASE + 0] = 'V';
     new485Ladder[FIRSTLINE_BASE + 1] = '/';
-    new485Ladder[FIRSTLINE_BASE + 2] = 'V';
-    new485Ladder[FIRSTLINE_BASE + 3] = 'o';
-    new485Ladder[FIRSTLINE_BASE + 4] = 'l';
-    new485Ladder[FIRSTLINE_BASE + 5] = 't';
-    new485Ladder[FIRSTLINE_BASE + 6] = 'a';
-    new485Ladder[FIRSTLINE_BASE + 7] = 'g';
-    new485Ladder[FIRSTLINE_BASE + 8] = 'e';
-    new485Ladder[FIRSTLINE_BASE + 9] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 10] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 11] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 12] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 13] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 14] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 2] = ' ';
+
+	num = scr.nowVoltage_micom_mV;
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[FIRSTLINE_BASE + 3] = ascii_1000;
+    new485Ladder[FIRSTLINE_BASE + 4] = ascii_100;
+    new485Ladder[FIRSTLINE_BASE + 5] = ascii_10;
+    new485Ladder[FIRSTLINE_BASE + 6] = ascii_1;
 
 	// 전압 : 첫번째 값 - 현재 전압 마이컴단 (보정된) 값 표시
 	nowIn_mV = num = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV,
@@ -1323,21 +1328,27 @@ void loadTxLdrBuf_ldrdata_A(void) {
     for (i = 0; i < 16; i++) {
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
-    new485Ladder[FIRSTLINE_BASE + 0] = 'S';
+    new485Ladder[FIRSTLINE_BASE + 0] = 'A';
     new485Ladder[FIRSTLINE_BASE + 1] = '/';
-    new485Ladder[FIRSTLINE_BASE + 2] = 'A';
-    new485Ladder[FIRSTLINE_BASE + 3] = 'm';
-    new485Ladder[FIRSTLINE_BASE + 4] = 'p';
-    new485Ladder[FIRSTLINE_BASE + 5] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 6] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 7] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 8] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 9] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 10] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 11] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 12] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 13] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 14] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 2] = ' ';
+
+	num = scr.nowAdAmp_micom_mV;
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[FIRSTLINE_BASE + 3] = ascii_1000;
+    new485Ladder[FIRSTLINE_BASE + 4] = ascii_100;
+    new485Ladder[FIRSTLINE_BASE + 5] = ascii_10;
+    new485Ladder[FIRSTLINE_BASE + 6] = ascii_1;
+
 
 	// 전류 Amp  : 첫번째  , 마이컴단 표시
 	nowIn_mV = num = getCorrectedNowIn_micomMV_Amp(scr.nowAdAmp_micom_mV,
