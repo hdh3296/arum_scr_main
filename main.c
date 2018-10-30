@@ -769,7 +769,14 @@ void outputPwm_loop(void) {
 
 
 
-void writeFlash(uint8_t ch, bool bEnable) {
+void writeFlash(uint16_t addressNum, uint16_t ldrdata) {
+    uint16_t BlockPt;
+
+    BlockPt = (addressNum / FLASH_ONE_BLOCK_SIZE);
+    FlashBlockRd(BlockPt);
+    cSR_ByteData(addressNum) = ldrdata;
+
+    FlashBlockWr(BlockPt);
 }
 
 
@@ -1628,7 +1635,6 @@ uint8_t isARPError(void) {
 
 	if (chkTimer_commomError_msec > time) {
 		gateRSTDo_time = MAX_GATE_zero_voltage;
-		pin_RUN_LED = LED_OFF;
 		return STEP_DONE;
 	}
 
@@ -1643,7 +1649,6 @@ uint8_t isARPError(void) {
 		} else {
 			// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
 			if (now_mV[ch] > (start_mV[ch] + 150)) {
-				pin_RUN_LED = LED_ON;
 				return STEP_ERROR;
 			}
 		}
@@ -2030,7 +2035,7 @@ void outputAlarmRyOnOff() {
 void main(void) {
 	uint8_t ch;
 	uint8_t errorCode = ERR_NONE;
-
+	static uint8_t ampType, bef_ampType;
 
     di();
     initMCU();
@@ -2053,6 +2058,8 @@ void main(void) {
     setAdcStartOrStop(1);
 
 	mainStartInit(); // 메인 시작하기 직전 초기화 !
+
+	ampType = bef_ampType = cF_amp_type;
 
     while (1) {
         unsigned int i;
@@ -2137,7 +2144,6 @@ void main(void) {
 			bAlarmRyOn_Off = OFF;
 
 			chkTimer_commomError_msec = 0;
-			pin_RUN_LED = LED_OFF;
 			gateRSTDo_time = MAX_GATE_zero_voltage; // off
 			pin_RY_RUN = RY_OFF;
 			pin_RY_ALARM = RY_OFF;
@@ -2148,6 +2154,15 @@ void main(void) {
 		// 전류 타입별 로더 설정치 범위 조정 하기 위한 함수이다.
 		ldr_maxValue_maxAmp();
 		ldr_maxValue_correctAmpMenuMaxMin();
+
+		// 전류 타입 설정값 변경 되면 보정값 초기화 해야 한다. (전류에 대한 보정 설정 값만)
+		ampType = cF_amp_type;
+		if (ampType != bef_ampType) {
+			bef_ampType = ampType;
+			writeFlash(F_SCR_CORRECT_A, 10000);
+			pin_RUN_LED = ~pin_RUN_LED;
+		}
+
 
 
     }
