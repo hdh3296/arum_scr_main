@@ -1263,7 +1263,8 @@ uint16_t getCorrectedNowIn_micomMV_Amp(uint16_t nowIn_mV, uint16_t correct_user,
 
 bool isOverVoltage_micomMV(void) {
 	uint16_t limit = getVoltage_micomMV_FromUserData(iF_scr_goalVoltage); // micom 목표 전압 100v -> 4000mV
-	uint16_t now = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV, iF_correct_V_user); // AN3, micom 현재 전압
+	uint16_t now = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV,
+													iF_correct_V_user); // AN3, micom 현재 전압
 
     if (now > limit) {
         return 1;

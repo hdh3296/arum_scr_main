@@ -1218,7 +1218,7 @@ void ldr_viewState(uint8_t ch) {
 
 void loadTxLdrBuf_ldrdata_V(void) {
     uint16_t i;
-    uint16_t num;
+    uint16_t num, nowIn_mV;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
 	uint32_t signalNumber[2];
 	uint8_t sign;
@@ -1243,8 +1243,8 @@ void loadTxLdrBuf_ldrdata_V(void) {
     new485Ladder[FIRSTLINE_BASE + 13] = ' ';
     new485Ladder[FIRSTLINE_BASE + 14] = ' ';
 	// 첫번째 데이터 (마이컴단 전압)
-    num = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV, iF_correct_V_user);
-
+	// 첫번째 값 : 현재 전압 마이컴단 (보정된) 값 표시
+	nowIn_mV = num = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV, iF_correct_V_user);
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1282,13 +1282,30 @@ void loadTxLdrBuf_ldrdata_V(void) {
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
 
-	new485Ladder[SECONDLINE_BASE + 6] = ascii_1000;
-	new485Ladder[SECONDLINE_BASE + 7] = ascii_100;
-	new485Ladder[SECONDLINE_BASE + 8] = ascii_10;
-	new485Ladder[SECONDLINE_BASE + 9] = '.';
-	new485Ladder[SECONDLINE_BASE + 10] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 8] = '.';
+	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 10] = '/';
 
 	// 실제 전압 표시하기 (보정된 최종)
+	num = nowIn_mV / 4;
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+	new485Ladder[SECONDLINE_BASE + 11] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 12] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 13] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 14] = '.';
+	new485Ladder[SECONDLINE_BASE + 15] = ascii_1;
 
 
 }
@@ -1483,7 +1500,7 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
 	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
 	new485Ladder[SECONDLINE_BASE + 10] = '/';
 
-	// 센서 실제 유저 최종 값 보여주기 #1030
+	// 센서 실제 유저 최종 값 보여주기
 	getSignNumberByNowInSensor(signalNumber, db_corrected_final_sensor_0_8_micomMV[ch]);
 	if (signalNumber[0] == SIGN_PLUS) {
 		sign = '+';
