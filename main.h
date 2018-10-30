@@ -155,7 +155,8 @@ extern uint16_t getFinalOneLowMinSensor_micom_mV(void);
 extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
 extern uint16_t getCorrectedLdrSet_ch0_ch8(uint8_t ch);
 extern uint16_t getCorrectedNowIn_micomMV_voltage(uint16_t nowIn_mV, uint16_t correct_user);
-
+extern uint16_t getCorrectedNowIn_micomMV_Amp(uint16_t nowIn_mV, uint16_t correct_user,
+										uint8_t ampType);
 
 #endif
 

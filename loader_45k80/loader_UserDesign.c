@@ -1242,9 +1242,10 @@ void loadTxLdrBuf_ldrdata_V(void) {
     new485Ladder[FIRSTLINE_BASE + 12] = ' ';
     new485Ladder[FIRSTLINE_BASE + 13] = ' ';
     new485Ladder[FIRSTLINE_BASE + 14] = ' ';
-	// 첫번째 데이터 (마이컴단 전압)
-	// 첫번째 값 : 현재 전압 마이컴단 (보정된) 값 표시
-	nowIn_mV = num = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV, iF_correct_V_user);
+
+	// 전압 : 첫번째 값 - 현재 전압 마이컴단 (보정된) 값 표시
+	nowIn_mV = num = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV,
+														iF_correct_V_user);
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1288,7 +1289,7 @@ void loadTxLdrBuf_ldrdata_V(void) {
 	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
 	new485Ladder[SECONDLINE_BASE + 10] = '/';
 
-	// 실제 전압 표시하기 (보정된 최종)
+	// 전압 : 실제 전압 표시하기 (보정된 최종)
 	num = nowIn_mV / 4;
     ascii_1000   = num / 1000;
     num = num % 1000;
@@ -1313,7 +1314,7 @@ void loadTxLdrBuf_ldrdata_V(void) {
 
 void loadTxLdrBuf_ldrdata_A(void) {
     uint16_t i;
-    uint16_t num;
+    uint16_t num, nowIn_mV;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
 	uint32_t signalNumber[2];
 	uint8_t sign;
@@ -1338,8 +1339,10 @@ void loadTxLdrBuf_ldrdata_A(void) {
     new485Ladder[FIRSTLINE_BASE + 13] = ' ';
     new485Ladder[FIRSTLINE_BASE + 14] = ' ';
 
-	// 첫번째 전류 마이컴단 표시
-    num = getCorrectedNowIn_micomMV(scr.nowAdAmp_micom_mV, iF_correct_A_user);
+	// 전류 Amp  : 첫번째  , 마이컴단 표시
+	nowIn_mV = num = getCorrectedNowIn_micomMV_Amp(scr.nowAdAmp_micom_mV,
+													iF_correct_A_user,
+													cF_amp_type);
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1383,7 +1386,7 @@ void loadTxLdrBuf_ldrdata_A(void) {
 	new485Ladder[SECONDLINE_BASE + 9] = '.';
 	new485Ladder[SECONDLINE_BASE + 10] = ascii_1;
 
-
+	// 실제 전류 표현하기
 
 }
 
@@ -1500,7 +1503,7 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
 	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
 	new485Ladder[SECONDLINE_BASE + 10] = '/';
 
-	// 센서 실제 유저 최종 값 보여주기
+	// 센서 : 실제 유저 최종 값 보여주기
 	getSignNumberByNowInSensor(signalNumber, db_corrected_final_sensor_0_8_micomMV[ch]);
 	if (signalNumber[0] == SIGN_PLUS) {
 		sign = '+';

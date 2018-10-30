@@ -1186,7 +1186,8 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 }
 
 // 보정 전압 Voltage User
-uint16_t getCorrectedNowIn_micomMV_voltage(uint16_t nowIn_mV, uint16_t correct_user) {
+uint16_t getCorrectedNowIn_micomMV_voltage(uint16_t nowIn_mV,
+										uint16_t correct_user) {
 	uint32_t signalNumber[2];
 	uint16_t result, correct_mV;
 	getSignNumberByLdrDigit(signalNumber, correct_user);
@@ -1233,7 +1234,8 @@ uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_user) {
 	return 5000;
 }
 // 보정 전류 Amp User
-uint16_t getCorrectedNowIn_micomMV_Amp(uint16_t nowIn_mV, uint16_t correct_user,
+uint16_t getCorrectedNowIn_micomMV_Amp(uint16_t nowIn_mV,
+										uint16_t correct_user,
 										uint8_t ampType) {
 	uint32_t signalNumber[2];
 	uint16_t result, correct_mV;
