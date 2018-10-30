@@ -10,6 +10,7 @@ uint16_t UserRam_16[VARIABLE_16_END];
 uint32_t UserRam_32[VARIABLE_32_END];
 Menu_Status MenuStatus[MAX_MENU];
 uint16_t maxAmpMenuNum;
+uint16_t maxCorrectAmpMenuNum;
 
 
 /////////////////////////////////////////////////////
@@ -269,6 +270,7 @@ uint16_t G3_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     // 전류 보정
     /////////////////////////////////////////////////////////////////////
+    maxCorrectAmpMenuNum = UserMenuSerialNm;
     bThisMenuSaver[UserMenuSerialNm] = 1;
     IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
     MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 6;

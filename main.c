@@ -1910,8 +1910,45 @@ uint16_t getMaxByAmpType(uint8_t type) {
 	}
 	return 0;
 }
-
-
+uint16_t getMaxByAmpType_correct(uint8_t type) {
+	uint16_t max;
+	switch (type) {
+		case 0: // 첫번째 타입
+			max = 5;
+			return (max * 2) + 10000; // 20%
+		case 1:
+			max = 10;
+			return (max * 2)  + 10000;
+		case 2:
+			max = 15;
+			return (max * 2)  + 10000;
+		case 3:
+			max = 30;
+			return (max * 2)  + 10000;
+		case 4:
+			max = 50;
+			return (max * 2)  + 10000;
+		case 5:
+			max = 75;
+			return (max * 2)  + 10000;
+		case 6:
+			max = 100;
+			return (max * 2)  + 10000;
+		case 7:
+			max = 150;
+			return (max * 2)  + 10000;
+		case 8:
+			max = 200;
+			return (max * 2)  + 10000;
+		case 9:
+			max = 250;
+			return (max * 2)  + 10000;
+		case 10:
+			max = 300;
+			return (max * 2)  + 10000;
+	}
+	return 0;
+}
 void ldr_maxValue_maxAmp() {
 	uint16_t max, mn;
 	mn = maxAmpMenuNum;
@@ -1921,6 +1958,20 @@ void ldr_maxValue_maxAmp() {
     else if (max >= 100) MenuStatus[mn].M_EditShiftCnt = 4;
     else MenuStatus[mn].M_EditShiftCnt = 3;
 }
+void ldr_maxValue_correctAmpMenuMaxMin() {
+// 전류 타입에 따라서 로더 설정값 최대/최소 설정 범위 조정
+	uint16_t max, min, mn;
+	mn = maxCorrectAmpMenuNum;
+	max = MenuStatus[mn].M_EditDigitMaxValue = getMaxByAmpType_correct(cF_amp_type);
+//	min =
+
+    if (max >= 1000) MenuStatus[mn].M_EditShiftCnt = 5;
+    else if (max >= 100) MenuStatus[mn].M_EditShiftCnt = 4;
+	else if (max >= 10) MenuStatus[mn].M_EditShiftCnt = 3;
+	else if (max >= 1) MenuStatus[mn].M_EditShiftCnt = 2;
+    else MenuStatus[mn].M_EditShiftCnt = 1;
+}
+
 
 bool isSystemOffError(uint8_t errcode) {
 // 에러 상태 메시지 저장
@@ -2094,7 +2145,9 @@ void main(void) {
 		}
 		outputAlarmRyOnOff();
 
+		// 전류 타입별 로더 설정치 범위 조정 하기 위한 함수이다.
 		ldr_maxValue_maxAmp();
+		ldr_maxValue_correctAmpMenuMaxMin();
 
 
     }
