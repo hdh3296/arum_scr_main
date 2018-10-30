@@ -2120,6 +2120,18 @@ void outputAlarmRyOnOff() {
 	}
 }
 
+void loadSensorUseNouseTo(uint8_t buf[]) {
+	buf[0] = cF_ch0_use;
+	buf[1] = cF_ch1_use;
+	buf[2] = cF_ch2_use;
+	buf[3] = cF_ch3_use;
+	buf[4] = cF_ch4_use;
+	buf[5] = cF_ch5_use;
+	buf[6] = cF_ch6_use;
+	buf[7] = cF_ch7_use;
+}
+
+
 // -------------------------------------
 // - main loop ------------------------
 // 메인 루프
@@ -2189,27 +2201,13 @@ void main(void) {
 			scr_micom_setNowInVoltage_mV(ch);
 		}
 
-		// ZSU use/not_use 셋팅 값 저장하기
-		bufZSU_use_not[0] = cF_ch0_use;
-		bufZSU_use_not[1] = cF_ch1_use;
-		bufZSU_use_not[2] = cF_ch2_use;
-		bufZSU_use_not[3] = cF_ch3_use;
-		bufZSU_use_not[4] = cF_ch4_use;
-		bufZSU_use_not[5] = cF_ch5_use;
-		bufZSU_use_not[6] = cF_ch6_use;
-		bufZSU_use_not[7] = cF_ch7_use;
-
-
 
 		// #1025 SRP MAX값을 마이컴단 값으로 변환하여 저장하기 (데이터베이스화)
 		database_SRPSOPARLRM();
 
-
 		if (isJustNowPowerOn()) { // powerOff -> On 하는 찰나 !!!
 			powerOnReadyDelayTimer = 0;
 		}
-
-
 
 		if (isCoditionContorl()) {
 
@@ -2242,6 +2240,13 @@ void main(void) {
 		}
 		outputAlarmRyOnOff();
 
+
+
+// ------ 기 타 --------------------------------------------------
+
+		// ZSU use/not_use 셋팅 값 저장하기
+		loadSensorUseNouseTo(bufZSU_use_not);
+
 		// 전류 타입별 로더 설정치 범위 조정 하기 위한 함수이다.
 		ldr_maxValue_maxAmp();
 		ldr_maxminValue_correctAmpMenuMaxMin();
@@ -2253,9 +2258,6 @@ void main(void) {
 			writeFlash(F_SCR_CORRECT_A, 10000);
 			pin_RUN_LED = ~pin_RUN_LED;
 		}
-
-
-
     }
 }
 
