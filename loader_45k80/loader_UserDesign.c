@@ -1290,7 +1290,7 @@ void loadTxLdrBuf_ldrdata_V(void) {
 	new485Ladder[SECONDLINE_BASE + 10] = '/';
 
 	// 전압 : 실제 전압 표시하기 (보정된 최종)
-	num = nowIn_mV / 4;
+	num = getVoltage_RealData_FromMicomMV(nowIn_mV);
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1380,13 +1380,31 @@ void loadTxLdrBuf_ldrdata_A(void) {
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
-	new485Ladder[SECONDLINE_BASE + 6] = ascii_1000;
-	new485Ladder[SECONDLINE_BASE + 7] = ascii_100;
-	new485Ladder[SECONDLINE_BASE + 8] = ascii_10;
-	new485Ladder[SECONDLINE_BASE + 9] = '.';
-	new485Ladder[SECONDLINE_BASE + 10] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 8] = '.';
+	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 10] = '/';
 
-	// 실제 전류 표현하기
+	// 3] 전류 Amp : 실제 전류 표현하기
+	num = getAmp_RealData_FromMicomMV(nowIn_mV, cF_amp_type); // <<<
+	// 전압 : 실제 전압 표시하기 (보정된 최종)
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+	new485Ladder[SECONDLINE_BASE + 11] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 12] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 13] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 14] = '.';
+	new485Ladder[SECONDLINE_BASE + 15] = ascii_1;
 
 }
 
