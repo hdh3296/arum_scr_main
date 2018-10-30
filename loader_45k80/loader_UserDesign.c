@@ -1225,6 +1225,7 @@ void loadTxLdrBuf_ldrdata_V(void) {
 
 
     for (i = 0; i < 16; i++) {
+		new485Ladder[FIRSTLINE_BASE + i] = ' ';
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
     new485Ladder[FIRSTLINE_BASE + 0] = 'V';
@@ -1326,6 +1327,7 @@ void loadTxLdrBuf_ldrdata_A(void) {
 
 
     for (i = 0; i < 16; i++) {
+		new485Ladder[FIRSTLINE_BASE + i] = ' ';
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
     new485Ladder[FIRSTLINE_BASE + 0] = 'A';
@@ -1426,6 +1428,7 @@ void loadTxLdrBuf_ldrdata_Volume(void) {
 
 
     for (i = 0; i < 16; i++) {
+		new485Ladder[FIRSTLINE_BASE + i] = ' ';
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
     new485Ladder[FIRSTLINE_BASE + 0] = 'S';
@@ -1472,6 +1475,7 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
 
 
     for (i = 0; i < 16; i++) {
+		new485Ladder[FIRSTLINE_BASE + i] = ' ';
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
     new485Ladder[FIRSTLINE_BASE + 0] = getAscii(ch);
@@ -1564,6 +1568,66 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
 	new485Ladder[SECONDLINE_BASE + 15] = ascii_1;
 
 }
+
+
+
+// 센서 가장 큰값/작은값  표현하기
+void loadTxLdrBuf_ldrdata_sensor_TopLow(void) {
+    uint16_t i;
+    uint16_t num;
+    uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
+	uint32_t signalNumber[2];
+	uint8_t sign;
+
+
+    for (i = 0; i < 16; i++) {
+		new485Ladder[FIRSTLINE_BASE + i] = ' ';
+        new485Ladder[SECONDLINE_BASE + i] = ' ';
+    }
+    new485Ladder[FIRSTLINE_BASE + 0] = 'M';
+    new485Ladder[FIRSTLINE_BASE + 1] = '/';
+    new485Ladder[FIRSTLINE_BASE + 2] = ' ';
+
+	// 보정된 값 두번째 줄에 표시
+	num = getFinalOneTopMaxSensor_micom_mV();
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[SECONDLINE_BASE + 0] = ascii_1000;
+    new485Ladder[SECONDLINE_BASE + 1] = ascii_100;
+    new485Ladder[SECONDLINE_BASE + 2] = ascii_10;
+    new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 4] = ' ';
+
+	num = getFinalOneLowMinSensor_micom_mV();
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
+    new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
+    new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
+    new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
+
+
+}
+
+
 
 
 //////////////////////////////////////////
@@ -1668,7 +1732,7 @@ void dsplayInDataState(void) {
 /*
     로더 초기화면에 현재 상태값 보여주기 위한 함수
 */
-	uint8_t maxMenuIndex = 11;
+	uint8_t maxMenuIndex = 12;
 	uint16_t num = getShowIndex(maxMenuIndex);
 
 	switch (num) {
@@ -1700,12 +1764,15 @@ void dsplayInDataState(void) {
 			loadTxLdrBuf_ldrdata_sensor(num); // ch8
             break;
 		case 9:
-            loadTxLdrBuf_ldrdata_V(); // voltage
+			loadTxLdrBuf_ldrdata_sensor_TopLow(); // top, low sensor
 			break;
 		case 10:
-            loadTxLdrBuf_ldrdata_A(); // amp
+            loadTxLdrBuf_ldrdata_V(); // voltage
 			break;
 		case 11:
+            loadTxLdrBuf_ldrdata_A(); // amp
+			break;
+		case 12:
         	loadTxLdrBuf_ldrdata_Volume(); // amp
 			break;
 		default:

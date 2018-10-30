@@ -1180,6 +1180,7 @@ bool getSensorTypeByCh(uint16_t i) {
 
 
 uint16_t getFinalOneTopMaxSensor_micom_mV(void) {
+// 보정된 값이다.
 	uint16_t max;
 	uint8_t ch;
 
@@ -1200,6 +1201,7 @@ uint16_t getFinalOneTopMaxSensor_micom_mV(void) {
 
 
 uint16_t getFinalOneLowMinSensor_micom_mV(void) {
+// 보정된 값이다.
 	uint16_t min;
 	uint8_t ch;
 
@@ -1369,7 +1371,7 @@ uint16_t getGoalSensorSetVal_micom_mV(uint16_t ldrValue) { // #1025
 
 
 void compareGoalNowSensor(void) {
-// 센서 제어
+// 센서 제어 함수
 	// 마이컴 단에서는 그냥 2500mv 라는 기준치 없다.
 	uint16_t goal; // micom단, 목표 센서 mV
 		// 로더에 설정된 목표 값은 +/- 값 이므로, 마이컴 단 값으로 변환 시켜줘야 한다.
@@ -1486,7 +1488,7 @@ bool isJustNowPowerOn(void) {
 
 
 
-void controlSensorSuWi(void) {
+void controlSensorJuWi(void) {
 	// 46us = 1도
 	if (!pin_AUTO) {
 		// 수동 볼륨에 의해서 gateRSTDo_time 값을 획득한다.
@@ -1842,7 +1844,7 @@ uint8_t allStepRun_5step() {
 		case 5:
 			UserSystemStatus = M_RUNNING;
 			pin_RY_RUN = RY_ON;
-			controlSensorSuWi();
+			controlSensorJuWi();
 
 			bState = isOPRError();
 			if (bState == STEP_ERROR) {
