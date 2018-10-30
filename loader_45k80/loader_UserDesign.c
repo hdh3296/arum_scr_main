@@ -1392,6 +1392,7 @@ void loadTxLdrBuf_ldrdata(uint8_t ch) {
     uint16_t i;
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
+	uint8_t bsign;
 
 
     for (i = 0; i < 16; i++) {
@@ -1431,6 +1432,12 @@ void loadTxLdrBuf_ldrdata(uint8_t ch) {
     new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
     new485Ladder[SECONDLINE_BASE + 4] = '/';
 
+	bsign = getCorrectedLdrSet_ch0_ch8(ch) / 10000;
+	if (bsign) {
+		bsign = '+';
+	} else bsign = '-';
+	new485Ladder[SECONDLINE_BASE + 5] = bsign;
+
     num = getCorrectedLdrSet_ch0_ch8(ch) % 10000;
     ascii_1000   = num / 1000;
     num = num % 1000;
@@ -1443,11 +1450,12 @@ void loadTxLdrBuf_ldrdata(uint8_t ch) {
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
-	new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
-	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
-	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
-	new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
-	new485Ladder[SECONDLINE_BASE + 9] = ' ';
+
+
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 8] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
 
 
 }
