@@ -17,6 +17,14 @@ uint16_t db_corrected_final_sensor_0_8_micomMV[9];
 extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
 extern void micom_saveTotal9SensorNowIn_mV(void);
 
+uint8_t db_finalErrorCode;
+bool bAlarmRyOn_Off;
+extern bool isSystemOffError(uint8_t errcode);
+enum {
+	OFF = 0,
+	ON = 1
+}
+
 enum {
 	LED_ON	= 0,
 	LED_OFF = 1
@@ -76,7 +84,6 @@ volatile uint16_t db_ldrSetSRPMIN;
 volatile uint16_t db_ldrSetSOPMAX;
 volatile uint16_t db_ldrSetSOPMIN;
 
-bool bSystemALLSTOPByError = 0;
 
 
 uint8_t rx_db_enableSet[MAX_CH];
@@ -1371,6 +1378,7 @@ bool isJustNowPowerOn(void) {
 
 
 
+
 void controlSensorSuWi(void) {
 	// 46us = 1도
 	if (!pin_AUTO) {
@@ -1741,7 +1749,7 @@ uint8_t allStepRun_5step() {
 				return ERR_UPR;
 			}
 
-			break;
+			return ERR_NONE;
 
 		default:
 			break;
@@ -1778,54 +1786,6 @@ bool isCoditionContorl() {
 }
 
 
-void controlSrcAnd5Step_prcess() {
-	uint8_t errorCode;
-
-	if (bSystemALLSTOPByError) return;
-
-	errorCode = allStepRun_5step(nRunStep);
-	switch (errorCode) {
-		case ERR_FOP:	// RST
-			pin_RY_ALARM = RY_ON;
-			bSystemALLSTOPByError = 1;
-			UserSystemStatus = M_ERR_FOP;
-			return;
-		case ERR_SRP:	// 1. 센서 역전
-			pin_RY_ALARM = RY_ON;
-			bSystemALLSTOPByError = 1;
-			UserSystemStatus = M_ERR_SRP;
-			return;
-		case ERR_SOP:	// 2. 단선
-			pin_RY_ALARM = RY_ON;
-			bSystemALLSTOPByError = 1;
-			UserSystemStatus = M_ERR_SOP;
-			return;
-		case ERR_AOP:	// 3.
-			pin_RY_ALARM = RY_ON;
-			bSystemALLSTOPByError = 1;
-			UserSystemStatus = M_ERR_AOP;
-			return;
-		case ERR_ARP:	// 4. 센서 전위가 반대로 상승 시 !
-			pin_RY_ALARM = RY_ON;
-			bSystemALLSTOPByError = 1;
-			UserSystemStatus = M_ERR_ARP;
-			return;
-		case ERR_UPR: 	// 경고
-			pin_RY_ALARM = RY_ON;
-			UserSystemStatus = M_ERR_UPR;
-			break;
-		case ERR_OPR:
-			pin_RY_ALARM = RY_ON;
-			bSystemALLSTOPByError = 1;
-			UserSystemStatus = M_ERR_OPR;
-			return;
-		case ERR_NONE:
-			pin_RY_ALARM = RY_OFF;
-		default:
-			break;
-	}
-
-}
 
 void mainStartInit(void) {
 	// 온도/판넬   통신 두절 체크 용 변수 초기화
@@ -1907,6 +1867,57 @@ void ldr_maxValue_maxAmp() {
     if (max >= 1000) MenuStatus[mn].M_EditShiftCnt = 5;
     else if (max >= 100) MenuStatus[mn].M_EditShiftCnt = 4;
     else MenuStatus[mn].M_EditShiftCnt = 3;
+}
+
+bool isSystemOffError(uint8_t errcode) {
+// 에러 상태 메시지 저장
+// 치명적 에러 여부 반환
+	switch (errcode) {
+		case ERR_FOP:	// RST
+			UserSystemStatus = M_ERR_FOP;
+			return 1;
+		case ERR_SRP:	// 1. 센서 역전
+			UserSystemStatus = M_ERR_SRP;
+			return 1;
+		case ERR_SOP:	// 2. 단선
+			UserSystemStatus = M_ERR_SOP;
+			return 1;
+		case ERR_AOP:	// 3.
+			UserSystemStatus = M_ERR_AOP;
+			return 1;
+		case ERR_ARP:	// 4. 센서 전위가 반대로 상승 시 !
+			UserSystemStatus = M_ERR_ARP;
+			return 1;
+		case ERR_OPR:
+			UserSystemStatus = M_ERR_OPR;
+			return 1;
+		// --- 경고 및 정상 ---------
+		case ERR_UPR:	// 경고
+			UserSystemStatus = M_ERR_UPR;
+			return 0;
+		case ERR_NONE:
+			return 0;
+		default:
+			break;
+	}
+	return 0;
+
+}
+
+
+void outputAlarmRyOnOff() {
+
+	if (pin_KEY_ALARM == KEY_ALARM_OFF) {
+		// 알람 릴레이 무조건 off
+		pin_RY_ALARM = RY_OFF;
+		return;
+	}
+
+	if (bAlarmRyOn_Off == ON) {
+		pin_RY_ALARM = RY_ON;
+	} else {
+		pin_RY_ALARM = RY_OFF;
+	}
 }
 
 // -------------------------------------
@@ -1998,26 +2009,40 @@ void main(void) {
 
 
 		if (isCoditionContorl()) {
-			// 전체 제어 순서
-			controlSrcAnd5Step_prcess();
-			if (bSystemALLSTOPByError) {
+
+			if(isSystemOffError(db_finalErrorCode)) {
+			// 치명적 에러 떴을 때 !
 				pin_RY_RUN = RY_OFF;
 				gateRSTDo_time = MAX_GATE_zero_voltage; // off
+			} else {
+				// 일반 제어 런닝 중 ~ ~ ~
+				db_finalErrorCode = allStepRun_5step(nRunStep);
 			}
+
+			// 단순히 알람 릴레이 ON, OFF 하기 위한 목적
+			if (db_finalErrorCode) {
+				bAlarmRyOn_Off = ON;
+			} else bAlarmRyOn_Off = OFF;
 		} else {
+		// 파위 스위치 off 했을 때 !
 			// system off !!!
-			bSystemALLSTOPByError = 0;
+			db_finalErrorCode = 0;
+			UserSystemStatus = M_POWER_OFF;
 			nRunStep = 1;
+			bAlarmRyOn_Off = OFF;
+
 			chkTimer_commomError_msec = 0;
 			pin_RUN_LED = LED_OFF;
 			gateRSTDo_time = MAX_GATE_zero_voltage; // off
 			pin_RY_RUN = RY_OFF;
 			pin_RY_ALARM = RY_OFF;
 			tiemr_30UjiChkUpper_msec = 0;
-			UserSystemStatus = M_POWER_OFF;
 		}
+		outputAlarmRyOnOff();
 
 		ldr_maxValue_maxAmp();
+
+
     }
 }
 
