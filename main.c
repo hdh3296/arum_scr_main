@@ -970,7 +970,7 @@ uint16_t SZeroXChekTimer;
 uint16_t TZeroXChekTimer;
 
 
-uint16_t getCorrectedLdrSet(uint8_t ch) {
+uint16_t getCorrectedLdrSet_ch0_ch8(uint8_t ch) {
 
 	switch (ch) {
 		case 0:
@@ -1000,10 +1000,10 @@ void micom_saveTotal9SensorNowIn_mV(void) {
 	uint8_t ch;
 	for (ch = 0; ch < 8; ch++) {
 		db_corrected_final_sensor_0_8_micomMV[ch] =
-			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch], getCorrectedLdrSet(ch));
+			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch], getCorrectedLdrSet_ch0_ch8(ch));
 	}
 	db_corrected_final_sensor_0_8_micomMV[ch] =
-		getCorrectedNowIn_micomMV(scr.nowMainAdSensor_micom_mV, getCorrectedLdrSet(ch));
+		getCorrectedNowIn_micomMV(scr.nowMainAdSensor_micom_mV, getCorrectedLdrSet_ch0_ch8(ch));
 }
 
 
@@ -1922,6 +1922,7 @@ void outputAlarmRyOnOff() {
 
 // -------------------------------------
 // - main loop ------------------------
+// 메인 루프
 void main(void) {
 	uint8_t ch;
 	uint8_t errorCode = ERR_NONE;

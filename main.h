@@ -134,7 +134,9 @@ typedef struct {
     //  이값의 채널 0 ~ 3 값이 각각 전압/전류/센서/볼륨 값들이다.
 } Heater;
 
+extern Heater scr;
 
+extern uint16_t db_corrected_final_sensor_0_8_micomMV[];
 extern Heater heater[];
 
 extern void can_txReady(void);
@@ -150,6 +152,9 @@ extern uint8_t bufZSU_use_not[];
 
 extern uint16_t getFinalOneTopMaxSensor_micom_mV(void);
 extern uint16_t getFinalOneLowMinSensor_micom_mV(void);
+extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
+extern uint16_t getCorrectedLdrSet_ch0_ch8(uint8_t ch);
+
 
 #endif
 

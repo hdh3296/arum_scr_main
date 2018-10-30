@@ -1213,6 +1213,199 @@ void ldr_viewState(uint8_t ch) {
 
 }
 
+void loadTxLdrBuf_ldrdata_V(void) {
+    uint16_t i;
+    uint16_t num;
+    uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
+
+
+    for (i = 0; i < 16; i++) {
+        new485Ladder[SECONDLINE_BASE + i] = ' ';
+    }
+    new485Ladder[FIRSTLINE_BASE + 0] = 'S';
+    new485Ladder[FIRSTLINE_BASE + 1] = '/';
+    new485Ladder[FIRSTLINE_BASE + 2] = 'V';
+    new485Ladder[FIRSTLINE_BASE + 3] = 'o';
+    new485Ladder[FIRSTLINE_BASE + 4] = 'l';
+    new485Ladder[FIRSTLINE_BASE + 5] = 't';
+    new485Ladder[FIRSTLINE_BASE + 6] = 'a';
+    new485Ladder[FIRSTLINE_BASE + 7] = 'g';
+    new485Ladder[FIRSTLINE_BASE + 8] = 'e';
+    new485Ladder[FIRSTLINE_BASE + 9] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 10] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 11] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 12] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 13] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 14] = ' ';
+
+    num = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV, iF_correct_V_mV);
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[SECONDLINE_BASE + 0] = ascii_1000;
+    new485Ladder[SECONDLINE_BASE + 1] = ascii_100;
+    new485Ladder[SECONDLINE_BASE + 2] = ascii_10;
+    new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
+    new485Ladder[SECONDLINE_BASE + 4] = '/';
+
+    num = iF_correct_V_mV % 10000;
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+	new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 9] = ' ';
+
+}
+
+
+void loadTxLdrBuf_ldrdata_A(void) {
+    uint16_t i;
+    uint16_t num;
+    uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
+
+
+    for (i = 0; i < 16; i++) {
+        new485Ladder[SECONDLINE_BASE + i] = ' ';
+    }
+    new485Ladder[FIRSTLINE_BASE + 0] = 'S';
+    new485Ladder[FIRSTLINE_BASE + 1] = '/';
+    new485Ladder[FIRSTLINE_BASE + 2] = 'A';
+    new485Ladder[FIRSTLINE_BASE + 3] = 'm';
+    new485Ladder[FIRSTLINE_BASE + 4] = 'p';
+    new485Ladder[FIRSTLINE_BASE + 5] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 6] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 7] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 8] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 9] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 10] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 11] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 12] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 13] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 14] = ' ';
+
+    num = getCorrectedNowIn_micomMV(scr.nowAdAmp_micom_mV, iF_correct_A_mV);
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[SECONDLINE_BASE + 0] = ascii_1000;
+    new485Ladder[SECONDLINE_BASE + 1] = ascii_100;
+    new485Ladder[SECONDLINE_BASE + 2] = ascii_10;
+    new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
+    new485Ladder[SECONDLINE_BASE + 4] = '/';
+
+
+    num = iF_correct_A_mV % 10000;
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+	new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 9] = ' ';
+}
+
+
+void loadTxLdrBuf_ldrdata(uint8_t ch) {
+    uint16_t i;
+    uint16_t num;
+    uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
+
+
+    for (i = 0; i < 16; i++) {
+        new485Ladder[SECONDLINE_BASE + i] = ' ';
+    }
+    new485Ladder[FIRSTLINE_BASE + 0] = 'S';
+    new485Ladder[FIRSTLINE_BASE + 1] = '/';
+    new485Ladder[FIRSTLINE_BASE + 2] = 'C';
+    new485Ladder[FIRSTLINE_BASE + 3] = 'H';
+    new485Ladder[FIRSTLINE_BASE + 4] = getAscii(ch);
+    new485Ladder[FIRSTLINE_BASE + 5] = '-';
+    new485Ladder[FIRSTLINE_BASE + 6] = 'D';
+    new485Ladder[FIRSTLINE_BASE + 7] = 'u';
+    new485Ladder[FIRSTLINE_BASE + 8] = 't';
+    new485Ladder[FIRSTLINE_BASE + 9] = 'y';
+    new485Ladder[FIRSTLINE_BASE + 10] = 'c';
+    new485Ladder[FIRSTLINE_BASE + 11] = 'y';
+    new485Ladder[FIRSTLINE_BASE + 12] = 'c';
+    new485Ladder[FIRSTLINE_BASE + 13] = 'l';
+    new485Ladder[FIRSTLINE_BASE + 14] = 'e';
+
+    num = db_corrected_final_sensor_0_8_micomMV[ch];   // <<<---
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[SECONDLINE_BASE + 0] = ascii_1000;
+    new485Ladder[SECONDLINE_BASE + 1] = ascii_100;
+    new485Ladder[SECONDLINE_BASE + 2] = ascii_10;
+    new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
+    new485Ladder[SECONDLINE_BASE + 4] = '/';
+
+    num = getCorrectedLdrSet_ch0_ch8(ch) % 10000;
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+	new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 9] = ' ';
+
+
+}
+
+
 //////////////////////////////////////////
 //////////////////////////////////////////
 uint16_t Default_Cur_State_Display(void) {
@@ -1237,12 +1430,12 @@ uint16_t Nm_Display(void) {
 }
 
 
-uint16_t getShowIndex(void) {
+uint16_t getShowIndex(uint8_t maxmenu) {
 	static uint16_t index;
 
 		switch (LoaderKey) {
 			case	UPKEY:
-				if (index < 4) index++;
+				if (index < maxmenu) index++;
 				break;
 			case	DOWNKEY:
 				if (index != 0) index--;
@@ -1310,55 +1503,48 @@ void loadTxLdrBuf_forDutycycle(uint8_t ch) {
 
 //////////================================
 // ch0 현재 상태 로더에서 보기 위한 함수
-void dsplayManyStateInfo_allCH(void) {
+
+void dsplayInDataState(void) {
 /*
     로더 초기화면에 현재 상태값 보여주기 위한 함수
 */
-	uint16_t showIndex = getShowIndex();
+	uint8_t maxMenuIndex = 10;
+	uint16_t num = getShowIndex(maxMenuIndex);
 
-	switch (showIndex) {
+	switch (num) {
 		case 0:
-            ldr_viewState(0);
+            loadTxLdrBuf_ldrdata(num); // ch0
 			break;
-		case 1:
-            ldr_viewState(1);
-			break;
+        case 1:
+            loadTxLdrBuf_ldrdata(num); // ch1
+            break;
         case 2:
-            ldr_viewState(2);
+            loadTxLdrBuf_ldrdata(num); // ch2
             break;
         case 3:
-            ldr_viewState(3);
-            break;
-        case 4:
-            ldr_viewState(4);
-            break;
-		default:
+            loadTxLdrBuf_ldrdata(num); // ch3
 			break;
-	}
-}
-
-void dsplayManyStateInfo_allCH__copy(void) {
-/*
-    로더 초기화면에 현재 상태값 보여주기 위한 함수
-*/
-	uint16_t showIndex = getShowIndex();
-
-	switch (showIndex) {
-		case 0:
-            ldr_viewState(0);
+		case 4:
+			loadTxLdrBuf_ldrdata(num); // ch4
 			break;
-		case 1:
-            ldr_viewState(1);
+		case 5:
+			loadTxLdrBuf_ldrdata(num); // ch5
 			break;
-        case 2:
-            ldr_viewState(2);
+		case 6:
+			loadTxLdrBuf_ldrdata(num); // ch6
+			break;
+		case 7:
+			loadTxLdrBuf_ldrdata(num); // ch7
             break;
-        case 3:
-            ldr_viewState(3);
+		case 8:
+			loadTxLdrBuf_ldrdata(num); // ch8
             break;
-        case 4:
-            ldr_viewState(4);
-            break;
+		case 9:
+            loadTxLdrBuf_ldrdata_V(); // voltage
+			break;
+		case 10:
+            loadTxLdrBuf_ldrdata_A(); // amp
+			break;
 		default:
 			break;
 	}
@@ -1370,7 +1556,8 @@ void dsplayManyStateInfo_pwm(void) {
 /*
     로더 초기화면에 현재 상태값 보여주기 위한 함수
 */
-	uint16_t showIndex = getShowIndex();
+	uint8_t maxMenuIndex = 4;
+	uint16_t showIndex = getShowIndex(maxMenuIndex);
 
 	switch (showIndex) {
 		case 0:
@@ -1425,10 +1612,10 @@ uint16_t DefaultDisplay(void) {
 
     switch (k) {
         case 0:
-			Default_Cur_State_Display();
+			dsplayInDataState(); // 로더 데이터 표시
             break;
         case 1:
-			dsplayManyStateInfo_allCH__copy();
+			Default_Cur_State_Display(); // 현재 상태 표시
             break;
         default:
 			dsplayManyStateInfo_pwm();
