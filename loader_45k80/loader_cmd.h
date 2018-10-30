@@ -167,6 +167,7 @@ extern Menu_Status CurMenuStatus;
 #define CURRENT_ZERO 100 // +/- 10 => 0~19
 
 extern void getSignNumberByLdrDigit(uint32_t signalNum[], uint32_t digit);
+extern void getSignNumberByNowInSensor(uint32_t dest[], uint32_t src);
 
 #endif
 

@@ -456,6 +456,18 @@ void getSignNumberByLdrDigit(uint32_t dest[], uint32_t src) {
 	}
 }
 
+void getSignNumberByNowInSensor(uint32_t dest[], uint32_t src) {
+	// 로더 변수 값을 가지고 해당 버퍼에 +/- 기호 값을 담아 저장한다.
+	// 예시) src = 9000 이라면, => -1000
+	if (src >= 2500) {
+		dest[0] = SIGN_PLUS;		// +
+		dest[1] = src - 2500; 	// 12500 - 10000 = 2500
+	} else {
+		dest[0] = SIGN_MINUS;
+		dest[1] = 2500 - src; // 10000 - 7500 = 2500
+	}
+}
+
 
 
 void Integer_Digit(void) {

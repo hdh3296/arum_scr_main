@@ -1288,6 +1288,9 @@ void loadTxLdrBuf_ldrdata_V(void) {
 	new485Ladder[SECONDLINE_BASE + 9] = '.';
 	new485Ladder[SECONDLINE_BASE + 10] = ascii_1;
 
+	// 실제 전압 표시하기 (보정된 최종)
+
+
 }
 
 
@@ -1462,7 +1465,6 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
 		sign = '+';
 	} else sign = '-';
 	new485Ladder[SECONDLINE_BASE + 5] = sign;
-
     num = signalNumber[1];
     ascii_1000   = num / 1000;
     num = num % 1000;
@@ -1475,11 +1477,34 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
-
 	new485Ladder[SECONDLINE_BASE + 6] = ascii_1000;
 	new485Ladder[SECONDLINE_BASE + 7] = ascii_100;
 	new485Ladder[SECONDLINE_BASE + 8] = ascii_10;
 	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
+	new485Ladder[SECONDLINE_BASE + 10] = '/';
+
+	// 센서 실제 유저 최종 값 보여주기 #1030
+	getSignNumberByNowInSensor(signalNumber, db_corrected_final_sensor_0_8_micomMV[ch]);
+	if (signalNumber[0] == SIGN_PLUS) {
+		sign = '+';
+	} else sign = '-';
+	new485Ladder[SECONDLINE_BASE + 11] = sign;
+    num = signalNumber[1];
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+	new485Ladder[SECONDLINE_BASE + 12] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 13] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 14] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 15] = ascii_1;
 
 }
 
