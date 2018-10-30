@@ -1474,21 +1474,29 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
     for (i = 0; i < 16; i++) {
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
-    new485Ladder[FIRSTLINE_BASE + 0] = 'S';
+    new485Ladder[FIRSTLINE_BASE + 0] = getAscii(ch);
     new485Ladder[FIRSTLINE_BASE + 1] = '/';
-    new485Ladder[FIRSTLINE_BASE + 2] = 'C';
-    new485Ladder[FIRSTLINE_BASE + 3] = 'H';
-    new485Ladder[FIRSTLINE_BASE + 4] = getAscii(ch);
-    new485Ladder[FIRSTLINE_BASE + 5] = '-';
-    new485Ladder[FIRSTLINE_BASE + 6] = 's';
-    new485Ladder[FIRSTLINE_BASE + 7] = 'e';
-    new485Ladder[FIRSTLINE_BASE + 8] = 'n';
-    new485Ladder[FIRSTLINE_BASE + 9] = 's';
-    new485Ladder[FIRSTLINE_BASE + 10] = 'o';
-    new485Ladder[FIRSTLINE_BASE + 11] = 'r';
-    new485Ladder[FIRSTLINE_BASE + 12] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 13] = ' ';
-    new485Ladder[FIRSTLINE_BASE + 14] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 2] = ' ';
+
+	num = db_sunsu_sensor_0_8_micomMV[ch];
+    ascii_1000   = num / 1000;
+    num = num % 1000;
+    ascii_100   = num / 100;
+    num = num % 100;
+    ascii_10    =   num / 10;
+    num = num % 10;
+    ascii_1     = num;
+	ascii_1000 = getAscii(ascii_1000);
+    ascii_100 = getAscii(ascii_100);
+    ascii_10 = getAscii(ascii_10);
+    ascii_1 = getAscii(ascii_1);
+    new485Ladder[FIRSTLINE_BASE + 3] = ascii_1000;
+    new485Ladder[FIRSTLINE_BASE + 4] = ascii_100;
+    new485Ladder[FIRSTLINE_BASE + 5] = ascii_10;
+    new485Ladder[FIRSTLINE_BASE + 6] = ascii_1;
+
+
+
 	// 센서 마이컴단 표시
     num = db_corrected_final_sensor_0_8_micomMV[ch];   // <<<---
     ascii_1000   = num / 1000;

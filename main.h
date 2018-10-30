@@ -137,6 +137,7 @@ typedef struct {
 extern Heater scr;
 
 extern uint16_t db_corrected_final_sensor_0_8_micomMV[];
+extern uint16_t db_sunsu_sensor_0_8_micomMV[];
 extern Heater heater[];
 
 extern void can_txReady(void);

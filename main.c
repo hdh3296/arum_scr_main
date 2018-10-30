@@ -13,6 +13,8 @@
 #define MIN_GATE_max_voltage	60
 
 uint16_t db_corrected_final_sensor_0_8_micomMV[9];
+uint16_t db_sunsu_sensor_0_8_micomMV[9];
+
 
 extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
 extern void micom_saveTotal9SensorNowIn_mV(void);
@@ -1048,9 +1050,11 @@ void micom_saveTotal9SensorNowIn_mV(void) {
 	for (ch = 0; ch < 8; ch++) {
 		db_corrected_final_sensor_0_8_micomMV[ch] =
 			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch], getCorrectedLdrSet_ch0_ch8(ch));
+		db_sunsu_sensor_0_8_micomMV[ch] = zsu_ch0_ch7_analog[ch];
 	}
 	db_corrected_final_sensor_0_8_micomMV[ch] =
 		getCorrectedNowIn_micomMV(scr.nowMainAdSensor_micom_mV, getCorrectedLdrSet_ch0_ch8(ch));
+	db_sunsu_sensor_0_8_micomMV[ch] = scr.nowMainAdSensor_micom_mV;
 }
 
 
