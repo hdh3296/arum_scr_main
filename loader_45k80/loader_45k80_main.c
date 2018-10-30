@@ -279,37 +279,21 @@ void ldr_chkRxKey(void) {
 }
 
 void procTxComunication(void) {
-    static uint8_t sequence, old_sequence;
+    static uint8_t sequence;
 	serialIdleTimer = 0;
     switch (sequence) {
         case 0:
             trasmitToLoader();
-			if (old_sequence == 1) {
-            	sequence = 2;
-			} else if (old_sequence == 2) {
-				sequence = 1;
-			} else {
-				sequence = 1;
-			}
-
+           	sequence = 1;
             if (bRequestWriteState) {
                 sequence = 0;
                 bRequestWriteState = 0;
             }
             break;
         case 1:
-			// pannel 데이터 요청하기 (tx)
-            trasmitToPannel();
-            sequence = 0;
-			old_sequence = 1;
+			trasmitToTemp();
+			sequence = 0;
             break;
-        case 2:
-            // 온도 데이터 요청하기 (tx)
-            trasmitToTemp();
-            sequence = 0;
-			old_sequence = 2;
-            break;
-
         default:
             sequence = 0;
             break;
