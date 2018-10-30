@@ -65,8 +65,10 @@ bool is_ad_calc_enable() {
     return FALSE;
 }
 
+// #1030 아날로그 AD입력 비정상적인거 필터링 위해서
+uint16_t getFilterlingADIn_mV() {
 
-
+}
 
 bool is_update_AD() {
     unsigned long AdVal;
