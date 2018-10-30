@@ -2054,7 +2054,8 @@ void ldr_maxminValue_correctAmpMenuMaxMin() {
 	min = MenuStatus[mn].M_EditDigitMinValue = getMinByAmpType_correct(cF_amp_type);
 
 	// 자릿수는 max 값만으로도 정해진다.
-    if (max >= 1000) MenuStatus[mn].M_EditShiftCnt = 5;
+	if (max >= 10000) MenuStatus[mn].M_EditShiftCnt = 6;
+    else if (max >= 1000) MenuStatus[mn].M_EditShiftCnt = 5;
     else if (max >= 100) MenuStatus[mn].M_EditShiftCnt = 4;
 	else if (max >= 10) MenuStatus[mn].M_EditShiftCnt = 3;
 	else if (max >= 1) MenuStatus[mn].M_EditShiftCnt = 2;
