@@ -1231,7 +1231,7 @@ uint16_t getCorrectedNowIn_micomMV_voltage(uint16_t nowIn_mV,
 	uint32_t signalNumber[2];
 	uint16_t result, correct_mV;
 	getSignNumberByLdrDigit(signalNumber, correct_user);
-	correct_mV = getVoltage_RealData_FromMicomMV(signalNumber[1]); // 실제 전압, 전류 때문에
+	correct_mV = getVoltage_micomMV_FromUserData(signalNumber[1]); // 실제 전압, 전류 때문에
 
 	switch (signalNumber[0]) {
 		case SIGN_PLUS: // +
@@ -1304,7 +1304,7 @@ uint16_t getCorrectedNowIn_micomMV_Amp(uint16_t nowIn_mV,
 
 
 bool isOverVoltage_micomMV(void) {
-	uint16_t limit = getVoltage_RealData_FromMicomMV(iF_scr_goalVoltage); // micom 목표 전압 100v -> 4000mV
+	uint16_t limit = getVoltage_micomMV_FromUserData(iF_scr_goalVoltage); // micom 목표 전압 100v -> 4000mV
 	uint16_t now = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV,
 													iF_correct_V_user); // AN3, micom 현재 전압
 
@@ -1622,7 +1622,7 @@ uint8_t isAOPError(void) {
 	uint16_t duty = iF_AOP_duty;		// 설정값 메뉴 (전체)
 	uint16_t time = iF_AOP_time; // 설정값 메뉴
 	// 정격 전압의 50%
-	uint16_t rated50_Voltage_mV = (getVoltage_RealData_FromMicomMV(iF_scr_goalVoltage)) / 2; // micom단 mV단으로 변경해야 한다. <<
+	uint16_t rated50_Voltage_mV = (getVoltage_micomMV_FromUserData(iF_scr_goalVoltage)) / 2; // micom단 mV단으로 변경해야 한다. <<
 	// 정격 전류의 10%
 	uint16_t reted10_Amp_mV = (getAmp_micomMV_FromUserData(iF_scr_goalAmp, cF_amp_type) / 10); // micom단 mV단으로 변경해야 한다.
 	// 현재 전압 값
