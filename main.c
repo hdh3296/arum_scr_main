@@ -1190,12 +1190,35 @@ uint16_t getCorrectedNowIn_micomMV_voltage(uint16_t nowIn_mV, uint16_t correct_u
 	uint32_t signalNumber[2];
 	uint16_t result, correct_mV;
 	getSignNumberByLdrDigit(signalNumber, correct_user);
-	correct_mV = getVoltage_micomMV_FromUserData(signalNumber[1]);
+	correct_mV = getVoltage_micomMV_FromUserData(signalNumber[1]); // 실제 전압, 전류 때문에
 
 	switch (signalNumber[0]) {
 		case SIGN_PLUS: // +
 			// 예시) +1 이면,
 			// 		현재 입력 값에다가 + 1를 하면 되지
+			result = nowIn_mV + correct_mV;
+			if (result > 5000) result = 5000;
+			return result;
+		case SIGN_MINUS:
+			if (correct_mV <= nowIn_mV) {
+				result = nowIn_mV - correct_mV;
+			} else {
+				result = 0;
+			}
+			return result;
+	}
+	return 5000;
+}
+uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_user) {
+	uint32_t signalNumber[2];
+	uint16_t result, correct_mV;
+	getSignNumberByLdrDigit(signalNumber, correct_user);
+	correct_mV = signalNumber[1]; // 센서 일때는 이렇게 한다.
+
+	switch (signalNumber[0]) {
+		case SIGN_PLUS: // +
+			// 예시) +1 이면,
+			//		현재 입력 값에다가 + 1를 하면 되지
 			result = nowIn_mV + correct_mV;
 			if (result > 5000) result = 5000;
 			return result;
@@ -1235,29 +1258,6 @@ uint16_t getCorrectedNowIn_micomMV_Amp(uint16_t nowIn_mV, uint16_t correct_user,
 	return 5000;
 }
 
-uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_user) {
-	uint32_t signalNumber[2];
-	uint16_t result, correct_mV;
-	getSignNumberByLdrDigit(signalNumber, correct_user);
-	correct_mV = signalNumber[1];
-
-	switch (signalNumber[0]) {
-		case SIGN_PLUS: // +
-			// 예시) +1 이면,
-			// 		현재 입력 값에다가 + 1를 하면 되지
-			result = nowIn_mV + correct_mV;
-			if (result > 5000) result = 5000;
-			return result;
-		case SIGN_MINUS:
-			if (correct_mV <= nowIn_mV) {
-				result = nowIn_mV - correct_mV;
-			} else {
-				result = 0;
-			}
-			return result;
-	}
-	return 5000;
-}
 
 
 
@@ -1977,7 +1977,7 @@ uint16_t getMinByAmpType_correct(uint8_t type) {
 			return 10000 - (min * 2);
 		case 6:
 			min = 100;
-			return 10000 - (min * 2)
+			return 10000 - (min * 2);
 		case 7:
 			min = 150;
 			return 10000 - (min * 2);

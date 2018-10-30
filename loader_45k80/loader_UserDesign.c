@@ -1220,6 +1220,8 @@ void loadTxLdrBuf_ldrdata_V(void) {
     uint16_t i;
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
+	uint32_t signalNumber[2];
+	uint8_t sign;
 
 
     for (i = 0; i < 16; i++) {
@@ -1240,8 +1242,9 @@ void loadTxLdrBuf_ldrdata_V(void) {
     new485Ladder[FIRSTLINE_BASE + 12] = ' ';
     new485Ladder[FIRSTLINE_BASE + 13] = ' ';
     new485Ladder[FIRSTLINE_BASE + 14] = ' ';
-
+	// 첫번째 데이터 (마이컴단 전압)
     num = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV, iF_correct_V_user);
+
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1259,7 +1262,14 @@ void loadTxLdrBuf_ldrdata_V(void) {
     new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
     new485Ladder[SECONDLINE_BASE + 4] = '/';
 
-    num = iF_correct_V_user % 10000;
+	// 전압에 대한 유저 로더 설정 보정 값 표시 하기
+	getSignNumberByLdrDigit(signalNumber, iF_correct_V_user);
+	if (signalNumber[0] == SIGN_PLUS) {
+		sign = '+';
+	} else sign = '-';
+	new485Ladder[SECONDLINE_BASE + 5] = sign;
+
+    num = signalNumber[1];
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1271,11 +1281,12 @@ void loadTxLdrBuf_ldrdata_V(void) {
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
-	new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
-	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
-	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
-	new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
-	new485Ladder[SECONDLINE_BASE + 9] = ' ';
+
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 8] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 9] = '.';
+	new485Ladder[SECONDLINE_BASE + 10] = ascii_1;
 
 }
 
@@ -1284,6 +1295,8 @@ void loadTxLdrBuf_ldrdata_A(void) {
     uint16_t i;
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
+	uint32_t signalNumber[2];
+	uint8_t sign;
 
 
     for (i = 0; i < 16; i++) {
@@ -1305,6 +1318,7 @@ void loadTxLdrBuf_ldrdata_A(void) {
     new485Ladder[FIRSTLINE_BASE + 13] = ' ';
     new485Ladder[FIRSTLINE_BASE + 14] = ' ';
 
+	// 첫번째 전류 마이컴단 표시
     num = getCorrectedNowIn_micomMV(scr.nowAdAmp_micom_mV, iF_correct_A_user);
     ascii_1000   = num / 1000;
     num = num % 1000;
@@ -1324,7 +1338,14 @@ void loadTxLdrBuf_ldrdata_A(void) {
     new485Ladder[SECONDLINE_BASE + 4] = '/';
 
 
-    num = iF_correct_A_user % 10000;
+	// 전류 유저 보정 로더 설정 값 표시하기
+	getSignNumberByLdrDigit(signalNumber, iF_correct_A_user);
+	if (signalNumber[0] == SIGN_PLUS) {
+		sign = '+';
+	} else sign = '-';
+	new485Ladder[SECONDLINE_BASE + 5] = sign;
+
+    num = signalNumber[1];
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1336,11 +1357,14 @@ void loadTxLdrBuf_ldrdata_A(void) {
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
-	new485Ladder[SECONDLINE_BASE + 5] = ascii_1000;
-	new485Ladder[SECONDLINE_BASE + 6] = ascii_100;
-	new485Ladder[SECONDLINE_BASE + 7] = ascii_10;
-	new485Ladder[SECONDLINE_BASE + 8] = ascii_1;
-	new485Ladder[SECONDLINE_BASE + 9] = ' ';
+	new485Ladder[SECONDLINE_BASE + 6] = ascii_1000;
+	new485Ladder[SECONDLINE_BASE + 7] = ascii_100;
+	new485Ladder[SECONDLINE_BASE + 8] = ascii_10;
+	new485Ladder[SECONDLINE_BASE + 9] = '.';
+	new485Ladder[SECONDLINE_BASE + 10] = ascii_1;
+
+
+
 }
 
 void loadTxLdrBuf_ldrdata_Volume(void) {
