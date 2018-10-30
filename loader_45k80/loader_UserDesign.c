@@ -1411,12 +1411,12 @@ void loadTxLdrBuf_ldrdata_Volume(void) {
     new485Ladder[SECONDLINE_BASE + 4] = ' ';
 }
 
-
-void loadTxLdrBuf_ldrdata(uint8_t ch) {
+void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
     uint16_t i;
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
-	uint8_t bsign;
+	uint32_t signalNumber[2];
+	uint8_t sign;
 
 
     for (i = 0; i < 16; i++) {
@@ -1428,16 +1428,16 @@ void loadTxLdrBuf_ldrdata(uint8_t ch) {
     new485Ladder[FIRSTLINE_BASE + 3] = 'H';
     new485Ladder[FIRSTLINE_BASE + 4] = getAscii(ch);
     new485Ladder[FIRSTLINE_BASE + 5] = '-';
-    new485Ladder[FIRSTLINE_BASE + 6] = 'D';
-    new485Ladder[FIRSTLINE_BASE + 7] = 'u';
-    new485Ladder[FIRSTLINE_BASE + 8] = 't';
-    new485Ladder[FIRSTLINE_BASE + 9] = 'y';
-    new485Ladder[FIRSTLINE_BASE + 10] = 'c';
-    new485Ladder[FIRSTLINE_BASE + 11] = 'y';
-    new485Ladder[FIRSTLINE_BASE + 12] = 'c';
-    new485Ladder[FIRSTLINE_BASE + 13] = 'l';
-    new485Ladder[FIRSTLINE_BASE + 14] = 'e';
-
+    new485Ladder[FIRSTLINE_BASE + 6] = 's';
+    new485Ladder[FIRSTLINE_BASE + 7] = 'e';
+    new485Ladder[FIRSTLINE_BASE + 8] = 'n';
+    new485Ladder[FIRSTLINE_BASE + 9] = 's';
+    new485Ladder[FIRSTLINE_BASE + 10] = 'o';
+    new485Ladder[FIRSTLINE_BASE + 11] = 'r';
+    new485Ladder[FIRSTLINE_BASE + 12] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 13] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 14] = ' ';
+	// 센서 마이컴단 표시
     num = db_corrected_final_sensor_0_8_micomMV[ch];   // <<<---
     ascii_1000   = num / 1000;
     num = num % 1000;
@@ -1456,13 +1456,14 @@ void loadTxLdrBuf_ldrdata(uint8_t ch) {
     new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
     new485Ladder[SECONDLINE_BASE + 4] = '/';
 
-	bsign = getCorrectedLdrSet_ch0_ch8(ch) / 10000;
-	if (bsign) {
-		bsign = '+';
-	} else bsign = '-';
-	new485Ladder[SECONDLINE_BASE + 5] = bsign;
+	// 센서 보정 값 표시
+	getSignNumberByLdrDigit(signalNumber, getCorrectedLdrSet_ch0_ch8(ch));
+	if (signalNumber[0] == SIGN_PLUS) {
+		sign = '+';
+	} else sign = '-';
+	new485Ladder[SECONDLINE_BASE + 5] = sign;
 
-    num = getCorrectedLdrSet_ch0_ch8(ch) % 10000;
+    num = signalNumber[1];
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1475,12 +1476,10 @@ void loadTxLdrBuf_ldrdata(uint8_t ch) {
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
 
-
 	new485Ladder[SECONDLINE_BASE + 6] = ascii_1000;
 	new485Ladder[SECONDLINE_BASE + 7] = ascii_100;
 	new485Ladder[SECONDLINE_BASE + 8] = ascii_10;
 	new485Ladder[SECONDLINE_BASE + 9] = ascii_1;
-
 
 }
 
@@ -1592,31 +1591,31 @@ void dsplayInDataState(void) {
 
 	switch (num) {
 		case 0:
-            loadTxLdrBuf_ldrdata(num); // ch0
+            loadTxLdrBuf_ldrdata_sensor(num); // ch0
 			break;
         case 1:
-            loadTxLdrBuf_ldrdata(num); // ch1
+            loadTxLdrBuf_ldrdata_sensor(num); // ch1
             break;
         case 2:
-            loadTxLdrBuf_ldrdata(num); // ch2
+            loadTxLdrBuf_ldrdata_sensor(num); // ch2
             break;
         case 3:
-            loadTxLdrBuf_ldrdata(num); // ch3
+            loadTxLdrBuf_ldrdata_sensor(num); // ch3
 			break;
 		case 4:
-			loadTxLdrBuf_ldrdata(num); // ch4
+			loadTxLdrBuf_ldrdata_sensor(num); // ch4
 			break;
 		case 5:
-			loadTxLdrBuf_ldrdata(num); // ch5
+			loadTxLdrBuf_ldrdata_sensor(num); // ch5
 			break;
 		case 6:
-			loadTxLdrBuf_ldrdata(num); // ch6
+			loadTxLdrBuf_ldrdata_sensor(num); // ch6
 			break;
 		case 7:
-			loadTxLdrBuf_ldrdata(num); // ch7
+			loadTxLdrBuf_ldrdata_sensor(num); // ch7
             break;
 		case 8:
-			loadTxLdrBuf_ldrdata(num); // ch8
+			loadTxLdrBuf_ldrdata_sensor(num); // ch8
             break;
 		case 9:
             loadTxLdrBuf_ldrdata_V(); // voltage
