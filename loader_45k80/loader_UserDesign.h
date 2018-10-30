@@ -343,7 +343,7 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_OPR_set 					iF_IntData(F_OPR_SET)
 
 // º¸Á¤
-#define iF_correct_V_mV 			iF_IntData(F_SCR_CORRECT_V)
+#define iF_correct_V_100mV_user 			iF_IntData(F_SCR_CORRECT_V)
 #define iF_correct_A_mV 			iF_IntData(F_SCR_CORRECT_A)
 #define iF_correct_ch0_mV 			iF_IntData(F_SCR_CORRECT_ch0)
 #define iF_correct_ch1_mV 			iF_IntData(F_SCR_CORRECT_ch1)

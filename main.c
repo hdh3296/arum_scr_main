@@ -1179,21 +1179,45 @@ void increaseDosu(uint16_t * pGateRSTDoValue) {
 }
 
 
-uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV) {
+uint16_t getCorrectedNowIn_micomMV_voltage(uint16_t nowIn_mV, uint16_t correct_user) {
 	uint32_t signalNumber[2];
-	uint16_t result;
-	getSignNumberByLdrDigit(signalNumber, correct_mV);
+	uint16_t result, correct_mV;
+	getSignNumberByLdrDigit(signalNumber, correct_user);
+	correct_mV = signalNumber[1] * 4;
 
 	switch (signalNumber[0]) {
 		case SIGN_PLUS: // +
 			// 예시) +1 이면,
 			// 		현재 입력 값에다가 + 1를 하면 되지
-			result = nowIn_mV + signalNumber[1];
+			result = nowIn_mV + correct_mV;
 			if (result > 5000) result = 5000;
 			return result;
 		case SIGN_MINUS:
-			if (signalNumber[1] <= nowIn_mV) {
-				result = nowIn_mV - signalNumber[1];
+			if (correct_mV <= nowIn_mV) {
+				result = nowIn_mV - correct_mV;
+			} else {
+				result = 0;
+			}
+			return result;
+	}
+	return 5000;
+}
+uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_user) {
+	uint32_t signalNumber[2];
+	uint16_t result, correct_mV;
+	getSignNumberByLdrDigit(signalNumber, correct_user);
+	correct_mV = signalNumber[1];
+
+	switch (signalNumber[0]) {
+		case SIGN_PLUS: // +
+			// 예시) +1 이면,
+			// 		현재 입력 값에다가 + 1를 하면 되지
+			result = nowIn_mV + correct_mV;
+			if (result > 5000) result = 5000;
+			return result;
+		case SIGN_MINUS:
+			if (correct_mV <= nowIn_mV) {
+				result = nowIn_mV - correct_mV;
 			} else {
 				result = 0;
 			}
@@ -1202,9 +1226,11 @@ uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV) {
 	return 5000;
 }
 
+
+
 bool isOverVoltage_micomMV(void) {
 	uint16_t limit = getLimitVoltage_micomMV(); // micom 목표 전압 100v -> 4000mV
-	uint16_t now = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV, iF_correct_V_mV); // AN3, micom 현재 전압
+	uint16_t now = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV, iF_correct_V_100mV_user); // AN3, micom 현재 전압
 
     if (now > limit) {
         return 1;

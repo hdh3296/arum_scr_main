@@ -257,8 +257,8 @@ uint16_t G3_Menu_Status_Set(void) {
     //scr : 전압  보정
     /////////////////////////////////////////////////////////////////////
     bThisMenuSaver[UserMenuSerialNm] = 1;
-    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_10);
+    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 6;
     MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 10100; // +100
 	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  9900; // -100
     MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_V;
@@ -1238,7 +1238,7 @@ void loadTxLdrBuf_ldrdata_V(void) {
     new485Ladder[FIRSTLINE_BASE + 13] = ' ';
     new485Ladder[FIRSTLINE_BASE + 14] = ' ';
 
-    num = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV, iF_correct_V_mV);
+    num = getCorrectedNowIn_micomMV(scr.nowVoltage_micom_mV, iF_correct_V_100mV_user);
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1256,7 +1256,7 @@ void loadTxLdrBuf_ldrdata_V(void) {
     new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
     new485Ladder[SECONDLINE_BASE + 4] = '/';
 
-    num = iF_correct_V_mV % 10000;
+    num = iF_correct_V_100mV_user % 10000;
     ascii_1000   = num / 1000;
     num = num % 1000;
     ascii_100   = num / 100;
@@ -1382,9 +1382,6 @@ void loadTxLdrBuf_ldrdata_Volume(void) {
     new485Ladder[SECONDLINE_BASE + 2] = ascii_10;
     new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
     new485Ladder[SECONDLINE_BASE + 4] = ' ';
-
-
-
 }
 
 
