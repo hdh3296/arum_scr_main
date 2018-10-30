@@ -56,8 +56,8 @@ const uint8_t GroupLineMessage[][17] = {
     "USER:Display Sel", //1
     "USER:Version    ", //0  // group0
     // 그룹 : 목표치 설정
-    "goal:Set Volt(V)", //14
-    "goal:Set Amp(A) ", //15
+    "limit: Volt(V)  ", //14
+    "limit: Amp(A)   ", //15
     "goal:Set Sensor ", //16
     "correct: Voltage", //16
     "correct: Amp    ", //16
@@ -343,8 +343,8 @@ const uint8_t FlashMsgSel[][17] = {
 #define iF_OPR_set 					iF_IntData(F_OPR_SET)
 
 // 보정
-#define iF_correct_V_100mV_user 			iF_IntData(F_SCR_CORRECT_V)
-#define iF_correct_A_mV 			iF_IntData(F_SCR_CORRECT_A)
+#define iF_correct_V_user 			iF_IntData(F_SCR_CORRECT_V)
+#define iF_correct_A_user 			iF_IntData(F_SCR_CORRECT_A)
 #define iF_correct_ch0_mV 			iF_IntData(F_SCR_CORRECT_ch0)
 #define iF_correct_ch1_mV 			iF_IntData(F_SCR_CORRECT_ch1)
 #define iF_correct_ch2_mV 			iF_IntData(F_SCR_CORRECT_ch2)
