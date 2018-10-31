@@ -1663,6 +1663,13 @@ uint8_t isAOPError(void) {
 	return STEP_CHKING;
 }
 
+void getUpdatedMin_mV(uint8_t ch, uint16_t min[], uint16_t now[]) {
+	if (now[ch] < min[ch]) {
+		min[ch] = now[ch];
+	}
+}
+
+
 uint8_t isARPError(void) {
 /* 4단계 ARP
 	* AOP Duty
@@ -1673,12 +1680,14 @@ uint8_t isARPError(void) {
 	* 그렇지 않고 센서 전위가 올라가면 에러 !
 	* 처음 시작 지점의 센서 전위 값 대비 + (위로) 150mV 올라간 지점이 하나라도 발견되면 에러 !
 */
-	uint16_t ch; // #1020
-	uint16_t now_mV[9];
+	uint8_t ch; // #1020
+
 	uint16_t duty = iF_ARP_duty;		// 설정값 메뉴 (전체)
 	uint16_t time = iF_ARP_time; // 설정값 메뉴
+	uint16_t bug_now_mV[9];
+	static uint16_t bug_min_mV[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
 
-	static uint16_t start_mV[9]; // 지역변수라서 저장 안되지 ㅋㅋㅋ static
+
 	// 현재 전위 마이컴단 mV 값
 	if (cF_4ARP_en == ET_DISABLE) return STEP_DONE;
 	// -------------------------------------------------------------------
@@ -1691,15 +1700,20 @@ uint8_t isARPError(void) {
 
 	for (ch = 0; ch < 9; ch++) {
 		if (!isSensorUseNo(ch)) continue;
-		now_mV[ch] = db_corrected_final_sensor_0_8_micomMV[ch]; // 현재 수위 상태 마이컴단
+		bug_now_mV[ch] = db_corrected_final_sensor_0_8_micomMV[ch]; // 현재 수위 상태 마이컴단
 		// scr 출력 !
 		gateRSTDo_time = getGateRstDoTimeByDuty(duty);
 
+		// 무조건 이전 값을 가지고 있다가
+		// 바로 직전값과 현재 값 비교 해서 하자
 		if (chkTimer_commomError_msec <= 2) {
-			start_mV[ch] = now_mV[ch];
+			bug_min_mV[ch] = bug_now_mV[ch];
 		} else {
+			// 최하 값을 저장하여야 한다.
+			// 최하 값은 계속 업데이트 해야 한다.
+			getUpdatedMin_mV(ch, bug_min_mV, bug_now_mV);
 			// 센서 + 150mV 쪽으로 올라갔는지 여부 체크
-			if (now_mV[ch] > (start_mV[ch] + 150)) {
+			if (bug_now_mV[ch] > (bug_min_mV[ch] + 10)) {
 				return STEP_ERROR;
 			}
 		}
@@ -1817,10 +1831,10 @@ uint8_t allStepRun_5step() {
 			}
 			break;
 
-		case 3:
-			bState = isAOPError();
+		case 3: // ARP
+			bState = isARPError();
 			if (bState == STEP_ERROR) {
-				return ERR_AOP; // 즉시, 반환
+				return ERR_ARP; // 즉시, 반환
 			} else if (bState == STEP_CHKING) {
 				return ERR_NONE;
 			} else if (bState == STEP_DONE) {
@@ -1831,9 +1845,9 @@ uint8_t allStepRun_5step() {
 			break;
 
 		case 4:
-			bState = isARPError();
+			bState = isAOPError();
 			if (bState == STEP_ERROR) {
-				return ERR_ARP; // 즉시, 반환
+				return ERR_AOP; // 즉시, 반환
 			} else if (bState == STEP_CHKING) {
 				return ERR_NONE;
 			} else if (bState == STEP_DONE) {
@@ -1841,6 +1855,7 @@ uint8_t allStepRun_5step() {
 				chkTimer_commomError_msec = 0;
 				return ERR_NONE;
 			}
+
 			break;
 
 		case 5:
