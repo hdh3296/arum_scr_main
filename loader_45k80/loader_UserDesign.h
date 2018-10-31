@@ -46,10 +46,10 @@ const uint8_t StatusMessage[][17] = {
     "(09)            ", // 9
     "Power Off       ", // 10
     "Auto Running    ", // 11
-    "SRP Checking~   ", // 1st
-    "SOP Checking~   ", // 2st
-    "AOP Checking~   ", // 3st
-    "ARP Checking~   ", // 4st
+    "SRP Checking    ", // 1st
+    "SOP Checking    ", // 2st
+    "AOP Checking    ", // 3st
+    "ARP Checking    ", // 4st
     "Manual Running  ",
 };
 // home, ready, system running
@@ -131,8 +131,8 @@ const uint8_t ch_enable_sel_list[][17] = {
 };
 
 const uint8_t ch_use_sel_list[][17] = {
-    "Nouse           ", //0
-    "Use             ", //1
+    "OFF             ", //0
+    "ON              ", //1
 };
 
 const uint8_t ch_reverse_sel_list[][17] = {
@@ -281,7 +281,7 @@ const uint8_t FlashMsgSel[][17] = {
 #define cF_DEFAULT_DSP 			cF_ByteData(F_DEFAULT_DSP)
 #define cF_FLASH_COPY 			cF_ByteData(F_FLASH_COPY)
 #define cF_INITIAL 				cF_ByteData(F_INITIAL)
-
+// 센서 채널별 use/nouse 설정 저장 변수
 #define cF_ch0_use 			cF_ByteData(F_CH0_USE)
 #define cF_ch1_use 			cF_ByteData(F_CH1_USE)
 #define cF_ch2_use 			cF_ByteData(F_CH2_USE)

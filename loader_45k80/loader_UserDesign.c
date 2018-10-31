@@ -14,13 +14,13 @@ uint16_t maxCorrectAmpMenuNum;
 
 
 /////////////////////////////////////////////////////
-// 로더 설정 디포트 초기 값
+// 로더 설정 디폴트 초기화 값 저장
 #define DFL_SETUP 0x55						//default val
 #define DFL_VERSION 0						//version
 #define DFL_SCR_GOAL_VOLTAGE 500 // 50.0V
 #define DFL_SCR_GOAL_CURRENT 50 // 10.0A
 #define DFL_SCR_GOAL_SENSOR  10250 // 1000mV 전위
-// 센서 정/역 디폴트
+// sensor type
 #define DFL_REVERSE_0 0 // 0 : zinc
 #define DFL_REVERSE_1 0
 #define DFL_REVERSE_2 0
@@ -30,6 +30,16 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_REVERSE_6 0
 #define DFL_REVERSE_7 0
 #define DFL_REVERSE_8 0
+// sensor use/nouse
+#define DEF_CH0_USE 1
+#define DEF_CH1_USE 0
+#define DEF_CH2_USE 0
+#define DEF_CH3_USE 0
+#define DEF_CH4_USE 0
+#define DEF_CH5_USE 0
+#define DEF_CH6_USE 0
+#define DEF_CH7_USE 0
+#define DEF_CH8_USE 0
 
 #define DFL_FOP_EN	1
 #define DFL_1SRP_EN 1
@@ -58,9 +68,6 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_UPR_SET 10350 // V under protection : +350
 #define DFL_OPR_SET 8600 // 7A over protectio : -1400
 
-
-
-
 // 보정
 #define DFL_SCR_CORRECT_V	10000
 #define DFL_SCR_CORRECT_A	10000
@@ -73,6 +80,7 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_SCR_CORRECT_ch6	10000
 #define DFL_SCR_CORRECT_ch7	10000
 #define DFL_SCR_CORRECT_ch8	10000
+
 
 
 #define DFL_CH3_CORRENT_A	200
@@ -919,7 +927,7 @@ uint16_t DefaultValueSet(void) {
     } else {
         cSR_ByteData(F_VERSION) = DFL_VERSION;
         cSR_ByteData(F_INITIAL) = DFL_SETUP;
-		// 센서 정/역 디폴트
+
         cSR_ByteData(F_REVERSE_0) = DFL_REVERSE_0;
         cSR_ByteData(F_REVERSE_1) = DFL_REVERSE_1;
         cSR_ByteData(F_REVERSE_2) = DFL_REVERSE_2;
@@ -940,15 +948,15 @@ uint16_t DefaultValueSet(void) {
 
         cSR_ByteData(F_AMP_TYPE) = DFL_AMP_TYPE;
 
-        cSR_ByteData(F_CH0_USE) = 1;
-        cSR_ByteData(F_CH1_USE) = 1;
-        cSR_ByteData(F_CH2_USE) = 1;
-        cSR_ByteData(F_CH3_USE) = 1;
-        cSR_ByteData(F_CH4_USE) = 1;
-        cSR_ByteData(F_CH5_USE) = 1;
-        cSR_ByteData(F_CH6_USE) = 1;
-		cSR_ByteData(F_CH7_USE) = 1;
-		cSR_ByteData(F_CH8_USE) = 1;
+        cSR_ByteData(F_CH0_USE) = DEF_CH0_USE;
+        cSR_ByteData(F_CH1_USE) = DEF_CH1_USE;
+        cSR_ByteData(F_CH2_USE) = DEF_CH2_USE;
+        cSR_ByteData(F_CH3_USE) = DEF_CH3_USE;
+        cSR_ByteData(F_CH4_USE) = DEF_CH4_USE;
+        cSR_ByteData(F_CH5_USE) = DEF_CH5_USE;
+        cSR_ByteData(F_CH6_USE) = DEF_CH6_USE;
+		cSR_ByteData(F_CH7_USE) = DEF_CH7_USE;
+		cSR_ByteData(F_CH8_USE) = DEF_CH8_USE;
 
 		cSR_ByteData(F_CH4_ENABLE) = 1;
         cSR_ByteData(F_CH3_CORRECT_A) = DFL_CH3_CORRENT_A;
@@ -1147,7 +1155,6 @@ void ldr_setFirstLine(uint8_t ch) {
 	new485Ladder[FIRSTLINE_BASE + 15] = ' ';
 }
 
-// 현재 상태 센서 값 표시
 void ldr_setSecondLine(uint8_t ch) {
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
@@ -1426,7 +1433,7 @@ void loadTxLdrBuf_ldrdata_Volume(void) {
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
     new485Ladder[FIRSTLINE_BASE + 0] = 'V';
-    new485Ladder[FIRSTLINE_BASE + 1] = 'O';
+    new485Ladder[FIRSTLINE_BASE + 1] = 'o';
     new485Ladder[FIRSTLINE_BASE + 2] = 'l';
     new485Ladder[FIRSTLINE_BASE + 3] = 'u';
     new485Ladder[FIRSTLINE_BASE + 4] = 'm';
@@ -1461,6 +1468,7 @@ void loadTxLdrBuf_ldrdata_Volume(void) {
 }
 
 void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
+	uint8_t c;
     uint16_t i;
     uint16_t num;
     uint8_t  ascii_1000, ascii_100, ascii_10, ascii_1;
@@ -1477,6 +1485,13 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
     new485Ladder[FIRSTLINE_BASE + 2] = getAscii(ch);
 	new485Ladder[FIRSTLINE_BASE + 3] = ':';
 
+	// use/nouse 표시 하기
+	if (isSensorUseNo(ch)) {
+		c = 'Y';
+	} else c = 'N';
+	new485Ladder[FIRSTLINE_BASE + 4] = c;
+	new485Ladder[FIRSTLINE_BASE + 5] = '/';
+
 	num = db_sunsu_sensor_0_8_micomMV[ch];
     ascii_1000   = num / 1000;
     num = num % 1000;
@@ -1489,10 +1504,10 @@ void loadTxLdrBuf_ldrdata_sensor(uint8_t ch) {
     ascii_100 = getAscii(ascii_100);
     ascii_10 = getAscii(ascii_10);
     ascii_1 = getAscii(ascii_1);
-    new485Ladder[FIRSTLINE_BASE + 4] = ascii_1000;
-    new485Ladder[FIRSTLINE_BASE + 5] = ascii_100;
-    new485Ladder[FIRSTLINE_BASE + 6] = ascii_10;
-    new485Ladder[FIRSTLINE_BASE + 7] = ascii_1;
+    new485Ladder[FIRSTLINE_BASE + 6] = ascii_1000;
+    new485Ladder[FIRSTLINE_BASE + 7] = ascii_100;
+    new485Ladder[FIRSTLINE_BASE + 8] = ascii_10;
+    new485Ladder[FIRSTLINE_BASE + 9] = ascii_1;
 
 
 
@@ -1580,8 +1595,12 @@ void loadTxLdrBuf_ldrdata_sensor_TopLow(void) {
         new485Ladder[SECONDLINE_BASE + i] = ' ';
     }
     new485Ladder[FIRSTLINE_BASE + 0] = 'M';
-    new485Ladder[FIRSTLINE_BASE + 1] = '/';
-    new485Ladder[FIRSTLINE_BASE + 2] = ' ';
+    new485Ladder[FIRSTLINE_BASE + 1] = 'A';
+    new485Ladder[FIRSTLINE_BASE + 2] = 'X';
+	new485Ladder[FIRSTLINE_BASE + 3] = '/';
+	new485Ladder[FIRSTLINE_BASE + 4] = 'M';
+	new485Ladder[FIRSTLINE_BASE + 5] = 'I';
+	new485Ladder[FIRSTLINE_BASE + 6] = 'N';
 
 	// 보정된 값 두번째 줄에 표시
 	num = getFinalOneTopMaxSensor_micom_mV();
@@ -1600,7 +1619,7 @@ void loadTxLdrBuf_ldrdata_sensor_TopLow(void) {
     new485Ladder[SECONDLINE_BASE + 1] = ascii_100;
     new485Ladder[SECONDLINE_BASE + 2] = ascii_10;
     new485Ladder[SECONDLINE_BASE + 3] = ascii_1;
-	new485Ladder[SECONDLINE_BASE + 4] = ' ';
+	new485Ladder[SECONDLINE_BASE + 4] = '/';
 
 	num = getFinalOneLowMinSensor_micom_mV();
     ascii_1000   = num / 1000;
@@ -1721,10 +1740,10 @@ void loadTxLdrBuf_forDutycycle(uint8_t ch) {
 
 
 //////////================================
-// ch0 현재 상태 로더에서 보기 위한 함수
 
 void dsplayInDataState(void) {
 /*
+	== 현재 상태 데이터 보기 함수 ==
     로더 초기화면에 현재 상태값 보여주기 위한 함수
 */
 	uint8_t maxMenuIndex = 12;
@@ -1732,10 +1751,10 @@ void dsplayInDataState(void) {
 
 	switch (num) {
 		case 0:
-            loadTxLdrBuf_ldrdata_sensor(num); // ch0
+            loadTxLdrBuf_ldrdata_sensor(num); // ch0 : 메인
 			break;
         case 1:
-            loadTxLdrBuf_ldrdata_sensor(num); // ch1
+            loadTxLdrBuf_ldrdata_sensor(num); // ch1 : ZSU
             break;
         case 2:
             loadTxLdrBuf_ldrdata_sensor(num); // ch2

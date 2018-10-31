@@ -15,7 +15,6 @@
 uint16_t db_corrected_final_sensor_0_8_micomMV[9]; // 보정된 최종
 uint16_t db_sunsu_sensor_0_8_micomMV[9]; // 단순히 테스트 용으로 현재 상태 값 보여주기 위한 목적
 
-
 extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
 extern void micom_saveTotal9SensorNowIn_mV(void);
 
