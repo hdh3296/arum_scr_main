@@ -12,8 +12,8 @@
 #define MAX_GATE_zero_voltage	240 // 토크 0 따라서, 전압 0
 #define MIN_GATE_max_voltage	60
 
-uint16_t db_corrected_final_sensor_0_8_micomMV[9];
-uint16_t db_sunsu_sensor_0_8_micomMV[9];
+uint16_t db_corrected_final_sensor_0_8_micomMV[9]; // 보정된 최종
+uint16_t db_sunsu_sensor_0_8_micomMV[9]; // 단순히 테스트 용으로 현재 상태 값 보여주기 위한 목적
 
 
 extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
@@ -1040,17 +1040,22 @@ uint16_t getCorrectedLdrSet_ch0_ch8(uint8_t ch) {
 	return 0;
 }
 
-
+// #1031
 void micom_saveTotal9SensorNowIn_mV(void) {
 	uint8_t ch;
-	for (ch = 0; ch < 8; ch++) {
+	// 마이컴 센서 : CH0에 저장해야 한다.
+	ch = 0;
+	db_corrected_final_sensor_0_8_micomMV[ch] =
+		getCorrectedNowIn_micomMV(scr.nowMainAdSensor_micom_mV,
+									getCorrectedLdrSet_ch0_ch8(ch));
+	db_sunsu_sensor_0_8_micomMV[ch] = scr.nowMainAdSensor_micom_mV;
+	// ZSU 센서 : CH1~8로 저장해야 한다.
+	for (ch = 1; ch < 9; ch++) {
 		db_corrected_final_sensor_0_8_micomMV[ch] =
-			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch], getCorrectedLdrSet_ch0_ch8(ch));
+			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch],
+										getCorrectedLdrSet_ch0_ch8(ch));
 		db_sunsu_sensor_0_8_micomMV[ch] = zsu_ch0_ch7_analog[ch];
 	}
-	db_corrected_final_sensor_0_8_micomMV[ch] =
-		getCorrectedNowIn_micomMV(scr.nowMainAdSensor_micom_mV, getCorrectedLdrSet_ch0_ch8(ch));
-	db_sunsu_sensor_0_8_micomMV[ch] = scr.nowMainAdSensor_micom_mV;
 }
 
 
@@ -2119,14 +2124,14 @@ void outputAlarmRyOnOff() {
 }
 
 void loadSensorUseNouseTo(uint8_t buf[]) {
-	buf[0] = cF_ch0_use;
-	buf[1] = cF_ch1_use;
-	buf[2] = cF_ch2_use;
-	buf[3] = cF_ch3_use;
-	buf[4] = cF_ch4_use;
-	buf[5] = cF_ch5_use;
-	buf[6] = cF_ch6_use;
-	buf[7] = cF_ch7_use;
+	buf[0] = cF_ch1_use;
+	buf[1] = cF_ch2_use;
+	buf[2] = cF_ch3_use;
+	buf[3] = cF_ch4_use;
+	buf[4] = cF_ch5_use;
+	buf[5] = cF_ch6_use;
+	buf[6] = cF_ch7_use;
+	buf[7] = cF_ch8_use;
 }
 
 
