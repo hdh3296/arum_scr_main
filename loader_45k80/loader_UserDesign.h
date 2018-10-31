@@ -25,11 +25,12 @@ enum {
 	M_08,
 	M_09,
 	M_POWER_OFF,
-	M_RUNNING,
+	M_RUNNING_AUTO,
 	M_1ST_SRP_CHK,
 	M_2ST_SOP_CHK,
 	M_3ST_AOP_CHK,
 	M_4ST_ARP_CHK,
+	M_RUNNING_MANUAL,
 };
 
 const uint8_t StatusMessage[][17] = {
@@ -44,11 +45,12 @@ const uint8_t StatusMessage[][17] = {
     "(08)            ", // 8
     "(09)            ", // 9
     "Power Off       ", // 10
-    "Running         ", // 11
+    "Auto Running    ", // 11
     "SRP Checking    ", // 1st
     "SOP Checking    ", // 2st
     "AOP Checking    ", // 3st
     "ARP Checking    ", // 4st
+    "Manual Running  ",
 };
 // home, ready, system running
 

@@ -44,9 +44,9 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_SRP_MAX 10200 // 7A
 #define DFL_SRP_MIN 9800 // V
 #define DFL_SRP_TIME 2000 // time
-// 2st
-#define DFL_SOP_MAX 10200 // V
-#define DFL_SOP_MIN 9800 // 7A
+// 2st sop (센서 단선)
+#define DFL_SOP_MAX 10100 // V
+#define DFL_SOP_MIN 9900 // 7A
 #define DFL_SOP_TIME 2000 // V
 // 3st
 #define DFL_AOP_DUTY 20 // 7A
