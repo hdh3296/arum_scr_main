@@ -46,10 +46,10 @@ const uint8_t StatusMessage[][17] = {
     "(09)            ", // 9
     "Power Off       ", // 10
     "Auto Running    ", // 11
-    "SRP Checking    ", // 1st
-    "SOP Checking    ", // 2st
-    "AOP Checking    ", // 3st
-    "ARP Checking    ", // 4st
+    "SRP Checking~   ", // 1st
+    "SOP Checking~   ", // 2st
+    "AOP Checking~   ", // 3st
+    "ARP Checking~   ", // 4st
     "Manual Running  ",
 };
 // home, ready, system running

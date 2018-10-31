@@ -1052,9 +1052,9 @@ void micom_saveTotal9SensorNowIn_mV(void) {
 	// ZSU 센서 : CH1~8로 저장해야 한다.
 	for (ch = 1; ch < 9; ch++) {
 		db_corrected_final_sensor_0_8_micomMV[ch] =
-			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch],
+			getCorrectedNowIn_micomMV(zsu_ch0_ch7_analog[ch-1],
 										getCorrectedLdrSet_ch0_ch8(ch));
-		db_sunsu_sensor_0_8_micomMV[ch] = zsu_ch0_ch7_analog[ch];
+		db_sunsu_sensor_0_8_micomMV[ch] = zsu_ch0_ch7_analog[ch-1];
 	}
 }
 
