@@ -574,9 +574,7 @@ void loop_tx_proc(void) {
     }
 }
 void rxtx_loop(void) {
-
     loop_rx_proc();
-
     loop_tx_proc();
 }
 

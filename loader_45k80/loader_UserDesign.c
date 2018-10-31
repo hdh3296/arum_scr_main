@@ -55,8 +55,8 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_ARP_DUTY 30 // 7A
 #define DFL_ARP_TIME 5000 // 7A
 
-#define DFL_UPR_SET 11000 // V
-#define DFL_OPR_SET 9000 // 7A
+#define DFL_UPR_SET 10350 // V under protection : +350
+#define DFL_OPR_SET 8600 // 7A over protectio : -1400
 
 
 

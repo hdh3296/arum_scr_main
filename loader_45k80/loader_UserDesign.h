@@ -59,6 +59,7 @@ const uint8_t GroupLineMessage[][17] = {
     "limit: Volt(V)  ", //14
     "limit: Amp(A)   ", //15
     "goal:Set Sensor ", //16
+
     "correct: Voltage", //16
     "correct: Amp    ", //16
     "correct: CH0    ", //16

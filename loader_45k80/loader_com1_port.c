@@ -88,6 +88,7 @@ uint8_t checkSum(void) {
 void uart2_txReadyGo(void) {
     uart_status = TX_SET;
     TXREG2 = uartTxBuffer[0];
+
 	txBuffer_pt = 1;
     TX2_IE = 1;
 //    tx485_enPin = EN_485;

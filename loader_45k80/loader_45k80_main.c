@@ -36,9 +36,11 @@ uint16_t getTxTotalCnt(void) {
 
 void txReadyAndStartForLoader(uint8_t txbuf[]) {
 /*
-	로더에 display 할 아스키 값 tx
+	로더에 표시할 아스키 값을 보낸다.
+	로더에서는 이 값을 받으면 자신의 저장된 키 값을 메인으로 보내온다.
 
-	* 로더에서는 이 값을 그대로 display 한다.
+	로더에 display 할 아스키 값 tx
+	로더에서는 이 값을 그대로 display 한다.
 */
     uint16_t i;
 
@@ -251,17 +253,12 @@ bool uart_isIdelState(void) {
 
 
 void trasmitToLoader(void) {
-/*
-	로더에 표시할 아스키 값을 보낸다.
 
-	로더에서는 이 값을 받으면 자신의 저장된 키 값을 메인으로 보내온다.
-*/
-    txReadyAndStartForLoader(uartTxBuffer);
+
 }
 
 void trasmitToTemp(void) {
     txReadyAndStartForTemp(uartTxBuffer);
-
 }
 
 
@@ -283,7 +280,7 @@ void procTxComunication(void) {
 	serialIdleTimer = 0;
     switch (sequence) {
         case 0:
-            trasmitToLoader();
+			txReadyAndStartForLoader(uartTxBuffer);
            	sequence = 1;
             if (bRequestWriteState) {
                 sequence = 0;
@@ -291,7 +288,7 @@ void procTxComunication(void) {
             }
             break;
         case 1:
-			trasmitToTemp();
+			txReadyAndStartForTemp(uartTxBuffer);
 			sequence = 0;
             break;
         default:
