@@ -39,10 +39,10 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_UPR_EN  1
 #define DFL_OPR_EN  0
 
-// 1st
+// 1st SRP
 #define DFL_AMP_TYPE 0	 // 0 = 5A (테스트 용)
-#define DFL_SRP_MAX 10100 // 7A
-#define DFL_SRP_MIN 10101 // V
+#define DFL_SRP_MAX 10200 // 7A
+#define DFL_SRP_MIN 9800 // V
 #define DFL_SRP_TIME 2000 // time
 // 2st
 #define DFL_SOP_MAX 10200 // V
