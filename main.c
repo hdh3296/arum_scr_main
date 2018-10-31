@@ -1491,14 +1491,16 @@ bool isJustNowPowerOn(void) {
 void controlSensorJuWi(void) {
 	// 46us = 1도
 	if (!pin_AUTO) {
-		UserSystemStatus = M_RUNNING_MANUAL;
+		if (!db_finalErrorCode)
+			UserSystemStatus = M_RUNNING_MANUAL;
 		// 수동 볼륨에 의해서 gateRSTDo_time 값을 획득한다.
 		if (scr.bNowAdVolume_micom_updted) {
 			scr.bNowAdVolume_micom_updted = FALSE;
 			gateRSTDo_time = test_manualVol();
 		}
 	} else {
-		UserSystemStatus = M_RUNNING_AUTO;
+		if (!db_finalErrorCode)
+			UserSystemStatus = M_RUNNING_AUTO;
 		// PWM 처럼 게이트 제어하는 함수이다.
 		controlGateTotal();
 	}
