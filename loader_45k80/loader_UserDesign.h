@@ -33,90 +33,86 @@ enum {
 };
 
 const uint8_t StatusMessage[][17] = {
-	"00.---------    ", // 0
-    "01.ERR_FOP !    ", // 1
-    "02.1st.ERR_SRP !", // 2
-    "03.2st.ERR_SOP !", // 3
-    "04.3st.ERR_AOP !", // 4
-    "05.4st.ERR_ARP !", // 5
-    "06.ERR_UPR !    ", // 6
-    "07.ERR_OPR !    ", // 7
-    "08.             ", // 8
-    "09.             ", // 9
-    "10.Power Off    ", // 10
-    "11.running      ", // 11
-    "1st.SRP Chking  ", // 12
-    "2st.SOP Chking  ", // 13
-    "3st.AOP Chking  ", // 14
-    "4st.ARP Chking  ", // 15
+	"(00)            ", // 0
+    "ERR FOP ! (01)  ", // 1
+    "ERR SRP ! (02)  ", // 2
+    "ERR SOP ! (03)  ", // 3
+    "ERR AOP ! (04)  ", // 4
+    "ERR ARP ! (05)  ", // 5
+    "ERR UPR ! (06)  ", // 6
+    "ERR OPR ! (07)  ", // 7
+    "(08)            ", // 8
+    "(09)            ", // 9
+    "Power Off       ", // 10
+    "Running         ", // 11
+    "SRP Checking    ", // 1st
+    "SOP Checking    ", // 2st
+    "AOP Checking    ", // 3st
+    "ARP Checking    ", // 4st
 };
 // home, ready, system running
 
 const uint8_t GroupLineMessage[][17] = {
-    "USER:Display Sel", //1
-    "USER:Version    ", //0  // group0
+    "USER:Display Sel",
+    "USER:Version    ",
     // 그룹 : 목표치 설정
-    "limit: Volt(V)  ", //14
-    "limit: Amp(A)   ", //15
-    "goal:Set Sensor ", //16
+    "LIMIT: Volt(V)  ",
+    "LIMIT: Amp(A)   ",
+    "GOAL : Sensor   ",
+	// 보정
+    "CORRECTION: Volt",
+    "CORRECTION: Amp ",
+    "CORRECTION: CH0 ", // main (일단 보여주는 것만)
+    "CORRECTION: CH1 ",
+    "CORRECTION: CH2 ",
+    "CORRECTION: CH3 ",
+    "CORRECTION: CH4 ",
+    "CORRECTION: CH5 ",
+    "CORRECTION: CH6 ",
+    "CORRECTION: CH7 ",
+    "CORRECTION: CH8 ",
+	// 센서 use/nouse
+    "SENSOR ONOFF:CH0",
+    "SENSOR ONOFF:CH1",
+    "SENSOR ONOFF:CH2",
+    "SENSOR ONOFF:CH3",
+    "SENSOR ONOFF:CH4",
+    "SENSOR ONOFF:CH5",
+    "SENSOR ONOFF:CH6",
+    "SENSOR ONOFF:CH7",
+    "SENSOR ONOFF:CH8",
+	// 센서 타입 선택 : Zinc, CUCU/SO4
+	"TYPE: SENSOR CH0",
+	"TYPE: SENSOR CH1",
+	"TYPE: SENSOR CH2",
+	"TYPE: SENSOR CH3",
+	"TYPE: SENSOR CH4",
+	"TYPE: SENSOR CH5",
+	"TYPE: SENSOR CH6",
+	"TYPE: SENSOR CH7",
+	"TYPE: SENSOR CH8",
+    "TYPE: Amp       ",
 
-    "correct: Voltage", //16
-    "correct: Amp    ", //16
-    "correct: CH0    ", //16
-    "correct: CH1    ", //9  // group1
-    "correct: CH2    ", //10
-    "correct: CH3    ", //14
-    "correct: CH4    ", //15
-    "correct: CH5    ", //16
-    "correct: CH6    ", //16
-    "correct: CH7    ", //16
-    "correct: CH8    ", //16
+	"ALARM: SRP MAX  ",
+    "ALARM: SRP MIN  ",
+    "ALARM: SRP TIME ",
+	"ALARM: SOP MAX  ",
+    "ALARM: SOP MIN  ",
+    "ALARM: SOP TIME ",
+    "ALARM: AOP DUTY ",
+    "ALARM: AOP TIME ",
+    "ALARM: ARP DUTY ",
+    "ALARM: ARP TIME ",
+    "ALARM: UPR LIMIT",
+    "ALARM: OPR LIMIT",
 
-    "zsu :ch0 e/d    ", //16
-    "zsu :ch1 e/d    ", //16
-    "zsu :ch2 e/d    ", //9  // group1
-    "zsu :ch3 e/d    ", //10
-    "zsu :ch4 e/d    ", //14
-    "zsu :ch5 e/d    ", //15
-    "zsu :ch6 e/d    ", //16
-    "zsu :ch7 e/d    ", //16
-    "Main:ch8 e/d    ", //16
-	// 센서 정/역
-	// 정방향 센서 : 징크 Zinc
-	//				- 양전하   수위 검출 용도
-	// 역방향 센서 : CUCU/SO4
-	//				- 음전하 수위 검출 용도
-	"zsu:ch0 REF TYPE", //16
-	"zsu:ch1 REF TYPE", //16
-	"zsu:ch2 REF TYPE", //16
-	"zsu:ch3 REF TYPE", //16
-	"zsu:ch4 REF TYPE", //16
-	"zsu:ch5 REF TYPE", //16
-	"zsu:ch6 REF TYPE", //16
-	"zsu:ch7 REF TYPE", //16
-	"main:   REF TYPE", //16
-
-    "etc :currentType", //16
-	"SRP : MAX       ", //16
-    "SRP : MIN       ", //16
-    "SRP : TIME      ", //9  // group1
-	"SOP : MAX       ", //16
-    "SOP : MIN       ", //16
-    "SOP : TIME      ", //9  // group1
-    "AOP : DUTY      ", //16
-    "AOP : TIME      ", //16
-    "ARP : DUTY      ", //16
-    "ARP : TIME      ", //16
-    "UPR : opr Limit ", //16
-    "OPR : upr Limit ", //16
-
-    "FOP : ON / OFF  ",
-    "1SRP: ON / OFF  ",
-    "2SOP: ON / OFF  ",
-    "3AOP: ON / OFF  ",
-    "4ARP: ON / OFF  ",
-    "UPR : ON / OFF  ",
-    "OPR : ON / OFF  ",
+    "ALARM ONOFF: SRP", // 1st
+    "ALARM ONOFF: SOP", // 2st
+    "ALARM ONOFF: AOP", // 3st
+    "ALARM ONOFF: ARP", // 4st
+    "ALARM ONOFF: UPR",
+    "ALARM ONOFF: OPR",
+    "ALARM ONOFF: FOP",
 };
 
 
@@ -133,7 +129,7 @@ const uint8_t ch_enable_sel_list[][17] = {
 };
 
 const uint8_t ch_use_sel_list[][17] = {
-    "Not use         ", //0
+    "Nouse           ", //0
     "Use             ", //1
 };
 

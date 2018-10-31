@@ -14,7 +14,7 @@ uint16_t maxCorrectAmpMenuNum;
 
 
 /////////////////////////////////////////////////////
-// 설정 디포트 초기값
+// 로더 설정 디포트 초기 값
 #define DFL_SETUP 0x55						//default val
 #define DFL_VERSION 0						//version
 #define DFL_SCR_GOAL_VOLTAGE 500 // 50.0V
@@ -32,10 +32,10 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_REVERSE_8 0
 
 #define DFL_FOP_EN	1
-#define DFL_1SRP_EN 0
-#define DFL_2SOP_EN 0
-#define DFL_3AOP_EN 0
-#define DFL_4ARP_EN 0
+#define DFL_1SRP_EN 1
+#define DFL_2SOP_EN 1
+#define DFL_3AOP_EN 1
+#define DFL_4ARP_EN 1
 #define DFL_UPR_EN  1
 #define DFL_OPR_EN  0
 
@@ -282,6 +282,18 @@ uint16_t G3_Menu_Status_Set(void) {
     UserMenuSerialNm++;
     sub_gr++;
 
+	/////////////////////////////////////////////////////////////////////
+	//센서  보정 : main sensor
+	/////////////////////////////////////////////////////////////////////
+	bThisMenuSaver[UserMenuSerialNm] = 1;
+	IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 10100; // +100
+	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =	9900; // -100
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch8;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	UserMenuSerialNm++;
+	sub_gr++;
 
 	/////////////////////////////////////////////////////////////////////
     //센서  보정 채널0
@@ -380,18 +392,6 @@ uint16_t G3_Menu_Status_Set(void) {
     MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
     UserMenuSerialNm++;
     sub_gr++;
-	/////////////////////////////////////////////////////////////////////
-    //센서  보정 채널8
-    /////////////////////////////////////////////////////////////////////
-    bThisMenuSaver[UserMenuSerialNm] = 1;
-    IntType_DIGIT_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-    MenuStatus[UserMenuSerialNm].M_EditShiftCnt = 5;
-    MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 10100; // +100
-	MenuStatus[UserMenuSerialNm].M_EditDigitMinValue =  9900; // -100
-    MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_SCR_CORRECT_ch8;
-    MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-    UserMenuSerialNm++;
-    sub_gr++;
 
 
 
@@ -408,6 +408,17 @@ uint16_t G4_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP04;
     sub_gr = SUB_GROUP01;
+
+	/////////////////////////////////////////////////////////////////////
+	//메인 센서
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH8_USE;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
 
 	/////////////////////////////////////////////////////////////////////
 	//서브 보드 - ch0 use/nouse
@@ -497,22 +508,12 @@ uint16_t G4_Menu_Status_Set(void) {
 	UserMenuSerialNm++;
 	sub_gr++;
 
-	/////////////////////////////////////////////////////////////////////
-	//메인 센서 ch8
-	/////////////////////////////////////////////////////////////////////
-	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_CH8_USE;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_use_sel_list;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
-	UserMenuSerialNm++;
-	sub_gr++;
 
     return (0);
 }
 
 
-// 센서 Zinc or CUCUSO4 선택
+// 센서 타입 선택 : Zinc or CUCUSO4 선택
 uint16_t G5_Menu_Status_Set(void) {
     uint16_t main_gr, sub_gr;
 
@@ -521,6 +522,17 @@ uint16_t G5_Menu_Status_Set(void) {
     /////////////////////////////////////////////////////////////////////
     main_gr = MAIN_GROUP05;
     sub_gr = SUB_GROUP01;
+
+	/////////////////////////////////////////////////////////////////////
+	// 메인 채널
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_8;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
 
 	/////////////////////////////////////////////////////////////////////
 	// 0 채널
@@ -611,17 +623,15 @@ uint16_t G5_Menu_Status_Set(void) {
 	sub_gr++;
 
 	/////////////////////////////////////////////////////////////////////
-	// 메인 채널 (8)
+	// 총 11가지 전류 타입 선택 (5A ~ 300A)
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_REVERSE_8;
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_AMP_TYPE;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ch_reverse_sel_list;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ampTypeList;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11;
 	UserMenuSerialNm++;
 	sub_gr++;
-
-
 
     return (0);
 }
@@ -633,16 +643,6 @@ uint16_t G6_Menu_Status_Set(void) {
 
     main_gr = MAIN_GROUP06;
     sub_gr = SUB_GROUP01;
-	/////////////////////////////////////////////////////////////////////
-	// 총 11가지 전류 타입 선택 (5A ~ 300A)
-	/////////////////////////////////////////////////////////////////////
-	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_AMP_TYPE;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ampTypeList;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 11;
-	UserMenuSerialNm++;
-	sub_gr++;
 
 	/////////////////////////////////////////////////////////////////////
     //SRP MAX
@@ -811,16 +811,6 @@ uint16_t G7_Menu_Status_Set(void) {
 /////////////////
 // ---- FOP ~ OPR 총 7개 각 알람 ON/OFF 설정(세팅)
 	/////////////////////////////////////////////////////////////////////
-	// FOP
-	/////////////////////////////////////////////////////////////////////
-	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
-	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_FOP_EN;
-	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
-	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
-	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
-	UserMenuSerialNm++;
-	sub_gr++;
-	/////////////////////////////////////////////////////////////////////
 	// 1SRP
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
@@ -875,6 +865,17 @@ uint16_t G7_Menu_Status_Set(void) {
 	/////////////////////////////////////////////////////////////////////
 	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
 	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_OPR_EN;
+	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
+	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
+	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
+	UserMenuSerialNm++;
+	sub_gr++;
+
+	/////////////////////////////////////////////////////////////////////
+	// FOP
+	/////////////////////////////////////////////////////////////////////
+	ByteType_DIGIT_STRING_EDIT_Set(main_gr, sub_gr, DIVIDE_0);
+	MenuStatus[UserMenuSerialNm].M_EditFlashAddr = F_FOP_EN;
 	MenuStatus[UserMenuSerialNm].M_EditGroupMsgAddr = (uint8_t *) GroupLineMessage[UserMenuSerialNm];
 	MenuStatus[UserMenuSerialNm].M_EditMsgAddr = (uint8_t *) ldr_errorTestSetText;
 	MenuStatus[UserMenuSerialNm].M_EditDigitMaxValue = 2;
@@ -1842,10 +1843,10 @@ uint16_t DefaultDisplay(void) {
 
     switch (k) {
         case 0:
-			dsplayInDataState(); // 로더 데이터 표시
+			Default_Cur_State_Display(); // 현재 상태 표시(고장 등등)
             break;
         case 1:
-			Default_Cur_State_Display(); // 현재 상태 표시
+			dsplayInDataState(); // 로더 데이터 표시
             break;
         default:
 			dsplayManyStateInfo_pwm();

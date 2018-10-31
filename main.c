@@ -2252,7 +2252,6 @@ void main(void) {
 		if (ampType != bef_ampType) {
 			bef_ampType = ampType;
 			writeFlash(F_SCR_CORRECT_A, 10000);
-			pin_RUN_LED = ~pin_RUN_LED;
 		}
     }
 }
@@ -2310,6 +2309,7 @@ void interrupt isr(void) {
 		if (pwstartTiemr < 0xffff) pwstartTiemr++;
         if (timer_msec >= 1000) {
             timer_msec = 0;
+			pin_RUN_LED = ~pin_RUN_LED;
         }
 
         NoCanInt++;
