@@ -16,12 +16,12 @@ uint16_t maxCorrectAmpMenuNum;
 /////////////////////////////////////////////////////
 // 로더 설정 디폴트 초기화 값 저장
 #define DFL_SETUP 0x55						//default val
-#define DFL_VERSION 13						//version
-#define DFL_SCR_GOAL_VOLTAGE 500 // 50.0V
-#define DFL_SCR_GOAL_CURRENT 50 // 10.0A
+#define DFL_VERSION 14						//version
+#define DFL_SCR_GOAL_VOLTAGE 600 // 60.0V
+#define DFL_SCR_GOAL_CURRENT 300 // 30.0A
 #define DFL_SCR_GOAL_SENSOR  10250 // 1000mV 전위
 // sensor type
-#define DFL_REVERSE_0 0 // 0 : zinc
+#define DFL_REVERSE_0 0 // 0 = zinc
 #define DFL_REVERSE_1 0
 #define DFL_REVERSE_2 0
 #define DFL_REVERSE_3 0
@@ -31,9 +31,9 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_REVERSE_7 0
 #define DFL_REVERSE_8 0
 // sensor use/nouse
-#define DEF_CH0_USE 1
-#define DEF_CH1_USE 0
-#define DEF_CH2_USE 0
+#define DEF_CH0_USE 1 // 1 = ON
+#define DEF_CH1_USE 1
+#define DEF_CH2_USE 1
 #define DEF_CH3_USE 0
 #define DEF_CH4_USE 0
 #define DEF_CH5_USE 0
@@ -41,16 +41,16 @@ uint16_t maxCorrectAmpMenuNum;
 #define DEF_CH7_USE 0
 #define DEF_CH8_USE 0
 
-#define DFL_FOP_EN	1
-#define DFL_1SRP_EN 1
-#define DFL_2SOP_EN 1
-#define DFL_3AOP_EN 1
-#define DFL_4ARP_EN 1
+#define DFL_FOP_EN	1	// 1 = EN
+#define DFL_1SRP_EN 0
+#define DFL_2SOP_EN 0
+#define DFL_3AOP_EN 0
+#define DFL_4ARP_EN 0
 #define DFL_UPR_EN  1
-#define DFL_OPR_EN  0
+#define DFL_OPR_EN  1
 
+#define DFL_AMP_TYPE 4	 // 4 = 50A
 // 1st SRP
-#define DFL_AMP_TYPE 0	 // 0 = 5A (테스트 용)
 #define DFL_SRP_MAX 10200 // 7A
 #define DFL_SRP_MIN 9800 // V
 #define DFL_SRP_TIME 2000 // time
