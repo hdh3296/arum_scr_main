@@ -993,7 +993,7 @@ uint16_t gateRSTDo_time; // 수동에의해 최종 몇 도 조절 할지의 값이다.
 // 이 값이 결국은 PWM 의 듀티값과 같다고 보면 된다.
 // 이값을 조절함으로 써 목표 전압/전류/센서 값을 제어하면 된다.
 
-uint16_t test_manualVol(void) {
+uint16_t getGoalBytest_manualVol(void) {
 	uint16_t volAnalog = scr.nowAdVolume_micom_mV; // 6~4994
 	return (180 - (volAnalog / 28) + 60);
 }
@@ -1399,19 +1399,48 @@ void compareGoalNowSensor(void) {
 	}
 }
 
-void controlGateTotal(void) {
-// 전압, 전류, 센서 제어
+bool cotrolGateTotalByLiminVolt_Amp(void) {
 	if (isOverVoltage_micomMV()) {
 		compareGoalNowVoltage();
-		return;
+		return 1;
 	} else if (isOverCurrent()) {
 		compareGoalNowCurrent();
+		return 1;
+	}
+	return 0;
+}
+
+void controlGateTotal(void) {
+// 전압, 전류, 센서 제어
+	if (cotrolGateTotalByLiminVolt_Amp()) {
 		return;
 	}
-
 	// ★ 센서 제어
 	compareGoalNowSensor();
 }
+
+
+void controlGateTotalByManual(void) {
+	uint16_t goalGateSRTDO_time;
+
+	if (cotrolGateTotalByLiminVolt_Amp()) {
+		return;
+	}
+
+	// 수동 볼륨에 의해서 gateRSTDo_time 값을 획득한다.
+	if (scr.bNowAdVolume_micom_updted) {
+		scr.bNowAdVolume_micom_updted = FALSE;
+
+		goalGateSRTDO_time = getGoalBytest_manualVol();
+		if (gateRSTDo_time > goalGateSRTDO_time) {
+			gateRSTDo_time -= 1; // -1 하면 전압/전류 증가 시키는 것이다.
+		} else if (gateRSTDo_time < goalGateSRTDO_time) {
+			gateRSTDo_time += 1;
+		}
+	}
+
+}
+
 
 
 // 전압 제어 코딩 성공 !
@@ -1489,20 +1518,20 @@ bool isJustNowPowerOn(void) {
 
 
 void controlSensorJuWi(void) {
+// 기본 제어 함수
 	// 46us = 1도
 	if (!pin_AUTO) {
-		if (!db_finalErrorCode)
-			UserSystemStatus = M_RUNNING_MANUAL;
-		// 수동 볼륨에 의해서 gateRSTDo_time 값을 획득한다.
-		if (scr.bNowAdVolume_micom_updted) {
-			scr.bNowAdVolume_micom_updted = FALSE;
-			gateRSTDo_time = test_manualVol();
-		}
+	// 수동 시 !
+
+		controlGateTotalByManual();
+		// 기타 -----------
+		if (!db_finalErrorCode) UserSystemStatus = M_RUNNING_MANUAL;
 	} else {
-		if (!db_finalErrorCode)
-			UserSystemStatus = M_RUNNING_AUTO;
 		// PWM 처럼 게이트 제어하는 함수이다.
 		controlGateTotal();
+
+		// 기타 -------------------
+		if (!db_finalErrorCode) UserSystemStatus = M_RUNNING_AUTO;
 	}
 }
 

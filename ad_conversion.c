@@ -1,7 +1,7 @@
 
 #include    <pic18.h>
 #include	"ad_conversion.h"
-
+#include	"initial.h"
 
 uint8_t AD_channel;
 bool b_ad_interrupted = 0;
@@ -82,7 +82,8 @@ bool is_update_AD() {
         SumCnt++;
 
 
-		sum_count = 1000;
+		if (!pin_AUTO) sum_count = 100;
+		else sum_count = 1000;
 
 
         if (SumCnt >= sum_count) {
