@@ -82,7 +82,14 @@ bool is_update_AD() {
         SumCnt++;
 
 
-		if (!pin_AUTO) sum_count = 100;
+		if (!pin_AUTO && (nRunStep == 5)) {
+		// 수동스위치 ON + 5단계 일반 제어에서
+			if (bAdconversionSpeedSlowDoForManual) {
+				sum_count = 100;
+			} else {
+				sum_count = 20;
+			}
+		}
 		else sum_count = 1000;
 
 

@@ -164,6 +164,7 @@ extern uint16_t getVoltage_RealData_FromMicomMV(uint16_t src);
 extern uint16_t getAmp_RealData_FromMicomMV(uint16_t src,
 										uint8_t ampType);
 extern bool isSensorUseNo(uint8_t ch);
-
+extern uint8_t nRunStep;
+extern bool bAdconversionSpeedSlowDoForManual;
 #endif
 

@@ -18,6 +18,8 @@ uint16_t db_sunsu_sensor_0_8_micomMV[9]; // 단순히 테스트 용으로 현재 상태 값 보
 extern uint16_t getCorrectedNowIn_micomMV(uint16_t nowIn_mV, uint16_t correct_mV);
 extern void micom_saveTotal9SensorNowIn_mV(void);
 
+bool bAdconversionSpeedSlowDoForManual;
+
 uint8_t db_finalErrorCode;
 bool bAlarmRyOn_Off;
 extern bool isSystemOffError(uint8_t errcode);
@@ -1314,7 +1316,14 @@ bool isOverVoltage_micomMV(void) {
 	uint16_t now = getCorrectedNowIn_micomMV_voltage(scr.nowVoltage_micom_mV,
 													iF_correct_V_user); // AN3, micom 현재 전압
 
-    if (now > limit) {
+	if (now > (limit - 100)) {
+		bAdconversionSpeedSlowDoForManual = 1;
+	} else {
+		bAdconversionSpeedSlowDoForManual = 0;
+	}
+
+	if (now > limit) {
+		// 오버 !
         return 1;
     }   return 0;
 }
@@ -1323,7 +1332,16 @@ bool isOverCurrent(void) {
 	uint16_t now = getCorrectedNowIn_micomMV_Amp(scr.nowAdAmp_micom_mV, iF_correct_A_user,
 												cF_amp_type); // AN3, micom 현재 전류
 
+	if (bAdconversionSpeedSlowDoForManual == 0) {
+		if (now > (limit - 100)) {
+			bAdconversionSpeedSlowDoForManual = 1;
+		} else {
+			bAdconversionSpeedSlowDoForManual = 0;
+		}
+	}
+
     if (now > limit) {
+		// 오버 !
         return 1;
     }   return 0;
 }
