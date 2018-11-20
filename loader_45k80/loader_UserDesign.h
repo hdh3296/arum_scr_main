@@ -65,34 +65,13 @@ const uint8_t GroupLineMessage[][17] = {
     "CORRECTION: Volt",
     "CORRECTION: Amp ",
     "CORRECTION: CH0 ", // main (일단 보여주는 것만)
-    "CORRECTION: CH1 ",
-    "CORRECTION: CH2 ",
-    "CORRECTION: CH3 ",
-    "CORRECTION: CH4 ",
-    "CORRECTION: CH5 ",
-    "CORRECTION: CH6 ",
-    "CORRECTION: CH7 ",
-    "CORRECTION: CH8 ",
+
+
 	// 센서 use/nouse
     "SENSOR ONOFF:CH0",
-    "SENSOR ONOFF:CH1",
-    "SENSOR ONOFF:CH2",
-    "SENSOR ONOFF:CH3",
-    "SENSOR ONOFF:CH4",
-    "SENSOR ONOFF:CH5",
-    "SENSOR ONOFF:CH6",
-    "SENSOR ONOFF:CH7",
-    "SENSOR ONOFF:CH8",
 	// 센서 타입 선택 : Zinc, CUCU/SO4
 	"TYPE: SENSOR CH0",
-	"TYPE: SENSOR CH1",
-	"TYPE: SENSOR CH2",
-	"TYPE: SENSOR CH3",
-	"TYPE: SENSOR CH4",
-	"TYPE: SENSOR CH5",
-	"TYPE: SENSOR CH6",
-	"TYPE: SENSOR CH7",
-	"TYPE: SENSOR CH8",
+
     "TYPE: Shunt     ",
 
 	"ALARM: SRP MAX  ",
