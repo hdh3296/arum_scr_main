@@ -1824,25 +1824,13 @@ uint8_t isFopErrorChk(void) {
 	두개 이상 안 들어오면 즉, 1개만 들어오면 에러이다.
 
 */
-	uint16_t cnt;
 
 	if (cF_FOP_en == ET_DISABLE) return 0;
 
-	cnt = 0;
 	if (RZeroXChekTimer > 100) {
-		cnt++;
-	}
-//	단상 때문에 막음 2018.1120
-//	if (SZeroXChekTimer > 100) {
-//		cnt++;
-//	}
-//	if (TZeroXChekTimer > 100) {
-//		cnt++;
-//	}
-
-	if (cnt >= 2) {
 		return 1; // ERROR !
 	}
+
 	return 0;
 }
 
