@@ -1832,12 +1832,13 @@ uint8_t isFopErrorChk(void) {
 	if (RZeroXChekTimer > 100) {
 		cnt++;
 	}
-	if (SZeroXChekTimer > 100) {
-		cnt++;
-	}
-	if (TZeroXChekTimer > 100) {
-		cnt++;
-	}
+//	단상 때문에 막음 2018.1120
+//	if (SZeroXChekTimer > 100) {
+//		cnt++;
+//	}
+//	if (TZeroXChekTimer > 100) {
+//		cnt++;
+//	}
 
 	if (cnt >= 2) {
 		return 1; // ERROR !

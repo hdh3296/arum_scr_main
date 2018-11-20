@@ -32,8 +32,8 @@ uint16_t maxCorrectAmpMenuNum;
 #define DFL_REVERSE_8 0
 // sensor use/nouse
 #define DEF_CH0_USE 1 // 1 = ON
-#define DEF_CH1_USE 1
-#define DEF_CH2_USE 1
+#define DEF_CH1_USE 0
+#define DEF_CH2_USE 0
 #define DEF_CH3_USE 0
 #define DEF_CH4_USE 0
 #define DEF_CH5_USE 0
