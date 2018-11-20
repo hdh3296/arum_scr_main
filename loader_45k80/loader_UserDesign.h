@@ -93,7 +93,7 @@ const uint8_t GroupLineMessage[][17] = {
 	"TYPE: SENSOR CH6",
 	"TYPE: SENSOR CH7",
 	"TYPE: SENSOR CH8",
-    "TYPE: Amp       ",
+    "TYPE: Shunt     ",
 
 	"ALARM: SRP MAX  ",
     "ALARM: SRP MIN  ",

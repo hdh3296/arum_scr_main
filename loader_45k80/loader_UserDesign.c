@@ -16,7 +16,7 @@ uint16_t maxCorrectAmpMenuNum;
 /////////////////////////////////////////////////////
 // 로더 설정 디폴트 초기화 값 저장
 #define DFL_SETUP 0x55						//default val
-#define DFL_VERSION 14						//version
+#define DFL_VERSION 15						//version
 #define DFL_SCR_GOAL_VOLTAGE 600 // 60.0V
 #define DFL_SCR_GOAL_CURRENT 300 // 30.0A
 #define DFL_SCR_GOAL_SENSOR  10250 // 1000mV 전위
